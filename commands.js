@@ -7,7 +7,7 @@ module.exports = {
         db.get('userdata', `userid = ${context["user-id"]}`)
         .then(userdatas => {
             userdata = userdatas[0]
-            if (Math.random() >= .95) {
+            if (Math.random() >= .90) {
                 db.update(['userid', context['user-id']],
                             ['goldcrowns'],
                             [userdata.goldcrowns + 1],
@@ -39,7 +39,7 @@ module.exports = {
             }
 
             
-            if (Math.random() <= .5) {
+            if (Math.random() <= .01) {
                 db.update(['userid', context['user-id']],
                             ['platcrowns'],
                             [userdata.platcrowns + 1],

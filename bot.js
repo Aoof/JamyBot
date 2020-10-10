@@ -4,16 +4,15 @@ const db = require("./db.js")
 require("dotenv").config()
 
 
-async function Bot() {
-    let channels = await db.get("channels")
+function Bot() {
     this.opts = {
         identity: {
-            username: process.env.USERNAME,
+            username: process.env.NAME,
             password: process.env.OAUTH
         },
-        channels: channels.map(function(channel) {
-            return channel.name
-        })
+        channels: [
+                      process.env.CHANNEL
+        ]
     }
 
     this.client = new tmi.client(opts)
@@ -31,11 +30,11 @@ async function Bot() {
         */
         commands.addUser(target, context, msg)
         commands.crowning(target, context, msg)
-
     }
 
     this.onConnectedHandler = (addr, port) => {
         console.log(`* Connected to ${addr}:${port}`);
+        console.log(`  USERNAME :   ${this.opts.identity.username}`)
     }
 
     this.client.on('message', this.onMessageHandler);
@@ -46,7 +45,4 @@ async function Bot() {
     return this
 }
 
-Bot().then(bot => {
-}).catch(err => {
-    if (err) throw err;
-})
+bot = Bot()
