@@ -12,105 +12,73 @@ const con = mysql.createConnection({
 module.exports = {
     get(table, where=null) {
         return new Promise((resolve, reject) => {
-            con.connect(function(err) {
-                if (err) {
-                    reject(err)
-                    return;
-                };
-
-                con.query(where ? "SELECT * FROM " + table + " WHERE " + where : "SELECT * FROM " + table,
-                    function(err, result, fields) {
-                        if (err) {
-                            reject(err)
-                            return;
-                        };
-
-                        resolve(result)
-                    }
-                )
-            })
-        })
-    },
-    insert(names, values, table) {
-        return new Promise((resolve, reject) => {
-            if (names.length != values.length) throw reject("Names does not match the values.");
-            names = JSON.stringify(names)
-            values = JSON.stringify(values)
-    
-            con.connect(function(err) {
-                if (err) {
-                    reject(err)
-                    return;
-                };
-    
-                con.query(`INSERT IGNORE INTO ${table} ${names} VALUES ${values}`, 
-                    function(err, result, fields) {
-                        if (err) {
-                            reject(err)
-                            return;
-                        };
-    
-                        resolve("Successfully inserted data to "+table+".")
-                    }
-                )
-            })
-        })
-    },
-    getOrCreate(names, query) {
-        return new Promise((resolve, reject) => {
-            con.connect((err) => {
-                if (err) {
-                    reject(err)
-                    return;
-                };
-
-                con.query(
-                    ```
-                    INSERT INTO users ${JSON.stringify(names)}
-                    SELECT ${JSON.stringify(names)} FROM 
-                    
-                    ```)
-            })
-        })
-    },
-    update(pk, names, values, table) {
-        return new Promise((resolve, reject) => {
-            if (names.length != values.length) throw reject("Names does not match the values.");
-            names = JSON.stringify(names)
-            values = JSON.stringify(values)
-    
-            con.connect((err) => {
-                if (err) {
-                    reject(err)
-                    return;
-                };
-                
-                let updated = "" 
-                
-                names.forEach(res => {
-                    updated += `${res} = ${values[names.indexOf(res)]}, `
-                })
-
-                if (updated.endsWith(",")) {
-                    updated = updated.substr(0, updated.length - 1)
+            con.query(where ? "SELECT * FROM " + table + " WHERE " + where : "SELECT * FROM " + table,
+                function(err, result, fields) {
+                    if (err) {
+                        reject(err)
+                        return;
+                    };
+                    resolve(result)
                 }
+            )
+        })
+    },
+    insert(_names, _values, table) {
+        return new Promise((resolve, reject) => {
+            names = _names.join(", ")
+            values = JSON.stringify(_values)
+            values = values.substr(1, values.length - 2)
 
-                con.query(
-                    ``` 
-                        UPDATE ${table}
-                        SET ${updated}
-                        WHERE id = ${pk}
-                    ```, 
-                    function(err, result, fields) {
-                        if (err) {
-                            reject(err)
-                            return;
-                        };
-                        
-                        resolve({id: pk, message: "Successfully updated "})
-                    }
-                )
+            names = `(${names})`
+            values = `(${values})`
+            
+    
+            con.query(`INSERT IGNORE INTO ${table} ${names} VALUES ${values}`,
+                function(err, result, fields) {
+                    if (err) {
+                        reject(err)
+                        return;
+                    };
+
+                    resolve("Successfully inserted data to "+table+".")
+                }
+            )
+        })
+    },
+    update(pk, _names, _values, table) {
+        return new Promise((resolve, reject) => {
+            names = _names.join(", ")
+            values = JSON.stringify(_values)
+            values = values.substr(1, values.length - 2)
+
+            names = `(${names})`
+            values = `(${values})`
+
+            let updated = "" 
+            
+            names.forEach(res => {
+                updated += `${res} = ${values[names.indexOf(res)]}, `
             })
+
+            if (updated.endsWith(",")) {
+                updated = updated.substr(0, updated.length - 1)
+            }
+
+            con.query(
+                ``` 
+                    UPDATE ${table}
+                    SET ${updated}
+                    WHERE ${pk[0]} = ${pk[1]}
+                ```, 
+                function(err, result, fields) {
+                    if (err) {
+                        reject(err)
+                        return;
+                    };
+                    
+                    resolve({id: pk[1], message: "Successfully updated "})
+                }
+            )
         })
     }
 }

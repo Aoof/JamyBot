@@ -2,13 +2,16 @@ const db = require('./db')
 
 async function User(id) {
     this.createQuery = ```
-                    userid VARCHAR(100) NOT NULL,
-                    username VARCHAR(45) NOT NULL,
-                    goldcrowns INTEGER,
-                    platcrowns INTEGER,
-                    PRIMARY KEY (userid)
+                CREATE TABLE users (
+                    userid VARCHAR(50),
+                    username VARCHAR(50) NOT NULL,
+                    badgesraw VARCHAR(50),
+                    user_id VARCHAR(50),
+                    room_id VARCHAR(50),
+                    moderator BOOL,
+                    subscriber BOOL,
+                )
                 ```
-    let user = db.getUserOrCreate(id)
 
 }
 

@@ -19,15 +19,57 @@ async function Bot() {
     
     this.onMessageHandler = function(target, context, msg, self) {
         if (self) { return; }
-        
-        let picker = Math.floor((Math.random() * 100));
-        if (picker <= 5) {
+        /*
+            # Receive message
+            # Insert user to database if not already registered
+            # Randomly check if user will get crowned or not
+            # # Golden crown 5% Chance
+            # # Platinum crown .1% Chance
+            # Save user's data accordingly
+        */
 
-            this.client.say(target, `@${context['display-name']} You have been crowned the Golden Egg`)
-        }
-        if (picker >= 99) {
-            this.client.say(target, `@${context['display-name']} You have been crowned the Platinum Egg.. Now thats POG 'cuz this has 1 in 100 chance to happen.`)
-        }
+        db.get('users', `userid = '${context["user-id"]}'`).then(result => {
+            if (result.length) return;
+
+            db.insert( // User
+                ['userid',
+                 'username',
+                 'badgesraw',
+                 'room_id',
+                 'moderator',
+                 'subscriber'], // Keys
+                [context["user-id"],
+                 context.username,
+                 context["badges-raw"],
+                 context["room-id"],
+                 context.mod,
+                 context.subscriber], // Values
+                 'users'
+                ).then(res => {
+                    console.log(res)
+                }).catch(err => {
+                    console.log(err)
+                })
+        }).catch(err => {
+            console.log(err)
+        })
+        
+
+        db.get('userdata', `userid = '${context["user-id"]}'`).then(result => {
+            if (result.length) return;
+
+            db.insert( // User Data
+                ['userid'], // Keys
+                [context["user-id"]], // Values
+                 'userdata'
+                ).then(res => {
+                    console.log(res)
+                }).catch(err => {
+                    console.log(err)
+                })
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     this.onConnectedHandler = function(addr, port) {
