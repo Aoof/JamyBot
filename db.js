@@ -45,38 +45,33 @@ module.exports = {
             )
         })
     },
-    update(pk, _names, _values, table) {
+    update(pk, names, values, table) {
         return new Promise((resolve, reject) => {
-            names = _names.join(", ")
-            values = JSON.stringify(_values)
-            values = values.substr(1, values.length - 2)
-
-            names = `(${names})`
-            values = `(${values})`
 
             let updated = "" 
             
             names.forEach(res => {
-                updated += `${res} = ${values[names.indexOf(res)]}, `
+                updated += (names.length != names.indexOf(res)) ? `${res} = ${values[names.indexOf(res)]}` : `${res} = ${values[names.indexOf(res)]}, `
             })
 
             if (updated.endsWith(",")) {
                 updated = updated.substr(0, updated.length - 1)
             }
 
-            con.query(
-                ``` 
-                    UPDATE ${table}
-                    SET ${updated}
-                    WHERE ${pk[0]} = ${pk[1]}
-                ```, 
+            con.query(`UPDATE ${table} SET ${updated} WHERE ${pk[0]} = ${pk[1]}`, 
                 function(err, result, fields) {
                     if (err) {
                         reject(err)
                         return;
                     };
                     
-                    resolve({id: pk[1], message: "Successfully updated "})
+                    names = names.join(", ")
+                    values = JSON.stringify(values)
+                    values = values.substr(1, values.length - 2)
+
+                    names = `(${names})`
+                    values = `(${values})`
+                    resolve(`Successfully updated ${names} to ${values} at ${table}.`)
                 }
             )
         })

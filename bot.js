@@ -1,4 +1,5 @@
 const tmi = require("tmi.js")
+const commands = require("./commands.js")
 const db = require("./db.js")
 require("dotenv").config()
 
@@ -16,8 +17,9 @@ async function Bot() {
     }
 
     this.client = new tmi.client(opts)
+    commands.client = this.client
     
-    this.onMessageHandler = function(target, context, msg, self) {
+    this.onMessageHandler = (target, context, msg, self) => {
         if (self) { return; }
         /*
             # Receive message
@@ -27,52 +29,12 @@ async function Bot() {
             # # Platinum crown .1% Chance
             # Save user's data accordingly
         */
+        commands.addUser(target, context, msg)
+        commands.crowning(target, context, msg)
 
-        db.get('users', `userid = '${context["user-id"]}'`).then(result => {
-            if (result.length) return;
-
-            db.insert( // User
-                ['userid',
-                 'username',
-                 'badgesraw',
-                 'room_id',
-                 'moderator',
-                 'subscriber'], // Keys
-                [context["user-id"],
-                 context.username,
-                 context["badges-raw"],
-                 context["room-id"],
-                 context.mod,
-                 context.subscriber], // Values
-                 'users'
-                ).then(res => {
-                    console.log(res)
-                }).catch(err => {
-                    console.log(err)
-                })
-        }).catch(err => {
-            console.log(err)
-        })
-        
-
-        db.get('userdata', `userid = '${context["user-id"]}'`).then(result => {
-            if (result.length) return;
-
-            db.insert( // User Data
-                ['userid'], // Keys
-                [context["user-id"]], // Values
-                 'userdata'
-                ).then(res => {
-                    console.log(res)
-                }).catch(err => {
-                    console.log(err)
-                })
-        }).catch(err => {
-            console.log(err)
-        })
     }
 
-    this.onConnectedHandler = function(addr, port) {
+    this.onConnectedHandler = (addr, port) => {
         console.log(`* Connected to ${addr}:${port}`);
     }
 
@@ -85,8 +47,6 @@ async function Bot() {
 }
 
 Bot().then(bot => {
-    
-
 }).catch(err => {
     if (err) throw err;
 })
