@@ -53,7 +53,7 @@ function Bot() {
 
     this.onConnectedHandler = (addr, port) => {
         console.log(`* Connected to ${addr}:${port}`);
-        console.log(`  USERNAME :   ${this.opts.identity.username}`)
+        console.log(`  Username  :  ${this.opts.identity.username}`)
     }
 
     this.client.on('message', this.onMessageHandler);

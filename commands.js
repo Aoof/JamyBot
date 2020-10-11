@@ -3,7 +3,7 @@ const db = require('./db')
 
 module.exports = {
     command(cmd, msg) {
-        if (typeof cmd == String) {
+        if (typeof cmd != Array) {
             return msg.startsWith(this.prefix + cmd)
         } else {
             let tr = 0
@@ -198,6 +198,7 @@ module.exports = {
     textCommandsHandler(target, context, msg) {
         db.get("tcommands")
         .then(commands => {
+            if (!commands.length) return;
             commands.forEach(command => {
                 if (this.command(command.command, msg)) {
                     this.client.say(target, command.reply)
