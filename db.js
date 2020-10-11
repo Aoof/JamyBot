@@ -18,7 +18,7 @@ module.exports = {
                         reject(err)
                         return;
                     };
-                    console.log(condition ? `GET data from ${table} where ${condition}.` : `GET data frmo ${table}.`)
+                    console.log(condition ? `GET data from ${table} where ${condition}.` : `GET data from ${table}.`)
                     resolve(result)
                 }
             )
@@ -60,7 +60,7 @@ module.exports = {
 
             updated = updated.join(", ")
 
-            con.query(`UPDATE ${table} SET ${updated} WHERE ${pk[0]} = ${pk[1]}`, 
+            con.query(`UPDATE ${table} SET ${updated} WHERE ${pk[0]} = '${pk[1]}'`, 
                 function(err, result, fields) {
                     if (err) {
                         reject(err)

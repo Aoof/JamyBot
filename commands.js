@@ -3,28 +3,39 @@ const db = require('./db')
 
 module.exports = {
     command(cmd, msg) {
-        if (typeof cmd != Array) {
-            return msg.startsWith(this.prefix + cmd)
+        if (typeof cmd != "object") {
+            return msg.startsWith(this.prefix + cmd.toLowerCase())
         } else {
             let tr = 0
             let fl = 0
             
             cmd.forEach(command => {
-                if (msg.startsWith(this.prefix + command)) {
+                if (msg.startsWith(this.prefix + command.toLowerCase())) {
                     tr++;
                 } else {
                     fl++;
                 }
             })
 
-            return tr > 0
+            return tr
+        }
+    },
+    extract(msg) {
+        let command = msg.substr(1)
+        let args = command.split(" ").slice(1)
+        command = args[0]
+        args.pop(0)
+
+        return {
+            command: command,
+            args: args
         }
     },
     crowning(target, context, msg) {
         db.get('userdata', `userid = ${context["user-id"]}`)
         .then(userdatas => {
             userdata = userdatas[0]
-            if (Math.random() >= .9995) {
+            if (Math.random() >= .9994) {
                 db.update(['userid', context['user-id']],
                             ['goldcrowns', 'points'],
                             [userdata.goldcrowns + 1, userdata.points + 2500],
@@ -83,57 +94,29 @@ module.exports = {
             console.log(err)
         })
     },
-    addUser(target, context, msg) {
-
-        db.get('users', `userid = ${context["user-id"]}`).then(result => {
-            if (result.length) return;
-            result = result[0]
-            db.insert( // User
-                ['userid',
-                 'username',
-                 'badgesraw',
-                 'room_id',
-                 'moderator',
-                 'subscriber'], // Keys
-                [context["user-id"],
-                 context.username,
-                 context["badges-raw"],
-                 context["room-id"],
-                 context.mod,
-                 context.subscriber], // Values
-                 'users'
-                ).then(res => {
-                    console.log(res)
-                }).catch(err => {
-                    console.log(err)
-                })
-        }).catch(err => {
-            console.log(err)
-        })
-        
-
-        db.get('userdata', `userid = ${context["user-id"]}`).then(result => {
-            if (result.length) return;
-            result = result[0]
-
-            db.insert( // User Data
-                ['userid'], // Keys
-                [context["user-id"]], // Values
-                 'userdata'
-                ).then(res => {
-                    console.log(res)
-                }).catch(err => {
-                    console.log(err)
-                })
-        }).catch(err => {
-            console.log(err)
-        })
-    },
     getCrowns(target, context, msg) {
-        db.get('userdata', `userid = ${context["user-id"]}`)
-        .then(data => {
-            data = data[0]
-            this.client.say(target, `/me @${context.username} has ${data.goldcrowns} Golden Crowns, and ${data.platcrowns} Platinium Crowns.`)
+        let user = context.username
+
+        let ext = this.extract(msg)
+
+        if (ext.args.length) {
+            user = ext.args[0]
+            if (user.startsWith("@")) {
+                user = user.replace("@", "")
+            }
+        }
+
+        db.get('users', `username = '${user}'`)
+        .then(users => {
+            if (!users.length) return
+            user = users[0]
+
+            db.get('userdata', `userid = '${user.userid}'`)
+            .then(res => {
+                if (!res.length) return;
+                res = res[0]
+                this.client.say(target, `/me > ${user.username}, has ${res.goldcrowns} Golden Crowns, and ${res.platcrowns} PLATINUM CROWNS.`)
+            })
         })
         .catch(err => {
             console.log(err)
@@ -143,29 +126,30 @@ module.exports = {
         db.get('userdata', `userid = ${context["user-id"]}`)
         .then(data => {
             data = data[0]
-            this.client.say(target, `/me @${context.username} has ${data.points} ${this.points.namePlural}.`)
+            this.client.say(target, `/me > ${context.username} has ${data.points} ${this.points.namePlural}.`)
         })
         .catch(err => {
             console.log(err)
         })
     },
     addTextCommand(target, context, msg) {
+        if (context.badges.broadcaster) {
+            context.mod = true
+        }
         if (!context.mod) return;
 
-        let command = msg.substr(1)
-        let args = command.split(" ").slice(1)
-        command = command[1]
-        reply = args.slice(1).join(" ")
+        let ext = this.extract(msg.toString())
+        reply = ext.args.slice(1).join(" ").replace('"', '\"').replace("'", "\'")
 
-        db.get('tcommands', `command = ${command}`)
+        db.get('tcommands', `command = '${ext.command}'`)
         .then(res => {
-            if (res) {
-                db.update(['command', command],
+            if (res.length) {
+                db.update(['command', ext.command],
                 ['reply'], 
                 [ reply ],
                 'tcommands')
                 .then(res => {
-                    this.client.say(target, `Successfully added ${command}.`)
+                    this.client.say(target, `Successfully added ${ext.command}.`)
                     console.log(res)
                 })
                 .catch(err => {
@@ -179,7 +163,7 @@ module.exports = {
                 "reply"
             ],
             [
-                command,
+                ext.command,
                 reply
             ],
             'tcommands')

@@ -1,6 +1,6 @@
 const tmi = require("tmi.js")
 const commands = require("./commands.js")
-const db = require("./db.js")
+const user = require("./User.js")
 require("dotenv").config()
 
 
@@ -34,21 +34,19 @@ function Bot() {
             # # Platinum crown .1% Chance
             # Save user's data accordingly
         */
-        commands.addUser(target, context, msg)
+        user.addUser(target, context, msg)
+        user.update(target, context, msg)
         commands.crowning(target, context, msg)
         if (commands.command("crowns", msg)) {
             commands.getCrowns(target, context, msg)
         }
-        // if (commands.command("discord", msg)) {
-        //     this.client.say(target, "Your Majesty invites you to join the elite Egg Carton: https://discord.gg/xas7Z52")
-        // }
-        // if (commands.command("points", msg)) {
-        //     commands.getPoints(target, context, msg)
-        // }
-        // if (commands.command(["cmd", "command", "update"], msg)) {
+        if (commands.command("points", msg)) {
+            commands.getPoints(target, context, msg)
+        }
+        // if (commands.command(["cmd", "command", "update"], msg)) { // Cannot make it work for some reason.. gonna check it later
         //     commands.addTextCommand(target, context, msg)
         // }
-        // commands.textCommandsHandler(target, context, msg)
+        commands.textCommandsHandler(target, context, msg)
     }
 
     this.onConnectedHandler = (addr, port) => {
