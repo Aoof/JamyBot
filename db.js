@@ -48,16 +48,17 @@ module.exports = {
     },
     update(pk, names, values, table) {
         return new Promise((resolve, reject) => {
+            updated = []
 
-            let updated = "" 
-            
-            names.forEach(res => {
-                updated += (names.length != names.indexOf(res)) ? `${res} = ${values[names.indexOf(res)]}` : `${res} = ${values[names.indexOf(res)]}, `
+            names.forEach(name => {
+                let value = values[names.indexOf(name)]
+                if (typeof value == typeof "") {
+                    value = `"${values}"`
+                }
+                updated.push(`${name} = ${value}`)
             })
 
-            if (updated.endsWith(",")) {
-                updated = updated.substr(0, updated.length - 1)
-            }
+            updated = updated.join(", ")
 
             con.query(`UPDATE ${table} SET ${updated} WHERE ${pk[0]} = ${pk[1]}`, 
                 function(err, result, fields) {
@@ -65,14 +66,8 @@ module.exports = {
                         reject(err)
                         return;
                     };
-                    
-                    names = names.join(", ")
-                    values = JSON.stringify(values)
-                    values = values.substr(1, values.length - 2)
 
-                    names = `(${names})`
-                    values = `(${values})`
-                    resolve(`Successfully updated ${names} to ${values} at ${table}.`)
+                    resolve(`Successfully updated ${updated} to ${values} at ${table}.`)
                 }
             )
         })

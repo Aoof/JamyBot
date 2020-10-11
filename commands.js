@@ -21,11 +21,10 @@ module.exports = {
         }
     },
     crowning(target, context, msg) {
-
         db.get('userdata', `userid = ${context["user-id"]}`)
         .then(userdatas => {
             userdata = userdatas[0]
-            if (Math.random() >= .90) {
+            if (Math.random() >= .9995) {
                 db.update(['userid', context['user-id']],
                             ['goldcrowns', 'points'],
                             [userdata.goldcrowns + 1, userdata.points + 2500],
@@ -64,7 +63,7 @@ module.exports = {
             }
 
             
-            if (Math.random() <= .01) {
+            if (Math.random() <= .000001) {
                 db.update(['userid', context['user-id']],
                             ['platcrowns', 'points'],
                             [userdata.platcrowns + 1, userdata.points + 2500*5],
