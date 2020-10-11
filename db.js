@@ -18,6 +18,7 @@ module.exports = {
                         reject(err)
                         return;
                     };
+                    console.log(condition ? `GET data from ${table} where ${condition}.` : `GET data frmo ${table}.`)
                     resolve(result)
                 }
             )

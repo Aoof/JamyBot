@@ -3,7 +3,22 @@ const db = require('./db')
 
 module.exports = {
     command(cmd, msg) {
-        return msg.startsWith(this.prefix + cmd)
+        if (typeof cmd == String) {
+            return msg.startsWith(this.prefix + cmd)
+        } else {
+            let tr = 0
+            let fl = 0
+            
+            cmd.forEach(command => {
+                if (msg.startsWith(this.prefix + command)) {
+                    tr++;
+                } else {
+                    fl++;
+                }
+            })
+
+            return tr > 0
+        }
     },
     crowning(target, context, msg) {
 
@@ -115,7 +130,7 @@ module.exports = {
             console.log(err)
         })
     },
-    getCrowns(target, context, message) {
+    getCrowns(target, context, msg) {
         db.get('userdata', `userid = ${context["user-id"]}`)
         .then(data => {
             data = data[0]
@@ -130,6 +145,64 @@ module.exports = {
         .then(data => {
             data = data[0]
             this.client.say(target, `/me @${context.username} has ${data.points} ${this.points.namePlural}.`)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    },
+    addTextCommand(target, context, msg) {
+        if (!context.mod) return;
+
+        let command = msg.substr(1)
+        let args = command.split(" ").slice(1)
+        command = command[1]
+        reply = args.slice(1).join(" ")
+
+        db.get('tcommands', `command = ${command}`)
+        .then(res => {
+            if (res) {
+                db.update(['command', command],
+                ['reply'], 
+                [ reply ],
+                'tcommands')
+                .then(res => {
+                    this.client.say(target, `Successfully added ${command}.`)
+                    console.log(res)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+                return;
+            };
+
+            db.insert([
+                "command",
+                "reply"
+            ],
+            [
+                command,
+                reply
+            ],
+            'tcommands')
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    },
+    textCommandsHandler(target, context, msg) {
+        db.get("tcommands")
+        .then(commands => {
+            commands.forEach(command => {
+                if (this.command(command.command, msg)) {
+                    this.client.say(target, command.reply)
+                }
+            })
         })
         .catch(err => {
             console.log(err)

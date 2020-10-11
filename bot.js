@@ -39,9 +39,16 @@ function Bot() {
         if (commands.command("crowns", msg)) {
             commands.getCrowns(target, context, msg)
         }
+        // if (commands.command("discord", msg)) {
+        //     this.client.say(target, "Your Majesty invites you to join the elite Egg Carton: https://discord.gg/xas7Z52")
+        // }
         // if (commands.command("points", msg)) {
         //     commands.getPoints(target, context, msg)
         // }
+        // if (commands.command(["cmd", "command", "update"], msg)) {
+        //     commands.addTextCommand(target, context, msg)
+        // }
+        // commands.textCommandsHandler(target, context, msg)
     }
 
     this.onConnectedHandler = (addr, port) => {
