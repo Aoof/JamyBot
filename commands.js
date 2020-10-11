@@ -2,6 +2,9 @@ const db = require('./db')
 
 
 module.exports = {
+    command(cmd, msg) {
+        return msg.startsWith(this.prefix + cmd)
+    },
     crowning(target, context, msg) {
 
         db.get('userdata', `userid = ${context["user-id"]}`)
@@ -9,30 +12,37 @@ module.exports = {
             userdata = userdatas[0]
             if (Math.random() >= .90) {
                 db.update(['userid', context['user-id']],
-                            ['goldcrowns'],
-                            [userdata.goldcrowns + 1],
+                            ['goldcrowns', 'points'],
+                            [userdata.goldcrowns + 1, userdata.points + 2500],
                             'userdata'
                 )
                 .then(res => {
-                    if ((userdata.goldcrowns + 1) % 5 == 0) {
+                    // Successfully crowned with a golden crown
+
+                    if ((userdata.goldcrowns + 1) % 5 == 0) { // This will check if the user received 4 golden crowns prior to this one
                         db.update(['userid', context['user-id']],
-                                    ['platcrowns'],
-                                    [userdata.platcrowns + 1],
+                                    ['platcrowns', 'points'],
+                                    [userdata.platcrowns + 1, userdata.points + 2500*5],
                                     'userdata'
-                        )
+                        ) // Crown with a platinum crown
                         .then(res => {
-                            this.client.say(target, `@${context.username}, You were lucky to be crowned 5 times with the golden crown.. for that you have been crowned with the PLATINIUM CROWN.`)
+                            // Successfully crowned with a platinum crown
+
+                            this.client.say(target, `/me @${context.username}, You were lucky to be crowned 5 times with the golden crown.. for that you have been crowned with the PLATINUM CROWN.`)
                             console.log(res)
                         })
                         .catch(err => {
+                            // Something went wrong while changing the platcrowns column in the database
                             console.log(err)
                         })
                     } else {
-                        this.client.say(target, `@${context.username}, You have been crowned with the Golden Crown.`)
+                        // if there was no 4 crowns prior to this then send this message instead
+                        this.client.say(target, `/me @${context.username}, You have been crowned with the Golden Crown.`)
                     }
                     console.log(res)
                 })
                 .catch(err => {
+                    // something went wrong while changing the goldcrowns column in the database
                     console.log(err)
                 })
 
@@ -41,12 +51,12 @@ module.exports = {
             
             if (Math.random() <= .01) {
                 db.update(['userid', context['user-id']],
-                            ['platcrowns'],
-                            [userdata.platcrowns + 1],
+                            ['platcrowns', 'points'],
+                            [userdata.platcrowns + 1, userdata.points + 2500*5],
                             'userdata'
-                )
+                ) // Crown with a platinum crown
                 .then(res => {
-                    this.client.say(target, `@${context.username}, You have been crowned with the PLATINIUM CROWN.`)
+                    this.client.say(target, `/me @${context.username}, You have been crowned with the PLATINIUM CROWN.`)
                     console.log(res)
                 })
                 .catch(err => {
@@ -102,6 +112,26 @@ module.exports = {
                     console.log(err)
                 })
         }).catch(err => {
+            console.log(err)
+        })
+    },
+    getCrowns(target, context, message) {
+        db.get('userdata', `userid = ${context["user-id"]}`)
+        .then(data => {
+            data = data[0]
+            this.client.say(target, `/me @${context.username} has ${data.goldcrowns} Golden Crowns, and ${data.platcrowns} Platinium Crowns.`)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    },
+    getPoints(target, context, message) {
+        db.get('userdata', `userid = ${context["user-id"]}`)
+        .then(data => {
+            data = data[0]
+            this.client.say(target, `/me @${context.username} has ${data.points} ${this.points.namePlural}.`)
+        })
+        .catch(err => {
             console.log(err)
         })
     }

@@ -17,6 +17,12 @@ function Bot() {
 
     this.client = new tmi.client(opts)
     commands.client = this.client
+
+    commands.prefix = "!"
+    commands.points = {
+        name: "Egg shell",
+        namePlural: "Egg shells"
+    }
     
     this.onMessageHandler = (target, context, msg, self) => {
         if (self) { return; }
@@ -30,6 +36,12 @@ function Bot() {
         */
         commands.addUser(target, context, msg)
         commands.crowning(target, context, msg)
+        if (commands.command("crowns", msg)) {
+            commands.getCrowns(target, context, msg)
+        }
+        // if (commands.command("points", msg)) {
+        //     commands.getPoints(target, context, msg)
+        // }
     }
 
     this.onConnectedHandler = (addr, port) => {

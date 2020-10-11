@@ -10,9 +10,9 @@ const con = mysql.createConnection({
 })
 
 module.exports = {
-    get(table, where=null) {
+    get(table, condition=null) {
         return new Promise((resolve, reject) => {
-            con.query(where ? "SELECT * FROM " + table + " WHERE " + where : "SELECT * FROM " + table,
+            con.query(condition ? `SELECT * FROM ${table} WHERE ${condition}` : "SELECT * FROM " + table,
                 function(err, result, fields) {
                     if (err) {
                         reject(err)
@@ -40,7 +40,7 @@ module.exports = {
                         return;
                     };
 
-                    resolve("Successfully inserted data to "+table+".")
+                    resolve(`Successfully inserted data to ${table} table.`)
                 }
             )
         })
