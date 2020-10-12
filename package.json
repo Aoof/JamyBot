@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/Aoof/JamyBot#readme",
   "dependencies": {
+    "axios": "^0.20.0",
     "dotenv": "^8.2.0",
     "hapi": "^18.1.0",
+    "https": "^1.0.0",
     "mysql": "^2.18.1",
     "tmi": "^2.0.0",
     "tmi.js": "^1.5.0"

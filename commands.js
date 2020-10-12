@@ -1,5 +1,5 @@
 const db = require('./db')
-
+const fs = require('fs');
 
 module.exports = {
     command(cmd, msg) {
@@ -24,7 +24,7 @@ module.exports = {
         let command = msg.substr(1)
         let args = command.split(" ").slice(1)
         command = args[0]
-        args.pop(0)
+        args.shift()
 
         return {
             command: command,
@@ -53,7 +53,7 @@ module.exports = {
                         .then(res => {
                             // Successfully crowned with a platinum crown
 
-                            this.client.say(target, `/me @${context.username}, You were lucky to be crowned 5 times with the golden crown.. for that you have been crowned with the PLATINUM CROWN.`)
+                            this.client.say(target, `/me > ${context.username}, You were lucky to be crowned 5 times with the golden crown.. for that you have been crowned with the PLATINUM CROWN.`)
                             console.log(res)
                         })
                         .catch(err => {
@@ -62,7 +62,7 @@ module.exports = {
                         })
                     } else {
                         // if there was no 4 crowns prior to this then send this message instead
-                        this.client.say(target, `/me @${context.username}, You have been crowned with the Golden Crown.`)
+                        this.client.say(target, `/me > ${context.username}, You have been crowned with the Golden Crown.`)
                     }
                     console.log(res)
                 })
@@ -81,7 +81,7 @@ module.exports = {
                             'userdata'
                 ) // Crown with a platinum crown
                 .then(res => {
-                    this.client.say(target, `/me @${context.username}, You have been crowned with the PLATINIUM CROWN.`)
+                    this.client.say(target, `/me > ${context.username}, You have been crowned with the PLATINIUM CROWN.`)
                     console.log(res)
                 })
                 .catch(err => {
@@ -141,55 +141,62 @@ module.exports = {
         let ext = this.extract(msg.toString())
         reply = ext.args.slice(1).join(" ").replace('"', '\"').replace("'", "\'")
 
-        db.get('tcommands', `command = '${ext.command}'`)
-        .then(res => {
-            if (res.length) {
-                db.update(['command', ext.command],
-                ['reply'], 
-                [ reply ],
-                'tcommands')
-                .then(res => {
-                    this.client.say(target, `Successfully added ${ext.command}.`)
-                    console.log(res)
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-                return;
-            };
+        let rawdata = fs.readFileSync('./tcommands.json');
+        let commands = JSON.parse(rawdata);
+        
+        let exists = false;
+        commands.forEach(cmd => {
+            if (cmd.command == ext.command) {
+                exists = true;
+            }
+        })
 
-            db.insert([
-                "command",
-                "reply"
-            ],
-            [
-                ext.command,
-                reply
-            ],
-            'tcommands')
-            .then(res => {
-                console.log(res)
+        if (!exists) {
+            commands.push({
+                "command": ext.command,
+                "reply": reply
             })
-            .catch(err => {
-                console.log(err)
-            })
+            fs.writeFileSync("./tcommands.json", JSON.stringify(commands))
+            this.client.say(target, `/me > ${context["display-name"]} added ${ext.command}.`)
+        } else {
+            this.client.say(target, `/me > ${context["display-name"]}, that command already exists. try ${this.prefix}${ext.command} or if you want to update it user ${this.prefix}update ${ext.command} REPLY.`)
+        }
+
+    },
+    updateTextCommand(target, context, msg) {
+        if (context.badges.broadcaster) {
+            context.mod = true
+        }
+        if (!context.mod) return;
+
+        let ext = this.extract(msg.toString())
+        reply = ext.args.join(" ")
+
+        let rawdata = fs.readFileSync('./tcommands.json');
+        let commands = JSON.parse(rawdata);
+        
+        let index = 0;
+        commands.forEach(cmd => {
+            if (cmd.command == ext.command) {
+                commands[index] = {
+                    "command": ext.command,
+                    "reply": reply
+                }
+            }
+            index++;
         })
-        .catch(err => {
-            console.log(err)
-        })
+
+        fs.writeFileSync('./tcommands.json', JSON.stringify(commands))
+        this.client.say(target, `/me > ${context["display-name"]} updated ${this.prefix}${ext.command}.`)
     },
     textCommandsHandler(target, context, msg) {
-        db.get("tcommands")
-        .then(commands => {
-            if (!commands.length) return;
-            commands.forEach(command => {
-                if (this.command(command.command, msg)) {
-                    this.client.say(target, command.reply)
-                }
-            })
-        })
-        .catch(err => {
-            console.log(err)
+        let rawdata = fs.readFileSync('./tcommands.json');
+        let commands = JSON.parse(rawdata);
+
+        commands.forEach(command => {
+            if (this.command(command["command"], msg)) {
+                this.client.say(target, command["reply"])
+            }
         })
     }
 }

@@ -1,6 +1,7 @@
 const tmi = require("tmi.js")
 const commands = require("./commands.js")
 const user = require("./User.js")
+const twitch = require("./twitchapi.js")
 require("dotenv").config()
 
 
@@ -23,6 +24,10 @@ function Bot() {
         name: "Egg shell",
         namePlural: "Egg shells"
     }
+
+    twitch.headers = [
+        'client-id: ' + process.env.CLIENTID
+    ]
     
     this.onMessageHandler = (target, context, msg, self) => {
         if (self) { return; }
@@ -43,9 +48,12 @@ function Bot() {
         if (commands.command("points", msg)) {
             commands.getPoints(target, context, msg)
         }
-        // if (commands.command(["cmd", "command", "update"], msg)) { // Cannot make it work for some reason.. gonna check it later
-        //     commands.addTextCommand(target, context, msg)
-        // }
+        if (commands.command(["cmd", "command"], msg)) { // Cannot make it work for some reason.. gonna check it later
+            commands.addTextCommand(target, context, msg)
+        }
+        if (commands.command("update", msg)) {
+            commands.updateTextCommand(target, context, msg)
+        }
         commands.textCommandsHandler(target, context, msg)
     }
 

@@ -52,8 +52,8 @@ module.exports = {
 
             names.forEach(name => {
                 let value = values[names.indexOf(name)]
-                if (typeof value == typeof "") {
-                    value = `"${values}"`
+                if (typeof value == "string") {
+                    value = `"${value}"`
                 }
                 updated.push(`${name} = ${value}`)
             })
@@ -67,7 +67,7 @@ module.exports = {
                         return;
                     };
 
-                    resolve(`Successfully updated ${updated} to ${values} at ${table}.`)
+                    resolve(`Successfully updated ${updated} at ${table}.`)
                 }
             )
         })

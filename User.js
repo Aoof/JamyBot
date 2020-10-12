@@ -72,12 +72,14 @@ module.exports = {
             db_user = [user.username,
                        user.badgesraw,
                        user.displayname,
-                       user.roomid,
+                       user.room_id,
                        user.moderator,
                        user.subscriber]
-
-            if (context_user != db_user) {
-                db.update(`userid = ${context["user-id"]}`, names, context_user, 'users')
+            
+            if (context_user.slice(0, names.length - 2) != db_user.slice(0, names.length - 2) 
+                && context_user[names.length-2] != db_user[names.length-2]
+                && context_user[names.length-1] != db_user[names.length-1]) {
+                db.update(['userid', context["user-id"]], names, context_user, 'users')
                 .then(res => {
                     console.log(res)
                 })
