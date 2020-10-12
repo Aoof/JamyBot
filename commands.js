@@ -1,16 +1,18 @@
 const db = require('./db')
 const fs = require('fs');
+const twitch = require("./twitchapi.js")
+const axios = require('axios')
 
 module.exports = {
     command(cmd, msg) {
         if (typeof cmd != "object") {
-            return msg.startsWith(this.prefix + cmd.toLowerCase())
+            return msg.startsWith(this.prefix + cmd.toLowerCase() + " ")
         } else {
             let tr = 0
             let fl = 0
             
             cmd.forEach(command => {
-                if (msg.startsWith(this.prefix + command.toLowerCase())) {
+                if (msg.startsWith(this.prefix + command.toLowerCase() + " ")) {
                     tr++;
                 } else {
                     fl++;
@@ -22,7 +24,7 @@ module.exports = {
     },
     extract(msg) {
         let command = msg.substr(1)
-        let args = command.split(" ").slice(1)
+        let args = command.split(" ")
         command = args[0]
         args.shift()
 
@@ -139,7 +141,7 @@ module.exports = {
         if (!context.mod) return;
 
         let ext = this.extract(msg.toString())
-        reply = ext.args.slice(1).join(" ").replace('"', '\"').replace("'", "\'")
+        reply = ext.args.slice(1).join(" ")
 
         let rawdata = fs.readFileSync('./tcommands.json');
         let commands = JSON.parse(rawdata);
@@ -170,7 +172,7 @@ module.exports = {
         if (!context.mod) return;
 
         let ext = this.extract(msg.toString())
-        reply = ext.args.join(" ")
+        reply = ext.args.slice(1).join(" ")
 
         let rawdata = fs.readFileSync('./tcommands.json');
         let commands = JSON.parse(rawdata);
@@ -197,6 +199,74 @@ module.exports = {
             if (this.command(command["command"], msg)) {
                 this.client.say(target, command["reply"])
             }
+        })
+    },
+    randomWink(target, context, msg) {
+        let ext = commands.extract(msg)
+
+        if (ext.args.length) {
+            this.client.say(target, `/me > ${context["display-name"]} winks at ${ext.args[0]}!`)
+        }
+        axios.post('https://2g.be/twitch/randomviewer.php?channel='+this.channel)
+        .then(res => {
+            let winkedTo = res.data
+            this.client.say(target, `/me > ${context["display-name"]} winks at ${winkedTo}!`)
+        })
+        .catch(err => {
+            console.log((err.data) ? err.data : err)
+        })
+    },
+    emotes(target, context, msg) {
+        axios.get("https://twitch.center/customapi/bttvemotes?channel="+this.channel)
+        .then(res => {
+            this.client.say(target, "/me > " + res.data)
+        })
+        .catch(err => {
+            console.log((err.data) ? err.data : err)
+        })
+    },
+    lurk(target, context, msg) {
+        this.client.say(target, `/me > ${context['display-name']} slowly takes off their crown and fades into the crowd.`)
+    },
+    shoutout(target, context, msg) {
+        if (context.badges.broadcaster) {
+            context.mod = true
+        }
+        if (!context.mod) return;
+
+        let ext = this.extract(msg)
+        let reply = ext.args.join(" ")
+
+        this.client.say(target, `/me > You need to peep this royal Egg: https://twitch.tv/${reply}`)
+    },
+    followage(target, context, msg) {
+        axios.get(`https://2g.be/twitch/following.php?user=${context.username}&channel=${this.channel}&format=mwdhms`)
+        .then(res => {
+            this.client.say(target, "/me > " + res.data)
+        })
+        .catch(err => {
+            console.log((err.data) ? err.data : err)
+        })
+    },
+    uptime(target, context, msg) {
+        // https://api.rtainc.co/twitch/uptime?channel=CHANNEL
+
+        axios.get(`https://api.rtainc.co/twitch/uptime?channel=${this.channel}`)
+        .then(res => {
+            this.client.say(target, "/me > " + res.data)
+        })
+        .catch(err => {
+            console.log((err.data) ? err.data : err)
+        })
+    },
+    accountAge(target, context, msg) {
+        // https://api.crunchprank.net/twitch/creation/$touserid
+        axios.get(`https://api.crunchprank.net/twitch/creation/${context.username}`)
+        .then(res => {
+            this.client.say(target, `/me > ${context["display-name"]}, your account was created at ${res.data}`)
+        })
+        .catch(err => {
+            console.log((err.data) ? err.data : err)
         })
     }
 }

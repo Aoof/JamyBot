@@ -1,5 +1,5 @@
 const twitch = require("./twitchapi.js")
 
-twitch.isLive("jamystro", resp => {
-    console.log(resp.data)
+twitch.randomWink(res => {
+    console.log(res)
 })

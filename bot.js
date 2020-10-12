@@ -2,6 +2,7 @@ const tmi = require("tmi.js")
 const commands = require("./commands.js")
 const user = require("./User.js")
 const twitch = require("./twitchapi.js")
+const twitchapi = require("./twitchapi.js")
 require("dotenv").config()
 
 
@@ -18,6 +19,7 @@ function Bot() {
 
     this.client = new tmi.client(opts)
     commands.client = this.client
+    twitch.client = this.client
 
     commands.prefix = "!"
     commands.points = {
@@ -25,9 +27,8 @@ function Bot() {
         namePlural: "Egg shells"
     }
 
-    twitch.headers = [
-        'client-id: ' + process.env.CLIENTID
-    ]
+    twitch.channel = process.env.CHANNEL
+    commands.channel = process.env.CHANNEL
     
     this.onMessageHandler = (target, context, msg, self) => {
         if (self) { return; }
@@ -48,11 +49,32 @@ function Bot() {
         if (commands.command("points", msg)) {
             commands.getPoints(target, context, msg)
         }
-        if (commands.command(["cmd", "command"], msg)) { // Cannot make it work for some reason.. gonna check it later
+        if (commands.command(["cmd", "command"], msg)) {
             commands.addTextCommand(target, context, msg)
         }
         if (commands.command("update", msg)) {
             commands.updateTextCommand(target, context, msg)
+        }
+        if (commands.command("wink", msg)) {
+            commands.randomWink(target, context, msg)
+        }
+        if (commands.command("emotes", msg)) {
+            commands.emotes(target, context, msg)
+        }
+        if (commands.command("lurk", msg)) {
+            commands.lurk(target, context, msg)
+        }
+        if (commands.command(["so", "shoutout"], msg)) {
+            commands.shoutout(target, context, msg)
+        }
+        if (commands.command("followage", msg)) {
+            commands.followage(target, context, msg)
+        }
+        if (commands.command("uptime", msg)) {
+            commands.uptime(target, context, msg)
+        }
+        if (commands.command("accountage", msg)) {
+            commands.accountAge(target, context, msg)
         }
         commands.textCommandsHandler(target, context, msg)
     }
