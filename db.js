@@ -41,7 +41,7 @@ module.exports = {
                         return;
                     };
 
-                    resolve(`Successfully inserted data to ${table} table.`)
+                    resolve(`[DB_INSERT] Successfully inserted data to ${table} table.`)
                 }
             )
         })
@@ -67,7 +67,7 @@ module.exports = {
                         return;
                     };
 
-                    resolve(`Successfully updated ${updated} at ${table}.`)
+                    resolve(`[DB_UPDATE] Successfully updated ${updated} at ${table}.`)
                 }
             )
         })

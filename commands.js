@@ -6,6 +6,9 @@ const axios = require('axios')
 module.exports = {
     command(cmd, msg) {
         if (typeof cmd != "object") {
+            // let cond =  msg.startsWith(this.prefix + cmd.toLowerCase() + " ")
+            // if (cond) console.log(`[CMD] Requested command ${this.prefix+cmd.toLowerCase()}`)
+            // return cond
             return msg.startsWith(this.prefix + cmd.toLowerCase() + " ")
         } else {
             let tr = 0
@@ -14,6 +17,7 @@ module.exports = {
             cmd.forEach(command => {
                 if (msg.startsWith(this.prefix + command.toLowerCase() + " ")) {
                     tr++;
+                    console.log(`[CMD] Requested command ${this.prefix+commnand.toLowerCase()}`)
                 } else {
                     fl++;
                 }

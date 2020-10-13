@@ -1,5 +1,12 @@
 const db = require("./db")
 
+
+function arrayEquals(a, b) {
+    return Array.isArray(a) &&
+      Array.isArray(b) &&
+      a.length === b.length &&
+      a.every((val, index) => val === b[index]);
+  }
 module.exports = {
     addUser(target, context, msg) {
 
@@ -66,19 +73,18 @@ module.exports = {
                             context["badges-raw"],
                             context["display-name"],
                             context["room-id"],
-                            context.mod,
-                            context.subscriber]
+                            context.mod ? 1 : 0,
+                            context.subscriber ? 1 : 0]
             
             db_user = [user.username,
-                       user.badgesraw,
-                       user.displayname,
-                       user.room_id,
-                       user.moderator,
-                       user.subscriber]
+                      user.badgesraw,
+                      user.displayname,
+                      user.room_id,
+                      user.moderator ? 1 : 0,
+                      user.subscriber ? 1 : 0]
             
-            if (context_user.slice(0, names.length - 2) != db_user.slice(0, names.length - 2) 
-                && context_user[names.length-2] != db_user[names.length-2]
-                && context_user[names.length-1] != db_user[names.length-1]) {
+            
+            if (arrayEquals(context_user, db_user)) {
                 db.update(['userid', context["user-id"]], names, context_user, 'users')
                 .then(res => {
                     console.log(res)
