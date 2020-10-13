@@ -3,6 +3,7 @@ const commands = require("./classes/commands.js")
 const user = require("./classes/User.js")
 const twitch = require("./classes/twitchapi.js")
 const logger = require("./classes/logger.js")
+const db = require("./db.js")
 require("dotenv").config()
 
 const mode = "aoof"
@@ -47,7 +48,7 @@ function Bot() {
         namePlural: "Egg shells"
     }
     
-    this.onMessageHandler = (target, context, msg, self) => {
+    this.onMessageHandler = async (target, context, msg, self) => {
         if (self) { return; }
         /*
             # Receive message
@@ -57,6 +58,22 @@ function Bot() {
             # # Platinum crown .1% Chance
             # Save user's data accordingly
         */
+
+        user.users = []
+        user.userdatas = []
+
+        commands.users = []
+        commands.userdatas = []
+        
+        let users = await db.get('users', `userid = '${context["user-id"]}'`)
+        let userdatas = await db.get('userdata', `userid = '${context["user-id"]}'`)
+
+        user.users.push(users[0])
+        commands.users.push(users[0])
+
+        user.userdatas.push(userdatas[0])
+        commands.userdatas.push(userdatas[0])
+
         user.addUserOrUpdate(target, context, msg)
         commands.crowning(target, context, msg)
         if (commands.command("crowns", msg)) {
