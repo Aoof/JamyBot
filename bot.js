@@ -2,18 +2,32 @@ const tmi = require("tmi.js")
 const commands = require("./commands.js")
 const user = require("./User.js")
 const twitch = require("./twitchapi.js")
-const twitchapi = require("./twitchapi.js")
 require("dotenv").config()
 
+const mode = "aoof"
+
+const env = (mode == "jamy") ? {
+                                    name: process.env.NAMERELEASE,
+                                    oauth: process.env.OAUTHRELEASE,
+                                    channel: process.env.CHANNELRELEASE,
+                                    client_id: process.env.CLIENTIDRELEASE,
+                                    client_secret: process.env.CLIENTSECRETRELEASE
+                                } : {
+                                    name: process.env.NAME,
+                                    oauth: process.env.OAUTH,
+                                    channel: process.env.CHANNEL,
+                                    client_id: process.env.CLIENTID,
+                                    client_secret: process.env.CLIENTSECRET
+                                }
 
 function Bot() {
     this.opts = {
         identity: {
-            username: process.env.NAME,
-            password: process.env.OAUTH
+            username: env.name,
+            password: env.oauth
         },
         channels: [
-                      process.env.CHANNEL
+            env.channel
         ]
     }
 
@@ -21,14 +35,14 @@ function Bot() {
     commands.client = this.client
     twitch.client = this.client
 
+    commands.env = env
+    twitch.env = env
+
     commands.prefix = "!"
     commands.points = {
         name: "Egg shell",
         namePlural: "Egg shells"
     }
-
-    twitch.channel = process.env.CHANNEL
-    commands.channel = process.env.CHANNEL
     
     this.onMessageHandler = (target, context, msg, self) => {
         if (self) { return; }
@@ -46,14 +60,11 @@ function Bot() {
         if (commands.command("crowns", msg)) {
             commands.getCrowns(target, context, msg)
         }
-        if (commands.command("points", msg)) {
-            commands.getPoints(target, context, msg)
-        }
+        // if (commands.command("points", msg)) {
+        //     commands.getPoints(target, context, msg)
+        // }
         if (commands.command(["cmd", "command"], msg)) {
-            commands.addTextCommand(target, context, msg)
-        }
-        if (commands.command("update", msg)) {
-            commands.updateTextCommand(target, context, msg)
+            commands.textCommandsHandler(target, context, msg)
         }
         if (commands.command("wink", msg)) {
             commands.randomWink(target, context, msg)
@@ -67,22 +78,22 @@ function Bot() {
         if (commands.command(["so", "shoutout"], msg)) {
             commands.shoutout(target, context, msg)
         }
-        if (commands.command("followage", msg)) {
-            commands.followage(target, context, msg)
-        }
+        // if (commands.command("followage", msg)) {
+        //     commands.followage(target, context, msg)
+        // }
         if (commands.command("uptime", msg)) {
             commands.uptime(target, context, msg)
         }
         if (commands.command("accountage", msg)) {
             commands.accountAge(target, context, msg)
         }
-        commands.textCommandsHandler(target, context, msg)
+        commands.textCommandsApplier(target, context, msg)
     }
 
     this.onConnectedHandler = (addr, port) => {
         console.log(`* Connected   :  ${addr}:${port}`);
-        console.log(`  Username    :  ${this.opts.identity.username}`)
-        console.log(`  To Channel  :  ${process.env.CHANNEL}`)
+        console.log(`  Username    :  ${env.name}`)
+        console.log(`  To Channel  :  ${env.channel}`)
     }
 
     this.client.on('message', this.onMessageHandler);

@@ -6,18 +6,17 @@ const axios = require('axios')
 module.exports = {
     command(cmd, msg) {
         if (typeof cmd != "object") {
-            // let cond =  msg.startsWith(this.prefix + cmd.toLowerCase() + " ")
-            // if (cond) console.log(`[CMD] Requested command ${this.prefix+cmd.toLowerCase()}`)
-            // return cond
-            return msg.startsWith(this.prefix + cmd.toLowerCase() + " ")
+            let cond =  msg.startsWith(this.prefix + cmd.toLowerCase())
+            if (cond) console.log(`[CMD] Requested command ${this.prefix+cmd.toLowerCase()}`)
+            return cond
         } else {
             let tr = 0
             let fl = 0
             
             cmd.forEach(command => {
-                if (msg.startsWith(this.prefix + command.toLowerCase() + " ")) {
+                if (msg.startsWith(this.prefix + command.toLowerCase())) {
                     tr++;
-                    console.log(`[CMD] Requested command ${this.prefix+commnand.toLowerCase()}`)
+                    console.log(`[CMD] Requested command ${this.prefix+command.toLowerCase()}`)
                 } else {
                     fl++;
                 }
@@ -138,54 +137,54 @@ module.exports = {
             console.log(err)
         })
     },
-    addTextCommand(target, context, msg) {
+    addTextCommand(target, context, args) {
         if (context.badges.broadcaster) {
             context.mod = true
         }
         if (!context.mod) return;
 
-        let ext = this.extract(msg.toString())
-        reply = ext.args.slice(1).join(" ")
+        let command = args[0]
+        let reply = args.slice(1).join(" ")
 
         let rawdata = fs.readFileSync('./tcommands.json');
         let commands = JSON.parse(rawdata);
         
         let exists = false;
         commands.forEach(cmd => {
-            if (cmd.command == ext.command) {
+            if (cmd.command == command) {
                 exists = true;
             }
         })
 
         if (!exists) {
             commands.push({
-                "command": ext.command,
+                "command": command,
                 "reply": reply
             })
             fs.writeFileSync("./tcommands.json", JSON.stringify(commands))
-            this.client.say(target, `/me > ${context["display-name"]} added ${ext.command}.`)
+            this.client.say(target, `/me > ${context["display-name"]} added ${command}.`)
         } else {
             this.client.say(target, `/me > ${context["display-name"]}, that command already exists. try ${this.prefix}${ext.command} or if you want to update it user ${this.prefix}update ${ext.command} REPLY.`)
         }
 
     },
-    updateTextCommand(target, context, msg) {
+    updateTextCommand(target, context, args) {
         if (context.badges.broadcaster) {
             context.mod = true
         }
         if (!context.mod) return;
 
-        let ext = this.extract(msg.toString())
-        reply = ext.args.slice(1).join(" ")
-
         let rawdata = fs.readFileSync('./tcommands.json');
         let commands = JSON.parse(rawdata);
         
+        let command = args[0]
+        let reply = args.slice(1).join(" ")
+
         let index = 0;
         commands.forEach(cmd => {
-            if (cmd.command == ext.command) {
+            if (cmd.command == command) {
                 commands[index] = {
-                    "command": ext.command,
+                    "command": command,
                     "reply": reply
                 }
             }
@@ -193,9 +192,9 @@ module.exports = {
         })
 
         fs.writeFileSync('./tcommands.json', JSON.stringify(commands))
-        this.client.say(target, `/me > ${context["display-name"]} updated ${this.prefix}${ext.command}.`)
+        this.client.say(target, `/me > ${context["display-name"]} updated ${this.prefix}${command}.`)
     },
-    textCommandsHandler(target, context, msg) {
+    textCommandsApplier(target, context, msg) {
         let rawdata = fs.readFileSync('./tcommands.json');
         let commands = JSON.parse(rawdata);
 
@@ -205,13 +204,60 @@ module.exports = {
             }
         })
     },
+    delTextCommand(target, context, args) {
+        if (context.badges.broadcaster) {
+            context.mod = true
+        }
+        if (!context.mod) return;
+
+        let rawdata = fs.readFileSync('./tcommands.json');
+        let commands = JSON.parse(rawdata);
+        
+        let command = args[0]
+
+        commands = commands.filter(cmd => {
+            if (cmd.command != command) {
+                return cmd
+            }
+        })
+
+        fs.writeFileSync('./tcommands.json', JSON.stringify(commands))
+        this.client.say(target, `/me > ${context["display-name"]} deleted ${this.prefix}${command}.`)
+    },
+    textCommandsHandler(target, context, msg) {
+        let ext = this.extract(msg)
+        let action = ext.args[0]
+        let args = ext.args.slice(1)
+
+        if (["update", "add", "delete", "del", "remove"].includes(action)) {
+            switch (action) {
+                case "update":
+                    this.updateTextCommand(target, context, args)
+                    break;
+                case "add":
+                    this.addTextCommand(target, context, args)
+                    break;
+                case "delete":
+                    this.delTextCommand(target, context, args)
+                    break;
+                case "del":
+                    this.delTextCommand(target, context, args)
+                    break;
+                case "remove":
+                    this.delTextCommand(target, context, args)
+                    break;
+                default:
+                    break;
+            }
+        } 
+    },
     randomWink(target, context, msg) {
         let ext = commands.extract(msg)
 
         if (ext.args.length) {
             this.client.say(target, `/me > ${context["display-name"]} winks at ${ext.args[0]}!`)
         }
-        axios.post('https://2g.be/twitch/randomviewer.php?channel='+this.channel)
+        axios.post('https://2g.be/twitch/randomviewer.php?channel='+this.env.channel)
         .then(res => {
             let winkedTo = res.data
             this.client.say(target, `/me > ${context["display-name"]} winks at ${winkedTo}!`)
@@ -221,7 +267,7 @@ module.exports = {
         })
     },
     emotes(target, context, msg) {
-        axios.get("https://twitch.center/customapi/bttvemotes?channel="+this.channel)
+        axios.get("https://twitch.center/customapi/bttvemotes?channel="+this.env.channel)
         .then(res => {
             this.client.say(target, "/me > " + res.data)
         })
@@ -244,7 +290,7 @@ module.exports = {
         this.client.say(target, `/me > You need to peep this royal Egg: https://twitch.tv/${reply}`)
     },
     followage(target, context, msg) {
-        axios.get(`https://2g.be/twitch/following.php?user=${context.username}&channel=${this.channel}&format=mwdhms`)
+        axios.get(`https://2g.be/twitch/following.php?user=${context.username}&channel=${this.env.channel}&format=mwdhms`)
         .then(res => {
             this.client.say(target, "/me > " + res.data)
         })
@@ -255,7 +301,7 @@ module.exports = {
     uptime(target, context, msg) {
         // https://api.rtainc.co/twitch/uptime?channel=CHANNEL
 
-        axios.get(`https://api.rtainc.co/twitch/uptime?channel=${this.channel}`)
+        axios.get(`https://api.rtainc.co/twitch/uptime?channel=${this.env.channel}`)
         .then(res => {
             this.client.say(target, "/me > " + res.data)
         })

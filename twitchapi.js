@@ -1,12 +1,11 @@
 const axios = require("axios")
-require("dotenv").config()
 
 module.exports = {
     auth(callback) {
         axios.post(`https://id.twitch.tv/oauth2/token`, {
             params: {
-                'client_id'     : process.env.CLIENTID,
-                'client_secret' : process.env.CLIENTSECRET,
+                'client_id'     : this.env.client_id,
+                'client_secret' : this.env.client_secret,
                 'grant_type'    : 'client_credentials'
             }
         })
@@ -20,7 +19,7 @@ module.exports = {
             accessToken = autCall.data.access_token
 
             params.headers = {
-                'Client-ID'     : process.env.CLIENTID,
+                'Client-ID'     : this.env.client_id,
                 'Authorization' : "Bearer " + accessToken
             }
 
