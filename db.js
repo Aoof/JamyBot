@@ -1,4 +1,6 @@
 const mysql = require("mysql")
+const logger = require("./classes/logger.js")
+
 require("dotenv").config()
 
 const con = mysql.createConnection({
@@ -18,7 +20,7 @@ module.exports = {
                         reject(err)
                         return;
                     };
-                    console.log(condition ? `GET data from ${table} where ${condition}.` : `GET data from ${table}.`)
+                    logger.log(condition ? `GET data from ${table} where ${condition}.` : `GET data from ${table}.`, true)
                     resolve(result)
                 }
             )

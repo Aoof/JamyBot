@@ -1,4 +1,5 @@
 const axios = require("axios")
+const logger = require("./logger.js")
 
 module.exports = {
     auth(callback) {
@@ -11,7 +12,7 @@ module.exports = {
         })
         .then(callback)
         .catch(err => {
-            console.log(err)
+            logger.log(err)
         })  
     },
     get(url, params, callback) {
@@ -26,7 +27,7 @@ module.exports = {
             axios.get(url, params)
             .then(callback)
             .catch(err => {
-                console.log(err)
+                logger.log(err)
             })
         })
     }

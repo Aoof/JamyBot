@@ -1,22 +1,25 @@
-const db = require('./db')
+const db = require('../db')
 const fs = require('fs');
 const twitch = require("./twitchapi.js")
 const axios = require('axios')
+const logger = require("./logger.js")
 
 module.exports = {
     command(cmd, msg) {
         if (typeof cmd != "object") {
-            let cond =  msg.startsWith(this.prefix + cmd.toLowerCase())
-            if (cond) console.log(`[CMD] Requested command ${this.prefix+cmd.toLowerCase()}`)
+            let ext = this.extract(msg)
+            let cond =  ext.command == cmd.toLowerCase()
+            if (cond) logger.log(`[CMD] Requested command ${this.prefix+cmd.toLowerCase()}`)
             return cond
         } else {
             let tr = 0
             let fl = 0
             
             cmd.forEach(command => {
-                if (msg.startsWith(this.prefix + command.toLowerCase())) {
+                let ext = this.extract(msg)
+                if (ext.command == command.toLowerCase()) {
                     tr++;
-                    console.log(`[CMD] Requested command ${this.prefix+command.toLowerCase()}`)
+                    logger.log(`[CMD] Requested command ${this.prefix+command.toLowerCase()}`)
                 } else {
                     fl++;
                 }
@@ -59,21 +62,21 @@ module.exports = {
                             // Successfully crowned with a platinum crown
 
                             this.client.say(target, `/me > ${context.username}, You were lucky to be crowned 5 times with the golden crown.. for that you have been crowned with the PLATINUM CROWN.`)
-                            console.log(res)
+                            logger.log(res)
                         })
                         .catch(err => {
                             // Something went wrong while changing the platcrowns column in the database
-                            console.log(err)
+                            logger.log(err)
                         })
                     } else {
                         // if there was no 4 crowns prior to this then send this message instead
                         this.client.say(target, `/me > ${context.username}, You have been crowned with the Golden Crown.`)
                     }
-                    console.log(res)
+                    logger.log(res)
                 })
                 .catch(err => {
                     // something went wrong while changing the goldcrowns column in the database
-                    console.log(err)
+                    logger.log(err)
                 })
 
             }
@@ -87,16 +90,16 @@ module.exports = {
                 ) // Crown with a platinum crown
                 .then(res => {
                     this.client.say(target, `/me > ${context.username}, You have been crowned with the PLATINIUM CROWN.`)
-                    console.log(res)
+                    logger.log(res)
                 })
                 .catch(err => {
-                    console.log(err)
+                    logger.log(err)
                 })
 
             }
         })
         .catch(err => {
-            console.log(err)
+            logger.log(err)
         })
     },
     getCrowns(target, context, msg) {
@@ -124,7 +127,7 @@ module.exports = {
             })
         })
         .catch(err => {
-            console.log(err)
+            logger.log(err)
         })
     },
     getPoints(target, context, message) {
@@ -134,7 +137,7 @@ module.exports = {
             this.client.say(target, `/me > ${context.username} has ${data.points} ${this.points.namePlural}.`)
         })
         .catch(err => {
-            console.log(err)
+            logger.log(err)
         })
     },
     addTextCommand(target, context, args) {
@@ -263,7 +266,7 @@ module.exports = {
             this.client.say(target, `/me > ${context["display-name"]} winks at ${winkedTo}!`)
         })
         .catch(err => {
-            console.log((err.data) ? err.data : err)
+            logger.log((err.data) ? err.data : err)
         })
     },
     emotes(target, context, msg) {
@@ -272,7 +275,7 @@ module.exports = {
             this.client.say(target, "/me > " + res.data)
         })
         .catch(err => {
-            console.log((err.data) ? err.data : err)
+            logger.log((err.data) ? err.data : err)
         })
     },
     lurk(target, context, msg) {
@@ -295,7 +298,7 @@ module.exports = {
             this.client.say(target, "/me > " + res.data)
         })
         .catch(err => {
-            console.log((err.data) ? err.data : err)
+            logger.log((err.data) ? err.data : err)
         })
     },
     uptime(target, context, msg) {
@@ -306,7 +309,7 @@ module.exports = {
             this.client.say(target, "/me > " + res.data)
         })
         .catch(err => {
-            console.log((err.data) ? err.data : err)
+            logger.log((err.data) ? err.data : err)
         })
     },
     accountAge(target, context, msg) {
@@ -316,7 +319,7 @@ module.exports = {
             this.client.say(target, `/me > ${context["display-name"]}, your account was created at ${res.data}`)
         })
         .catch(err => {
-            console.log((err.data) ? err.data : err)
+            logger.log((err.data) ? err.data : err)
         })
     }
 }

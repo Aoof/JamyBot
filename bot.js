@@ -1,7 +1,8 @@
 const tmi = require("tmi.js")
-const commands = require("./commands.js")
-const user = require("./User.js")
-const twitch = require("./twitchapi.js")
+const commands = require("./classes/commands.js")
+const user = require("./classes/User.js")
+const twitch = require("./classes/twitchapi.js")
+const logger = require("./classes/logger.js")
 require("dotenv").config()
 
 const mode = "aoof"
@@ -31,6 +32,8 @@ function Bot() {
         ]
     }
 
+    logger.newSave()
+
     this.client = new tmi.client(opts)
     commands.client = this.client
     twitch.client = this.client
@@ -54,8 +57,7 @@ function Bot() {
             # # Platinum crown .1% Chance
             # Save user's data accordingly
         */
-        user.addUser(target, context, msg)
-        user.update(target, context, msg)
+        user.addUserOrUpdate(target, context, msg)
         commands.crowning(target, context, msg)
         if (commands.command("crowns", msg)) {
             commands.getCrowns(target, context, msg)
@@ -91,9 +93,9 @@ function Bot() {
     }
 
     this.onConnectedHandler = (addr, port) => {
-        console.log(`* Connected   :  ${addr}:${port}`);
-        console.log(`  Username    :  ${env.name}`)
-        console.log(`  To Channel  :  ${env.channel}`)
+        logger.log(`* Connected   :  ${addr}:${port}`);
+        logger.log(`  Username    :  ${env.name}`)
+        logger.log(`  To Channel  :  ${env.channel}`)
     }
 
     this.client.on('message', this.onMessageHandler);
