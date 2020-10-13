@@ -6,7 +6,7 @@ const logger = require("./classes/logger.js")
 const db = require("./db.js")
 require("dotenv").config()
 
-const mode = "aoof"
+const mode = "jamy"
 
 const env = (mode == "jamy") ? {
                                     name: process.env.NAMERELEASE,
