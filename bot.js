@@ -5,6 +5,10 @@ const twitch = require("./classes/twitchapi.js")
 const logger = require("./classes/logger.js")
 const db = require("./db.js")
 const points = require("./classes/points.js")
+// const website = require("./website/website.js")
+
+const app = require("express")()
+
 require("dotenv").config()
 
 function arrayEquals(a, b) {
@@ -161,7 +165,9 @@ function Bot() {
     this.client.on('message', this.onMessageHandler);
     this.client.on('connected', this.onConnectedHandler);
 
-    this.client.connect()
+    app.get('/', function(req, res) {
+        res.send("RoyalButler is working fine")
+    })
 
     return this
 }
