@@ -1,6 +1,6 @@
 const fs = require("fs")
 
-const mode = "dev"
+const mode = "prod"
 
 module.exports = {
     log(msg, doConsoleLog) {
