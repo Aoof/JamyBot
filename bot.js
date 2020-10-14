@@ -1,5 +1,5 @@
 const tmi = require("tmi.js")
-const commands = require("./classes/commands.js")
+const Commands = require("./classes/commands.js")
 const user = require("./classes/User.js")
 const twitch = require("./classes/twitchapi.js")
 const logger = require("./classes/logger.js")
@@ -44,6 +44,7 @@ function Bot() {
     }
 
     logger.newSave()
+    let commands = new Commands()
 
     this.client = 
     points.client = 
@@ -108,10 +109,6 @@ function Bot() {
 
     this.onMessageHandler = async (target, context, msg, self) => {
         if (self) { return; }
-
-        let cmd = (cmdname, command) => {
-            if (commands.command(cmdname, msg)) command(target, context, msg);
-        }
         /*
             # Receive message
             # Insert user to database if not already registered
@@ -133,17 +130,21 @@ function Bot() {
 
         user.addUserOrUpdate(target, context, msg)
         commands.crowning(target, context, msg)
+        
+        function cmd(cmdname, command) {
+            if (commands.command(cmdname, msg)) command(target, context, msg);
+        }
 
         cmd("crowns",            commands.getCrowns)
-        // cmd("points",         commands.getPoints)
         cmd(["cmd", "command"],  commands.textCommandsHandler)
         cmd("wink",              commands.randomWink)
         cmd("emotes",            commands.emotes)
         cmd("lurk",              commands.lurk)
         cmd(["so", "shoutout"],  commands.shoutout)
-        // cmd("followage",      commands.followage)
         cmd("uptime",            commands.uptime)
         cmd("accountage",        commands.accountAge)
+        // cmd("followage",      commands.followage)
+        // cmd("points",         commands.getPoints)
 
         commands.textCommandsApplier(target, context, msg)
     }

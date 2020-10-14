@@ -16,11 +16,11 @@ client.connect()
 module.exports = {
     get(table, condition=null) {
         return new Promise((resolve, reject) => {
-            client.query(condition ? `SELECT * FROM royalbutler.${table} WHERE ${condition}` : "SELECT * FROM " + table,
+            let q = condition ? `SELECT * FROM royalbutler.${table} WHERE ${condition}` : "SELECT * FROM " + table
+            client.query(q,
                 (err, result) => {
-                    logger.log(result)
                     if (err) {
-                        reject(err)
+                        reject(err.stack)
                         return;
                     };
                     logger.log(condition ? `GET data from royalbutler.${table} where ${condition}.` : `GET data from ${table}.`, true)
@@ -38,11 +38,11 @@ module.exports = {
             names = `(${names})`
             values = `(${values})`
             
-    
-            client.query(`INSERT INTO royalbutler.${table} ${names} VALUES ${values}`,
+            let q = `INSERT INTO royalbutler.${table} ${names} VALUES ${values}`
+            client.query(q,
                 function(err, result, fields) {
                     if (err) {
-                        reject(err)
+                        reject(err.stack)
                         return;
                     };
 
@@ -58,17 +58,18 @@ module.exports = {
             names.forEach(name => {
                 let value = values[names.indexOf(name)]
                 if (typeof value == "string") {
-                    value = `"${value}"`
+                    value = `'${value}'`
                 }
                 updated.push(`${name} = ${value}`)
             })
 
             updated = updated.join(", ")
 
-            client.query(`UPDATE ${table} SET ${updated} WHERE ${pk[0]} = '${pk[1]}'`, 
+            let q = `UPDATE ${table} SET ${updated} WHERE ${pk[0]} = '${pk[1]}'`
+            client.query(q, 
                 function(err, result, fields) {
                     if (err) {
-                        reject(err)
+                        reject(err.stack)
                         return;
                     };
 
