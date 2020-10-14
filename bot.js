@@ -54,6 +54,8 @@ function Bot() {
     commands.env =
     twitch.env = env
 
+    points.online_users = []
+
     commands.prefix = "!"
     commands.points = {
         name: "Egg shell",
@@ -106,6 +108,10 @@ function Bot() {
 
     this.onMessageHandler = async (target, context, msg, self) => {
         if (self) { return; }
+
+        let cmd = (cmdname, command) => {
+            if (commands.command(cmdname, msg)) command(target, context, msg);
+        }
         /*
             # Receive message
             # Insert user to database if not already registered
@@ -128,36 +134,18 @@ function Bot() {
 
         user.addUserOrUpdate(target, context, msg)
         commands.crowning(target, context, msg)
-        if (commands.command("crowns", msg)) {
-            commands.getCrowns(target, context, msg)
-        }
-        // if (commands.command("points", msg)) {
-        //     commands.getPoints(target, context, msg)
-        // }
-        if (commands.command(["cmd", "command"], msg)) {
-            commands.textCommandsHandler(target, context, msg)
-        }
-        if (commands.command("wink", msg)) {
-            commands.randomWink(target, context, msg)
-        }
-        if (commands.command("emotes", msg)) {
-            commands.emotes(target, context, msg)
-        }
-        if (commands.command("lurk", msg)) {
-            commands.lurk(target, context, msg)
-        }
-        if (commands.command(["so", "shoutout"], msg)) {
-            commands.shoutout(target, context, msg)
-        }
-        // if (commands.command("followage", msg)) {
-        //     commands.followage(target, context, msg)
-        // }
-        if (commands.command("uptime", msg)) {
-            commands.uptime(target, context, msg)
-        }
-        if (commands.command("accountage", msg)) {
-            commands.accountAge(target, context, msg)
-        }
+
+        cmd("crowns",            commands.getCrowns)
+        // cmd("points",         commands.getPoints)
+        cmd(["cmd", "command"],  commands.textCommandsHandler)
+        cmd("wink",              commands.randomWink)
+        cmd("emotes",            commands.emotes)
+        cmd("lurk",              commands.lurk)
+        cmd(["so", "shoutout"],  commands.shoutout)
+        // cmd("followage",      commands.followage)
+        cmd("uptime",            commands.uptime)
+        cmd("accountage",        commands.accountAge)
+
         commands.textCommandsApplier(target, context, msg)
     }
 
@@ -166,7 +154,8 @@ function Bot() {
         logger.log(`  Username    :  ${env.name}`)
         logger.log(`  To Channel  :  ${env.channel}`)
 
-        points.timedMessage(30)
+        setTimeout(() => points.timedMessage (60), 1000*60*60)
+        setTimeout(() => points.timedMessage2(90), 1000*60*90)
         points.onlineUsersHandler()
     }
     this.client.on('message', this.onMessageHandler);

@@ -60,7 +60,7 @@ module.exports = {
                     .then(res => {
                         // Successfully crowned with a platinum crown
 
-                        this.client.say(target, `/me > ${context.username}, You were lucky to be crowned 5 times with the golden crown.. for that you have been crowned with the PLATINUM CROWN.`)
+                        this.client.say(target, `${context.username}, You were lucky to be crowned 5 times with the golden crown.. for that you have been crowned with the PLATINUM CROWN.`)
                         logger.log(res)
                     })
                     .catch(err => {
@@ -69,7 +69,7 @@ module.exports = {
                     })
                 } else {
                     // if there was no 4 crowns prior to this then send this message instead
-                    this.client.say(target, `/me > ${context.username}, You have been crowned with the Golden Crown.`)
+                    this.client.say(target, `${context.username}, You have been crowned with the Golden Crown.`)
                 }
                 logger.log(res)
             })
@@ -88,7 +88,7 @@ module.exports = {
                         'userdata'
             ) // Crown with a platinum crown
             .then(res => {
-                this.client.say(target, `/me > ${context.username}, You have been crowned with the PLATINIUM CROWN.`)
+                this.client.say(target, `${context.username}, You have been crowned with the PLATINIUM CROWN.`)
                 logger.log(res)
             })
             .catch(err => {
@@ -118,7 +118,7 @@ module.exports = {
             .then(res => {
                 if (!res.length) return;
                 res = res[0]
-                this.client.say(target, `/me > ${user.username}, has ${res.goldcrowns} Golden Crowns, and ${res.platcrowns} PLATINUM CROWNS.`)
+                this.client.say(target, `${user.username}, has ${res.goldcrowns} Golden Crowns, and ${res.platcrowns} PLATINUM CROWNS.`)
             })
         })
         .catch(err => {
@@ -129,14 +129,14 @@ module.exports = {
         db.get('userdata', `userid = ${context["user-id"]}`)
         .then(data => {
             data = data[0]
-            this.client.say(target, `/me > ${context.username} has ${data.points} ${this.points.namePlural}.`)
+            this.client.say(target, `${context.username} has ${data.points} ${this.points.namePlural}.`)
         })
         .catch(err => {
             logger.log(err)
         })
     },
     addTextCommand(target, context, args) {
-        if (context.badges.broadcaster) {
+        if (context.badges.broadcaster  || context.username == '4oofxd') {
             context.mod = true
         }
         if (!context.mod) return;
@@ -160,14 +160,14 @@ module.exports = {
                 "reply": reply
             })
             fs.writeFileSync("./tcommands.json", JSON.stringify(commands))
-            this.client.say(target, `/me > ${context["display-name"]} added ${command}.`)
+            this.client.say(target, `${context["display-name"]} added ${command}.`)
         } else {
-            this.client.say(target, `/me > ${context["display-name"]}, that command already exists. try ${this.prefix}${ext.command} or if you want to update it user ${this.prefix}update ${ext.command} REPLY.`)
+            this.client.say(target, `${context["display-name"]}, that command already exists. try ${this.prefix}${ext.command} or if you want to update it user ${this.prefix}update ${ext.command} REPLY.`)
         }
 
     },
     updateTextCommand(target, context, args) {
-        if (context.badges.broadcaster) {
+        if (context.badges.broadcaster  || context.username == '4oofxd') {
             context.mod = true
         }
         if (!context.mod) return;
@@ -190,7 +190,7 @@ module.exports = {
         })
 
         fs.writeFileSync('./tcommands.json', JSON.stringify(commands))
-        this.client.say(target, `/me > ${context["display-name"]} updated ${this.prefix}${command}.`)
+        this.client.say(target, `${context["display-name"]} updated ${this.prefix}${command}.`)
     },
     textCommandsApplier(target, context, msg) {
         let rawdata = fs.readFileSync('./tcommands.json');
@@ -203,7 +203,7 @@ module.exports = {
         })
     },
     delTextCommand(target, context, args) {
-        if (context.badges.broadcaster) {
+        if (context.badges.broadcaster  || context.username == '4oofxd') {
             context.mod = true
         }
         if (!context.mod) return;
@@ -220,7 +220,7 @@ module.exports = {
         })
 
         fs.writeFileSync('./tcommands.json', JSON.stringify(commands))
-        this.client.say(target, `/me > ${context["display-name"]} deleted ${this.prefix}${command}.`)
+        this.client.say(target, `${context["display-name"]} deleted ${this.prefix}${command}.`)
     },
     textCommandsHandler(target, context, msg) {
         let ext = this.extract(msg)
@@ -253,12 +253,12 @@ module.exports = {
         let ext = commands.extract(msg)
 
         if (ext.args.length) {
-            this.client.say(target, `/me > ${context["display-name"]} winks at ${ext.args[0]}!`)
+            this.client.say(target, `${context["display-name"]} winks at ${ext.args[0]}!`)
         }
         axios.post('https://2g.be/twitch/randomviewer.php?channel='+this.env.channel)
         .then(res => {
             let winkedTo = res.data
-            this.client.say(target, `/me > ${context["display-name"]} winks at ${winkedTo}!`)
+            this.client.say(target, `${context["display-name"]} winks at ${winkedTo}!`)
         })
         .catch(err => {
             logger.log((err.data) ? err.data : err)
@@ -267,17 +267,17 @@ module.exports = {
     emotes(target, context, msg) {
         axios.get("https://twitch.center/customapi/bttvemotes?channel="+this.env.channel)
         .then(res => {
-            this.client.say(target, "/me > " + res.data)
+            this.client.say(target, "" + res.data)
         })
         .catch(err => {
             logger.log((err.data) ? err.data : err)
         })
     },
     lurk(target, context, msg) {
-        this.client.say(target, `/me > ${context['display-name']} slowly takes off their crown and fades into the crowd.`)
+        this.client.say(target, `${context['display-name']} slowly takes off their crown and fades into the crowd but can still hear Jamy's velvety voice`)
     },
     shoutout(target, context, msg) {
-        if (context.badges.broadcaster) {
+        if (context.badges.broadcaster  || context.username == '4oofxd') {
             context.mod = true
         }
         if (!context.mod) return;
@@ -285,12 +285,12 @@ module.exports = {
         let ext = this.extract(msg)
         let reply = ext.args.join(" ")
 
-        this.client.say(target, `/me > You need to peep this royal Egg: https://twitch.tv/${reply}`)
+        this.client.say(target, `You need to peep this royal Egg: https://twitch.tv/${reply}`)
     },
     followage(target, context, msg) {
         axios.get(`https://2g.be/twitch/following.php?user=${context.username}&channel=${this.env.channel}&format=mwdhms`)
         .then(res => {
-            this.client.say(target, "/me > " + res.data)
+            this.client.say(target, "" + res.data)
         })
         .catch(err => {
             logger.log((err.data) ? err.data : err)
@@ -301,7 +301,7 @@ module.exports = {
 
         axios.get(`https://api.rtainc.co/twitch/uptime?channel=${this.env.channel}`)
         .then(res => {
-            this.client.say(target, "/me > " + res.data)
+            this.client.say(target, "" + res.data)
         })
         .catch(err => {
             logger.log((err.data) ? err.data : err)
@@ -311,7 +311,7 @@ module.exports = {
         // https://api.crunchprank.net/twitch/creation/$touserid
         axios.get(`https://api.crunchprank.net/twitch/creation/${context.username}`)
         .then(res => {
-            this.client.say(target, `/me > ${context["display-name"]}, your account was created at ${res.data}`)
+            this.client.say(target, `${context["display-name"]}, your account was created at ${res.data}`)
         })
         .catch(err => {
             logger.log((err.data) ? err.data : err)
