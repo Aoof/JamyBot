@@ -1,5 +1,6 @@
 const db = require("../db")
 const logger = require("./logger.js")
+const twitch = require("./twitchapi.js")
 
 
 function arrayEquals(a, b) {
@@ -7,7 +8,7 @@ function arrayEquals(a, b) {
       Array.isArray(b) &&
       a.length === b.length &&
       a.every((val, index) => val == b[index]);
-  }
+}
 
 
 module.exports = {

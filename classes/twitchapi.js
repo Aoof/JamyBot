@@ -3,16 +3,10 @@ const logger = require("./logger.js")
 
 module.exports = {
     auth(callback) {
-        axios.post(`https://id.twitch.tv/oauth2/token`, {
-            params: {
-                'client_id'     : this.env.client_id,
-                'client_secret' : this.env.client_secret,
-                'grant_type'    : 'client_credentials'
-            }
-        })
+        axios.post(`https://id.twitch.tv/oauth2/token?client_id=${this.env.client_id}&client_secret=${this.env.client_secret}&grant_type=client_credentials`)
         .then(callback)
         .catch(err => {
-            logger.log(err)
+            logger.log(err.response.data)
         })  
     },
     get(url, params, callback) {
@@ -27,7 +21,7 @@ module.exports = {
             axios.get(url, params)
             .then(callback)
             .catch(err => {
-                logger.log(err)
+                logger.log(err.response.data)
             })
         })
     }
