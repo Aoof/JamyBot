@@ -120,7 +120,6 @@ function Bot() {
             # # Platinum crown .1% Chance
             # Save user's data accordingly
         */
-        
         let users = await db.get('users', `userid = '${context["user-id"]}'`)
         let userdatas = await db.get('userdata', `userid = '${context["user-id"]}'`)
 

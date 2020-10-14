@@ -1,5 +1,5 @@
 const logger = require("./classes/logger.js")
-const mysql = require("mysql")
+// const mysql = require("mysql")
 const {Client} = require("pg")
 
 require("dotenv").config()
@@ -11,11 +11,14 @@ const client = new Client({
     }
 });
 
+client.connect()
+
 module.exports = {
     get(table, condition=null) {
         return new Promise((resolve, reject) => {
             client.query(condition ? `SELECT * FROM royalbutler.${table} WHERE ${condition}` : "SELECT * FROM " + table,
-                function(err, result) {
+                (err, result) => {
+                    logger.log(result)
                     if (err) {
                         reject(err)
                         return;
@@ -62,7 +65,7 @@ module.exports = {
 
             updated = updated.join(", ")
 
-            con.query(`UPDATE ${table} SET ${updated} WHERE ${pk[0]} = '${pk[1]}'`, 
+            client.query(`UPDATE ${table} SET ${updated} WHERE ${pk[0]} = '${pk[1]}'`, 
                 function(err, result, fields) {
                     if (err) {
                         reject(err)
