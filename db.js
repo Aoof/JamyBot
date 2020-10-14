@@ -1,27 +1,27 @@
-const mysql = require("mysql")
 const logger = require("./classes/logger.js")
+const mysql = require("mysql")
+const {Client} = require("pg")
 
 require("dotenv").config()
 
-const con = mysql.createConnection({
-    host         : process.env.HOST,
-    user         : process.env.USER,
-    password     : process.env.PASSWORD,
-    insecureAuth : true,
-    database     : process.env.DATABASE
-})
+const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
 module.exports = {
     get(table, condition=null) {
         return new Promise((resolve, reject) => {
-            con.query(condition ? `SELECT * FROM ${table} WHERE ${condition}` : "SELECT * FROM " + table,
-                function(err, result, fields) {
+            client.query(condition ? `SELECT * FROM royalbutler.${table} WHERE ${condition}` : "SELECT * FROM " + table,
+                function(err, result) {
                     if (err) {
                         reject(err)
                         return;
                     };
-                    logger.log(condition ? `GET data from ${table} where ${condition}.` : `GET data from ${table}.`, true)
-                    resolve(result)
+                    logger.log(condition ? `GET data from royalbutler.${table} where ${condition}.` : `GET data from ${table}.`, true)
+                    resolve(result.rows)
                 }
             )
         })
@@ -36,14 +36,14 @@ module.exports = {
             values = `(${values})`
             
     
-            con.query(`INSERT IGNORE INTO ${table} ${names} VALUES ${values}`,
+            client.query(`INSERT INTO royalbutler.${table} ${names} VALUES ${values}`,
                 function(err, result, fields) {
                     if (err) {
                         reject(err)
                         return;
                     };
 
-                    resolve(`[DB_INSERT] Successfully inserted data to ${table} table.`)
+                    resolve(`[DB_INSERT] Successfully inserted data to royalbutler.${table} table.`)
                 }
             )
         })
