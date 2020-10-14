@@ -9,6 +9,10 @@ const points = require("./classes/points.js")
 
 const app = require("express")()
 
+app.get('/', function(req, res) {
+    res.send("RoyalButler is working fine")
+})
+
 require("dotenv").config()
 
 function arrayEquals(a, b) {
@@ -164,10 +168,6 @@ function Bot() {
     }
     this.client.on('message', this.onMessageHandler);
     this.client.on('connected', this.onConnectedHandler);
-
-    app.get('/', function(req, res) {
-        res.send("RoyalButler is working fine")
-    })
 
     return this
 }
