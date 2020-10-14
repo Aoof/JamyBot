@@ -7,12 +7,6 @@ const db = require("./db.js")
 const points = require("./classes/points.js")
 // const website = require("./website/website.js")
 
-const app = require("express")()
-
-app.get('/', function(req, res) {
-    res.send("RoyalButler is working fine")
-})
-
 require("dotenv").config()
 
 function arrayEquals(a, b) {
