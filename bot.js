@@ -14,7 +14,7 @@ function arrayEquals(a, b) {
       a.every((val, index) => val == b[index]);
 }
 
-const mode = "jamy"
+const mode = "aoof"
 
 const env = (mode == "jamy") ? {
                                     name: process.env.NAMERELEASE,
