@@ -8,14 +8,7 @@ const points = require("./classes/points.js")
 
 require("dotenv").config()
 
-function arrayEquals(a, b) {
-    return Array.isArray(a) &&
-      Array.isArray(b) &&
-      a.length === b.length &&
-      a.every((val, index) => val == b[index]);
-}
-
-const mode = "!jamy"
+const mode = "jamy"
 
 const env = (mode == "jamy") ? {
                                     name: process.env.NAMERELEASE,
@@ -48,12 +41,14 @@ function Bot() {
 
     let commands = new Commands()
 
-    this.client = 
+    this.client = new tmi.client(this.opts)
+    this.client.connect()
     points.client = 
     commands.client =
-    twitch.client = new tmi.client(this.opts)
+    twitch.client = this.client
 
-    points.env = 
+
+    points.env =
     commands.env =
     twitch.env = env
 
@@ -64,7 +59,7 @@ function Bot() {
         name: "Egg shell",
         namePlural: "Egg shells"
     }
-    
+
     this.online_users = []
     this.to_be_online = 10 // In minutes
 
@@ -81,7 +76,7 @@ function Bot() {
             user.online_users =
             points.online_users = this.online_users
         }, 1000*60*this.to_be_online)
-        
+
         let online_user = {
             user: user,
             userdata: userdata,
@@ -132,21 +127,21 @@ function Bot() {
 
         user.addUserOrUpdate(target, context, msg)
         commands.crowning(target, context, msg)
-        
+
         let cmd = (cmdname, command) => {
             if (commands.command(cmdname, msg)) command(target, context, msg);
         }
 
         cmd("crowns",            commands.getCrowns)
+        // cmd("points",         commands.getPoints)
         cmd(["cmd", "command"],  commands.textCommandsHandler)
         cmd("wink",              commands.randomWink)
         cmd("emotes",            commands.emotes)
         cmd("lurk",              commands.lurk)
         cmd(["so", "shoutout"],  commands.shoutout)
+        // cmd("followage",      commands.followage)
         cmd("uptime",            commands.uptime)
         cmd("accountage",        commands.accountAge)
-        // cmd("followage",      commands.followage)
-        // cmd("points",         commands.getPoints)
 
         commands.textCommandsApplier(target, context, msg)
     }
@@ -160,10 +155,9 @@ function Bot() {
         setTimeout(() => points.timedMessage2(90), 1000*60*90)
         points.onlineUsersHandler()
     }
+
     this.client.on('message', this.onMessageHandler);
     this.client.on('connected', this.onConnectedHandler);
-
-    return this
 }
 
 bot = Bot()

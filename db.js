@@ -19,6 +19,7 @@ module.exports = {
             let q = condition ? `SELECT * FROM royalbutler.${table} WHERE ${condition}` : "SELECT * FROM " + table
             client.query(q,
                 (err, result) => {
+                  logger.log(result)
                     if (err) {
                         reject(err.stack)
                         return;
@@ -37,10 +38,11 @@ module.exports = {
 
             names = `(${names})`
             values = `(${values})`
-            
+
             let q = `INSERT INTO royalbutler.${table} ${names} VALUES ${values}`
             client.query(q,
                 function(err, result, fields) {
+                  logger.log(result)
                     if (err) {
                         reject(err.stack)
                         return;
@@ -66,8 +68,9 @@ module.exports = {
             updated = updated.join(", ")
 
             let q = `UPDATE ${table} SET ${updated} WHERE ${pk[0]} = '${pk[1]}'`
-            client.query(q, 
+            client.query(q,
                 function(err, result, fields) {
+                  logger.log(result)
                     if (err) {
                         reject(err.stack)
                         return;

@@ -1,0 +1,7 @@
+// const tmi = require("tmi.js")
+// const Commands = require("../classes/commands.js")
+// const user = require("../classes/User.js")
+// const twitch = require("../classes/twitchapi.js")
+// const logger = require("../classes/logger.js")
+// const db = require("../db.js")
+// const points = require("../classes/points.js")
