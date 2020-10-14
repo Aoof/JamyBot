@@ -1,5 +1,5 @@
 {
-  "name": "royalbutler",
+  "name": "jamybot",
   "version": "1.0.0",
   "description": "A bot for Jamy's Channel",
   "main": "bot.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Aoof/royalbutler.git"
+    "url": "git+https://github.com/Aoof/jamybot.git"
   },
   "author": "AoofXD",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Aoof/royalbutler/issues"
+    "url": "https://github.com/Aoof/jamybot/issues"
   },
-  "homepage": "https://github.com/Aoof/royalbutler#readme",
+  "homepage": "https://github.com/Aoof/jamybot#readme",
   "dependencies": {
     "axios": "^0.20.0",
     "dotenv": "^8.2.0",
@@ -24,6 +24,7 @@
     "hapi": "^18.1.0",
     "https": "^1.0.0",
     "mysql": "^2.18.1",
+    "nodemon": "^2.0.5",
     "pg": "^8.4.1",
     "tmi": "^2.0.0",
     "tmi.js": "^1.5.0"

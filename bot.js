@@ -5,7 +5,6 @@ const twitch = require("./classes/twitchapi.js")
 const logger = require("./classes/logger.js")
 const db = require("./db.js")
 const points = require("./classes/points.js")
-// const website = require("./website/website.js")
 
 require("dotenv").config()
 
@@ -16,7 +15,7 @@ function arrayEquals(a, b) {
       a.every((val, index) => val == b[index]);
 }
 
-const mode = "jamy"
+const mode = "!jamy"
 
 const env = (mode == "jamy") ? {
                                     name: process.env.NAMERELEASE,
@@ -46,6 +45,7 @@ function Bot() {
     }
 
     logger.newSave()
+
     let commands = new Commands()
 
     this.client = 
@@ -133,7 +133,7 @@ function Bot() {
         user.addUserOrUpdate(target, context, msg)
         commands.crowning(target, context, msg)
         
-        function cmd(cmdname, command) {
+        let cmd = (cmdname, command) => {
             if (commands.command(cmdname, msg)) command(target, context, msg);
         }
 
