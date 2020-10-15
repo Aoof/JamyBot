@@ -10,7 +10,7 @@ const path = require("path")
 
 require("dotenv").config()
 
-const mode = "jamy"
+const mode = "!jamy"
 
 const env = (mode == "jamy") ? {
                                     name: process.env.NAMERELEASE,
@@ -158,6 +158,7 @@ function Bot() {
     }
 
     this.onConnectedHandler = (addr, port) => {
+        this.status = true
         logger.log(`* Connected   :  ${addr}:${port}`);
         logger.log(`  Username    :  ${env.name}`)
         logger.log(`  To Channel  :  ${env.channel}`)
@@ -169,10 +170,13 @@ function Bot() {
 
     this.client.on('message', this.onMessageHandler);
     this.client.on('connected', this.onConnectedHandler);
+    this.client.on('disconnected', function (reason) {
+        this.status = false
+        client.connect();
+    });
 }
 
-bot = Bot()
-
+let bot = new Bot()
 
 const app = express()
 const port = process.env.PORT || "8080";
@@ -180,17 +184,34 @@ const port = process.env.PORT || "8080";
 app.set('view engine', 'ejs')
 
 app.get("/", (req, res) => {
-    res.render('index', {
-        status: {
-            bot: true,
-            db: true,
-            phandler: true,
-            chandler: true
-        },
-        bot: {
-            name: env.name
-        },
-        channel: env.channel
+    db.get('users')
+    .then(() => {
+        res.render('index', {
+            status: {
+                bot: bot.status,
+                db: true,
+                phandler: true,
+                chandler: true
+            },
+            bot: {
+                name: env.name
+            },
+            channel: env.channel
+        })
+    })
+    .catch(() => {
+        res.render('index', {
+            status: {
+                bot: bot.status,
+                db: false,
+                phandler: true,
+                chandler: true
+            },
+            bot: {
+                name: env.name
+            },
+            channel: env.channel
+        })
     })
 });
 
