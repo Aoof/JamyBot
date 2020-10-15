@@ -14,16 +14,18 @@ const client = new Client({
 client.connect()
 
 module.exports = {
-    get(table, condition=null) {
+    get(table, condition=null, order=null) {
         return new Promise((resolve, reject) => {
-            let q = condition ? `SELECT * FROM royalbutler.${table} WHERE ${condition}` : "SELECT * FROM " + table
+            let q = `SELECT * FROM royalbutler.${table}`
+            if (condition) q += ` WHERE ${condition}`
+            if (order) q += ` ORDER BY ${order}` 
             client.query(q,
                 (err, result) => {
                     if (err) {
                         reject(err.stack)
                         return;
                     };
-                    logger.log(condition ? `GET data from royalbutler.${table} where ${condition}.` : `GET data from ${table}.`, true)
+                    logger.log(q, true)
                     resolve(result.rows)
                 }
             )

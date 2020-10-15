@@ -134,16 +134,18 @@ function Bot() {
             if (commands.command(cmdname, msg)) command(target, context, msg);
         }
 
-        cmd("crowns",            commands.getCrowns)
-        // cmd("points",         commands.getPoints)
-        cmd(["cmd", "command"],  commands.textCommandsHandler)
-        cmd("wink",              commands.randomWink)
-        cmd("emotes",            commands.emotes)
-        cmd("lurk",              commands.lurk)
-        cmd(["so", "shoutout"],  commands.shoutout)
-        // cmd("followage",      commands.followage)
-        cmd("uptime",            commands.uptime)
-        cmd("accountage",        commands.accountAge)
+        cmd("crowns",                 commands.getCrowns)
+        cmd(["cmd", "command"],       commands.textCommandsHandler)
+        cmd("wink",                   commands.randomWink)
+        cmd("emotes",                 commands.emotes)
+        cmd("lurk",                   commands.lurk)
+        cmd(["so", "shoutout"],       commands.shoutout)
+        cmd("followage",              commands.followage)
+        cmd("uptime",                 commands.uptime)
+        cmd("accountage",             commands.accountAge)
+        cmd("points",                 commands.getPoints)
+        cmd(["gamble", "roulette"],   commands.gamble)
+        cmd("setpoints",              commands.setPoints)
 
         commands.textCommandsApplier(target, context, msg)
     }
