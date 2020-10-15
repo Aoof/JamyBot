@@ -10,7 +10,7 @@ const path = require("path")
 
 require("dotenv").config()
 
-const mode = "!jamy"
+const mode = "jamy"
 
 const env = (mode == "jamy") ? {
                                     name: process.env.NAMERELEASE,
