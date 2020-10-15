@@ -4,13 +4,13 @@ const user = require("./classes/User.js")
 const twitch = require("./classes/twitchapi.js")
 const logger = require("./classes/logger.js")
 const db = require("./db.js")
-const points = require("./classes/points.js")
+const Points = require("./classes/points.js")
 const express = require("express")
 const path = require("path")
 
 require("dotenv").config()
 
-const mode = "jamy"
+const mode = "!jamy"
 
 const env = (mode == "jamy") ? {
                                     name: process.env.NAMERELEASE,
@@ -42,6 +42,7 @@ function Bot() {
     logger.newSave()
 
     let commands = new Commands()
+    let points = new Points()
 
     this.client = new tmi.client(this.opts)
     this.client.connect()
@@ -119,7 +120,7 @@ function Bot() {
         let users = await db.get('users', `userid = '${context["user-id"]}'`)
         let userdatas = await db.get('userdata', `userid = '${context["user-id"]}'`)
 
-        // this.add_online(users[0], userdatas[0])
+        this.add_online(users[0], userdatas[0])
 
         user.users =
         commands.users = [users[0]]
@@ -157,7 +158,7 @@ function Bot() {
 
         setTimeout(() => points.timedMessage(1.5), 1000*60*60*1.5)
         setTimeout(() => points.timedMessage2(2), 1000*60*60*2)
-        // points.onlineUsersHandler()
+        points.onlineUsersHandler()
     }
 
     this.client.on('message', this.onMessageHandler);

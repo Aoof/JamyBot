@@ -31,6 +31,7 @@ module.exports = {
                             context.mod,
                             context.subscriber]
             
+
             db_user = [user.username,
                     user.badgesraw,
                     user.displayname,
