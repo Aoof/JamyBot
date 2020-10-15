@@ -1,7 +1,7 @@
 const fs = require("fs")
 const path = require("path")
 const dir = path.resolve(__dirname, '..')
-const mode = "!prod"
+const mode = "prod"
 
 module.exports = {
     log(msg, doConsoleLog) {
