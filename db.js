@@ -34,7 +34,7 @@ module.exports = {
     insert(_names, _values, table) {
         return new Promise((resolve, reject) => {
             names = _names.join(", ")
-            values = JSON.stringify(_values)
+            values = JSON.stringify(_values).replace(/\"/g, "'")
             values = values.substr(1, values.length - 2)
 
             names = `(${names})`
@@ -78,6 +78,20 @@ module.exports = {
                     resolve(`[DB_UPDATE] Successfully updated ${updated} at ${table}.`)
                 }
             )
+        })
+    },
+    delete(pk, table) {
+        return new Promise((resolve, reject) => {
+            let q = `DELETE FROM ${table} WHERE ${pk[0]} = '${pk[1]}'`
+            client.query(q,
+                function(err, result, fields) {
+                    if (err) {
+                        reject(err.stack)
+                        return;
+                    }
+
+                    resolve(`[DB_DELETE] Successfully deleted ${pk[0]} = ${pk[1]} at ${table}.`)
+                })
         })
     }
 }

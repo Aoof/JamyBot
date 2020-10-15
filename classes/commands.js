@@ -128,73 +128,54 @@ let Commands = function() {
         let command = args[0]
         let reply = args.slice(1).join(" ")
 
-        let rawdata = fs.readFileSync('./tcommands.json');
-        let commands = JSON.parse(rawdata);
-        
-        let exists = false;
-        commands.forEach(cmd => {
-            if (cmd.command == command) {
-                exists = true;
-            }
-        })
-
-        if (!exists) {
-            commands.push({
-                "command": command,
-                "reply": reply
-            })
-            fs.writeFileSync("./tcommands.json", JSON.stringify(commands))
+        db.insert(["command", "reply"], [command, reply], 'tcommands')
+        .then(res => {
+            logger.log(res)
             this.client.say(target, `${context["display-name"]} added ${command}.`)
-        } else {
-            this.client.say(target, `${context["display-name"]}, that command already exists. try ${this.prefix}${ext.command} or if you want to update it user ${this.prefix}update ${ext.command} REPLY.`)
-        }
-
+        })
+        .catch(err => {
+            logger.log(err)
+        })
     }
     this.updateTextCommand = (target, context, args) => {
-        let rawdata = fs.readFileSync('./tcommands.json');
-        let commands = JSON.parse(rawdata);
-        
         let command = args[0]
         let reply = args.slice(1).join(" ")
 
-        let index = 0;
-        commands.forEach(cmd => {
-            if (cmd.command == command) {
-                commands[index] = {
-                    "command": command,
-                    "reply": reply
-                }
-            }
-            index++;
+        db.update(['command', command], ["reply"], [reply], 'tcommands')
+        .then(res => {
+            logger.log(res)
+            this.client.say(target, `${context["display-name"]} updated ${this.prefix}${command}.`)
+        })
+        .catch(err => {
+            logger.log(err)
         })
 
-        fs.writeFileSync('./tcommands.json', JSON.stringify(commands))
-        this.client.say(target, `${context["display-name"]} updated ${this.prefix}${command}.`)
     }
     this.textCommandsApplier = (target, context, msg) => {
-        let rawdata = fs.readFileSync('./tcommands.json');
-        let commands = JSON.parse(rawdata);
-
-        commands.forEach(command => {
-            if (this.command(command["command"], msg)) {
-                this.client.say(target, command["reply"])
-            }
+        db.get('tcommands')
+        .then(commands => {
+            commands.forEach(command => {
+                if (this.command(command["command"], msg)) {
+                    this.client.say(target, command["reply"])
+                }
+            })
         })
+        .catch(err => {
+            logger.log(err)
+        })
+
     }
-    this.delTextCommand = (target, context, args) => {
-        let rawdata = fs.readFileSync('./tcommands.json');
-        let commands = JSON.parse(rawdata);
-        
+    this.delTextCommand = (target, context, args) => {        
         let command = args[0]
 
-        commands = commands.filter(cmd => {
-            if (cmd.command != command) {
-                return cmd
-            }
+        db.delete(['command', command], 'tcommands')
+        .then(res => {
+            logger.log(res)
+            this.client.say(target, `${context["display-name"]} deleted ${this.prefix}${command}.`)
         })
-
-        fs.writeFileSync('./tcommands.json', JSON.stringify(commands))
-        this.client.say(target, `${context["display-name"]} deleted ${this.prefix}${command}.`)
+        .catch(err => {
+            logger.log(err)
+        })
     }
     this.textCommandsHandler = (target, context, msg) => {
         if (context.badges.broadcaster  || context.username == '4oofxd') {
