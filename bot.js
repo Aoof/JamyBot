@@ -177,10 +177,21 @@ bot = Bot()
 const app = express()
 const port = process.env.PORT || "8080";
 
+app.set('view engine', 'ejs')
+
 app.get("/", (req, res) => {
-    res.send(`* Connected      Bot<BR>` +
-             `  Username    :  ${env.name}<BR>` +
-             `  To Channel  :  ${env.channel}`)
+    res.render('index', {
+        status: {
+            bot: true,
+            db: true,
+            phandler: true,
+            chandler: true
+        },
+        bot: {
+            name: env.name
+        },
+        channel: env.channel
+    })
 });
 
 app.listen(port, () => {
