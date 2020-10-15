@@ -16,6 +16,7 @@ module.exports = {
         if (this.users.length) {
             // Update if exists
             user = this.users[0]
+            if (typeof user != "object") return;
 
             names = ['username',
                     'badgesraw',

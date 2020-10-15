@@ -46,6 +46,7 @@ function Bot() {
 
     this.client = new tmi.client(this.opts)
     this.client.connect()
+
     points.client = 
     commands.client =
     twitch.client = this.client
@@ -67,10 +68,11 @@ function Bot() {
     this.to_be_online = 10 // In minutes
 
     this.add_online = (user, userdata) => {
+        if (typeof user != "object" || typeof userdata != "object") return
         let userTimer = setInterval(() => {
-            this.online_users = this.online_users.filter(online_user => {
-                if (user.userid != online_user.user.userid) {
-                    return online_user
+            this.online_users = this.online_users.filter(ou => {
+                if (user.userid != ou.user.userid) {
+                    return ou
                 }
             })
 
@@ -119,8 +121,8 @@ function Bot() {
         */
         let users = await db.get('users', `userid = '${context["user-id"]}'`)
         let userdatas = await db.get('userdata', `userid = '${context["user-id"]}'`)
-
-        this.add_online(users[0], userdatas[0])
+        
+        // this.add_online(users[0], userdatas[0])
 
         user.users =
         commands.users = [users[0]]
