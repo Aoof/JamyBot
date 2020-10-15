@@ -58,8 +58,11 @@ function Bot() {
 
     points.online_users = []
 
+    points.prefix = 
     commands.prefix = "!"
-    commands.points = {
+    
+    points.points =
+    commands.points =  {
         name: "Egg shell",
         namePlural: "Egg shells"
     }
@@ -122,12 +125,14 @@ function Bot() {
         let users = await db.get('users', `userid = '${context["user-id"]}'`)
         let userdatas = await db.get('userdata', `userid = '${context["user-id"]}'`)
         
-        // this.add_online(users[0], userdatas[0])
+        this.add_online(users[0], userdatas[0])
 
         user.users =
+        points.users =
         commands.users = [users[0]]
 
         user.userdatas =
+        points.userdatas =
         commands.userdatas = [userdatas[0]]
 
         user.addUserOrUpdate(target, context, msg)
@@ -146,9 +151,8 @@ function Bot() {
         cmd("followage",              commands.followage)
         cmd("uptime",                 commands.uptime)
         cmd("accountage",             commands.accountAge)
-        cmd("points",                 commands.getPoints)
-        cmd(["gamble", "roulette"],   commands.gamble)
-        cmd("setpoints",              commands.setPoints)
+        cmd("points",                 points.getPoints)
+        cmd(["gamble", "roulette"],   points.gamble)
 
         commands.textCommandsApplier(target, context, msg)
     }

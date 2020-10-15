@@ -2,7 +2,6 @@ const db = require('../db')
 const fs = require('fs');
 const axios = require('axios')
 const logger = require("./logger.js");
-const points = require('./points');
 
 let Commands = function() {
     this.extract = (msg) => {
@@ -103,7 +102,7 @@ let Commands = function() {
         let ext = this.extract(msg)
 
         if (ext.args.length) {
-            user = ext.args[0]
+            user = ext.args[0].toLowerCase()
             if (user.startsWith("@")) {
                 user = user.replace("@", "")
             }
@@ -124,105 +123,6 @@ let Commands = function() {
         .catch(err => {
             logger.log(err)
         })
-    }
-    this.getPoints = (target, context, msg) => {
-        let user = context.username
-
-        let ext = this.extract(msg)
-
-        if (ext.args.length) {
-            user = ext.args[0]
-            if (user.startsWith("@")) {
-                user = user.replace("@", "")
-            }
-        }
-
-        db.get('users', `username = '${user}'`)
-        .then(users => {
-            if (!users.length) return
-            let user = users[0]
-            
-            db.get('userdata', `userid = '${user.userid}'`)
-            .then(res => {
-                
-                if (!res.length) return;
-                res = res[0]
-
-                db.get('userdata', null, '-points')
-                .then(results => {
-                    let pos = 0;
-                    let participants = 0;
-                    let index = 0
-                    
-                    participants = results.length
-            
-                    results.forEach(res => {
-                        if (res.userid == user.userid) {
-                            pos = index
-                        }
-                        index++;
-                    })
-                    this.client.say(target, `${user.displayname}, ${user.displayname} has ${res.points} ${this.points.namePlural} and is rank ${pos}/${participants} on the leaderboard.`)
-                })
-                .catch(err => {
-                    logger.log(err)
-                })
-            })
-
-        })
-        .catch(err => {
-            logger.log(err)
-        })
-    }
-    this.gamble = (target, context, msg) => {
-        let data = this.userdatas[0]
-
-        let ext = this.extract(msg)
-        let args1 = ext.args[0]
-        let amount;
-
-        switch (amount) {
-            case "all":
-                amount = data.points;
-                break;
-            default:
-                amount = JSON.parse(args1)
-                break;
-        }
-
-        let user = this.users[0]
-
-        if (amount > data.points) {
-            this.client.say(target, `${user.displayname}, You don't have ${amount} ${this.points.namePlural}.`)
-            return;
-        }
-
-        user = {
-            user: user,
-            userdata: data
-        }
-
-        if (Math.random() <= (user.user.subscriber) ? .47 : .51) {
-            points.add_points(user, amount)
-            this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and won! ${user.user.displayname} now has ${data.points + amount} ${this.points.namePlural}. PogChamp`)
-        } else {
-            points.set_points(user, data.points - amount)
-            this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and lost! ${user.user.displayname} now has ${data.points - amount} ${this.points.namePlural}. FeelsBadMan`)
-        }
-
-    }
-    this.setPoints = (target, context, msg) => {
-        if (context.badges.broadcaster  || context.username == '4oofxd') {
-            context.mod = true
-        }
-        if (!context.mod) return;
-
-        let user = this.users[0]
-
-        let ext = this.extract(msg)
-        let amount = ext.args[0]
-
-        points.set_points(user, JSON.parse(amount))
     }
     this.addTextCommand = (target, context, args) => {
         let command = args[0]
@@ -333,6 +233,7 @@ let Commands = function() {
 
         if (ext.args.length) {
             this.client.say(target, `${context["display-name"]} winks at ${ext.args[0]}!`)
+            return
         }
         axios.post('https://2g.be/twitch/randomviewer.php?channel='+this.env.channel)
         .then(res => {
