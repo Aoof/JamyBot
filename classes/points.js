@@ -37,7 +37,7 @@ let Points = function () {
         if (this.online_users) this.online_users.forEach(online_user => {
             let multiplier = 1
             if (online_user.user.subscriber) multiplier += .2
-            this.add_points(online_user, 60*multiplier)
+            this.add_points(online_user, 10*multiplier)
         })
         setTimeout(this.onlineUsersHandler, 1000*10)
     }
