@@ -157,7 +157,7 @@ function Bot() {
 
         setTimeout(() => points.timedMessage(1.5), 1000*60*60*1.5)
         setTimeout(() => points.timedMessage2(2), 1000*60*60*2)
-        points.onlineUsersHandler()
+        // points.onlineUsersHandler()
     }
 
     this.client.on('message', this.onMessageHandler);
