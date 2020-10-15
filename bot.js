@@ -155,8 +155,8 @@ function Bot() {
         logger.log(`  Username    :  ${env.name}`)
         logger.log(`  To Channel  :  ${env.channel}`)
 
-        points.timedMessage(60)
-        setTimeout(90*60*1000, points.timedMessage2(90))
+        setTimeout(() => points.timedMessage(1.5), 1000*60*60*1.5)
+        setTimeout(() => points.timedMessage2(2), 1000*60*60*2)
         points.onlineUsersHandler()
     }
 

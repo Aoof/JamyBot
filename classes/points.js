@@ -26,12 +26,12 @@ module.exports = {
     timedMessage(interval) {
         logger.log(`There are ${this.online_users.length} users online`)
         this.client.say('#'+this.env.channel, 'Don\'t mind me, just wanted to say the king\'s head looks extra shiny today.')
-        setTimeout(() => this.timedMessage(interval), 1000*60*interval)
+        setTimeout(() => this.timedMessage(interval), 1000*60*60*interval)
     },
     timedMessage2(interval) {
         logger.log(`There are ${this.online_users.length} users online`)
         this.client.say('#'+this.env.channel, 'If you see a bug, get my master Aoof to squash it.')
-        setTimeout(() => this.timedMessage2(interval), 1000*60*interval)
+        setTimeout(() => this.timedMessage2(interval), 1000*60*60*interval)
     },
     onlineUsersHandler() {
         if (!this.online_users) return;
