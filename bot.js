@@ -119,7 +119,7 @@ function Bot() {
         let users = await db.get('users', `userid = '${context["user-id"]}'`)
         let userdatas = await db.get('userdata', `userid = '${context["user-id"]}'`)
 
-        this.add_online(users[0], userdatas[0])
+        // this.add_online(users[0], userdatas[0])
 
         user.users =
         commands.users = [users[0]]
