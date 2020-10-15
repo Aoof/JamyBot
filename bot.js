@@ -5,6 +5,8 @@ const twitch = require("./classes/twitchapi.js")
 const logger = require("./classes/logger.js")
 const db = require("./db.js")
 const points = require("./classes/points.js")
+const express = require("express")
+const path = require("path")
 
 require("dotenv").config()
 
@@ -161,3 +163,17 @@ function Bot() {
 }
 
 bot = Bot()
+
+
+const app = express()
+const port = process.env.PORT || "8080";
+
+app.get("/", (req, res) => {
+    res.send(`* Connected      Bot<BR>` +
+             `  Username    :  ${env.name}<BR>` +
+             `  To Channel  :  ${env.channel}`)
+});
+
+app.listen(port, () => {
+    logger.log(`listening to http://127.0.0.1:${port}/`)
+});
