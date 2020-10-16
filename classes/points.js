@@ -65,7 +65,7 @@ let Points = function () {
 
                 db.get('userdata', null, '-points')
                 .then(results => {
-                    let pos = 0;
+                    let pos = 1;
                     let participants = 0;
                     let index = 0
                     

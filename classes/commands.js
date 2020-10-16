@@ -5,6 +5,8 @@ const logger = require("./logger.js");
 
 let Commands = function() {
     this.extract = (msg) => {
+        if (msg[0] != "!") return;
+        
         let command = msg.substr(1)
         let args = command.split(" ")
         command = args[0]
