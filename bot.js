@@ -129,11 +129,11 @@ function Bot() {
 
         user.users =
         points.users =
-        commands.users = [users[0]]
+        commands.users = users
 
         user.userdatas =
         points.userdatas =
-        commands.userdatas = [userdatas[0]]
+        commands.userdatas = userdatas
 
         user.addUserOrUpdate(target, context, msg)
         commands.crowning(target, context, msg)

@@ -31,16 +31,21 @@ module.exports = {
             )
         })
     },
-    insert(_names, _values, table) {
+    insert(names, values, table) {
         return new Promise((resolve, reject) => {
-            names = _names.join(", ")
-            values = JSON.stringify(_values).replace(/\"/g, "'")
-            values = values.substr(1, values.length - 2)
+            _values = []
 
-            names = `(${names})`
-            values = `(${values})`
+            values.forEach(value => {
+                if (typeof value == "string") {
+                    value = `'${value}'`
+                }
+                _values.push(value)
+            })
 
-            let q = `INSERT INTO royalbutler.${table} ${names} VALUES ${values}`
+            _values = `(${_values.join(", ")})`
+            names = `(${names.join(", ")})`
+
+            let q = `INSERT INTO royalbutler.${table} ${names} VALUES ${_values}`
             client.query(q,
                 function(err, result, fields) {
                     if (err) {
