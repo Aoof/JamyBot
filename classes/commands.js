@@ -9,6 +9,11 @@ let Commands = function() {
         let args = command.split(" ")
         command = args[0]
         args.shift()
+        
+        if (msg[0] != "!") {
+            command = ""
+            args = []
+        }
 
         return {
             command: command,
