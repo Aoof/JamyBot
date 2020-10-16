@@ -183,35 +183,25 @@ const port = process.env.PORT || "8080";
 
 app.set('view engine', 'ejs')
 
-app.get("/", (req, res) => {
-    db.get('users')
-    .then(() => {
-        res.render('index', {
-            status: {
-                bot: bot.status,
-                db: true,
-                phandler: true,
-                chandler: true
-            },
-            bot: {
-                name: env.name
-            },
-            channel: env.channel
-        })
-    })
-    .catch(() => {
-        res.render('index', {
-            status: {
-                bot: bot.status,
-                db: false,
-                phandler: true,
-                chandler: true
-            },
-            bot: {
-                name: env.name
-            },
-            channel: env.channel
-        })
+app.get("/", async (req, res) => {
+    let cond
+    try {
+        cond = await db.get('users')
+    } catch {
+        cond = false
+    }
+    res.render('index', {
+        status: {
+            // bot: false,
+            bot: bot.status,
+            db: typeof cond != "boolean",
+            phandler: true,
+            chandler: true
+        },
+        bot: {
+            name: env.name
+        },
+        channel: env.channel
     })
 });
 

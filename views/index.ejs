@@ -66,13 +66,17 @@
     <div class="status"> <!-- status check -->
         <h1>Bot: <%- (status.bot) ? '<span class="ok">Active</span>' : '<span class="err">InActive</span>' %></h1>
         <h1>Database: <%- (status.db) ? '<span class="ok">Active</span>' : '<span class="err">InActive</span>' %></h1>
-        <h1>Points Handler: <span class="err"><%- (status.phandler) ? '<span class="ok">Active</span>' : '<span class="err">InActive</span>' %></span></h1>
-        <h1>Commands Handler: <span class="err"><%- (status.chandler) ? '<span class="ok">Active</span>' : '<span class="err">InActive</span>' %></span></h1>
+        <h1>Points Handler: <%- (status.phandler) ? '<span class="ok">Active</span>' : '<span class="err">InActive</span>' %></h1>
+        <h1>Commands Handler: <%- (status.chandler) ? '<span class="ok">Active</span>' : '<span class="err">InActive</span>' %></h1>
       </div>
       
       
       <div class="absoluteCenter">
-        <h1>Connected as <%= bot.name %> To <a href='https://twitch.tv/<%= channel %>' target="_blank"><%= channel %> Twitch Channel</a></h1>
+        <% if (status.bot && status.db) { %>
+          <h1>Connected as <%= bot.name %> To <a href='https://twitch.tv/<%= channel %>' target="_blank"><%= channel %> Twitch Channel</a></h1>
+        <% } else { %>
+          <h1>Bot is <span class="err">down</span></h1>
+        <% } %>
       </div>
 </body>
 
