@@ -375,7 +375,7 @@ let Commands = function() {
                 return
             }
 
-            if (betChoosing < 1 || betChoosing >= this.bet.opts.length) {
+            if (betChoosing < 1 || betChoosing > this.bet.opts.length) {
                 this.client.say(target, `${participant.user.displayname}, thats not a valid option.`)
                 return
             }
