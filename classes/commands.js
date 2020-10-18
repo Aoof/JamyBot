@@ -351,11 +351,7 @@ let Commands = function() {
         if (!this.bet.started) return
         let args = this.extract(msg).args
 
-        let participant = this.bet.participants.filter(p => {
-            if (p.user.userid == context["user-id"]) {
-                return p.user.userid
-            }
-        })[0]
+        let participant = this.bet.participants.filter(p => p.user.userid == context["user-id"])[0]
 
         if (args.length) {
             if (participant) {
@@ -386,7 +382,6 @@ let Commands = function() {
 
             db.update(['userid', context["user-id"]], ['points'], [participant.data.points - betAmount], 'userdata')
             .then(res => {
-                logger.log(res)
                 participant.betting = betAmount
                 participant.choosing = betChoosing
 
@@ -412,7 +407,7 @@ let Commands = function() {
         }
         if (!context.mod) return;
 
-        let winChoosing = JSON.parse(this.extract(msg).args[0])
+        let winChoosing = JSON.parse(this.extract(msg).args[0]) + 1
         let winnings
 
         this.bet.participants.forEach(p => {
@@ -431,9 +426,7 @@ let Commands = function() {
         })
 
 
-        this.client.say(target, `Bet is finished.. Winners are ${this.bet.participants.filter(p => {
-            if (p.winner) return p
-        }).map(u => u.user.displayname).join(", ")}`)
+        this.client.say(target, `Bet is finished.. Winners are ${this.bet.participants.filter(p => p.winner).map(u => u.user.displayname).join(", ")}`)
 
         this.bet = {
             title: "",
