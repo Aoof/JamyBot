@@ -407,7 +407,7 @@ let Commands = function() {
         }
         if (!context.mod) return;
 
-        let winChoosing = JSON.parse(this.extract(msg).args[0]) + 1
+        let winChoosing = JSON.parse(this.extract(msg).args[0])
         let winnings
 
         this.bet.participants.forEach(p => {
