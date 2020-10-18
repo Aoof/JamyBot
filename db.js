@@ -72,7 +72,9 @@ module.exports = {
 
             updated = updated.join(", ")
 
-            let q = `UPDATE ${table} SET ${updated} WHERE ${pk[0]} = '${pk[1]}'`
+            if (typeof pk[1] == "string") pk[1] = `'${pk[1]}'`
+
+            let q = `UPDATE royalbutler.${table} SET ${updated} WHERE ${pk[0]} = ${pk[1]}`
             client.query(q,
                 function(err, result, fields) {
                     if (err) {
@@ -87,7 +89,7 @@ module.exports = {
     },
     delete(pk, table) {
         return new Promise((resolve, reject) => {
-            let q = `DELETE FROM ${table} WHERE ${pk[0]} = '${pk[1]}'`
+            let q = `DELETE FROM royalbutler.${table} WHERE ${pk[0]} = '${pk[1]}'`
             client.query(q,
                 function(err, result, fields) {
                     if (err) {

@@ -10,7 +10,7 @@ const path = require("path")
 
 require("dotenv").config()
 
-const mode = "jamy"
+const mode = "!jamy"
 
 const env = (mode == "jamy") ? {
                                     name: process.env.NAMERELEASE,
@@ -153,6 +153,9 @@ function Bot() {
         cmd("accountage",             commands.accountAge)
         cmd("points",                 points.getPoints)
         cmd(["gamble", "roulette"],   points.gamble)
+        cmd(["startbet", "sb"],       commands.startbet)
+        cmd("bet",                    commands.submitbet)
+        cmd(["endbet", "eb"],         commands.endbet)
 
         commands.textCommandsApplier(target, context, msg)
     }
@@ -170,8 +173,9 @@ function Bot() {
 
     this.client.on('message', this.onMessageHandler);
     this.client.on('connected', this.onConnectedHandler);
-    this.client.on('disconnected', function (reason) {
+    this.client.on('disconnected', (reason) => {
         this.status = false
+        logger.log(reason)
         client.connect();
     });
 }

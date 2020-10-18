@@ -4,13 +4,22 @@ const axios = require('axios')
 const logger = require("./logger.js");
 
 let Commands = function() {
+    this.bet = {
+        title: "",
+        opts: [],
+        participants: [],
+        prizepool: 0,
+        status: false
+    }
+
+
     this.extract = (msg) => {
         let command = msg.substr(1)
         let args = command.split(" ")
         command = args[0]
         args.shift()
         
-        if (msg[0] != "!") {
+        if (msg[0] != this.prefix) {
             command = ""
             args = []
         }
@@ -20,6 +29,8 @@ let Commands = function() {
             args: args
         }
     }
+
+
     this.command = (cmd, msg) => {
         if (typeof cmd != "object") {
             let ext = this.extract(msg)
@@ -43,6 +54,8 @@ let Commands = function() {
             return tr
         }
     }
+    
+    
     this.crowning = (target, context, msg) => {
         // No filtering for empty results here cuz the function before did that
         userdata = this.userdatas[0]
@@ -101,6 +114,8 @@ let Commands = function() {
 
         }
     }
+    
+    
     this.getCrowns = (target, context, msg) => {
         let user = context.username
 
@@ -156,6 +171,8 @@ let Commands = function() {
         })
 
     }
+    
+    
     this.textCommandsApplier = (target, context, msg) => {
         db.get('tcommands')
         .then(commands => {
@@ -182,6 +199,8 @@ let Commands = function() {
             logger.log(err)
         })
     }
+    
+    
     this.textCommandsHandler = (target, context, msg) => {
         if (context.badges.broadcaster  || context.username == '4oofxd') {
             context.mod = true
@@ -214,6 +233,8 @@ let Commands = function() {
             }
         } 
     }
+    
+    
     this.randomWink = (target, context, msg) => {
         let ext = this.extract(msg)
 
@@ -230,6 +251,8 @@ let Commands = function() {
             logger.log((err.data) ? err.data : err)
         })
     }
+    
+    
     this.emotes = (target, context, msg) => {
         axios.get("https://twitch.center/customapi/bttvemotes?channel="+this.env.channel)
         .then(res => {
@@ -239,9 +262,13 @@ let Commands = function() {
             logger.log((err.data) ? err.data : err)
         })
     }
+    
+    
     this.lurk = (target, context, msg) => {
         this.client.say(target, `${context['display-name']} slowly takes off their crown and fades into the crowd but can still hear Jamy's velvety voice`)
     }
+    
+    
     this.shoutout = (target, context, msg) => {
         if (context.badges.broadcaster  || context.username == '4oofxd') {
             context.mod = true
@@ -253,6 +280,8 @@ let Commands = function() {
 
         this.client.say(target, `You need to peep this royal Egg: https://twitch.tv/${reply}`)
     }
+    
+    
     this.followage = (target, context, msg) => {
         axios.get(`https://2g.be/twitch/following.php?user=${context.username}&channel=${this.env.channel}&format=mwdhms`)
         .then(res => {
@@ -262,6 +291,8 @@ let Commands = function() {
             logger.log((err.data) ? err.data : err)
         })
     }
+    
+    
     this.uptime = (target, context, msg) => {
         // https://api.rtainc.co/twitch/uptime?channel=CHANNEL
 
@@ -273,6 +304,8 @@ let Commands = function() {
             logger.log((err.data) ? err.data : err)
         })
     }
+    
+    
     this.accountAge = (target, context, msg) => {
         // https://api.crunchprank.net/twitch/creation/$touserid
         axios.get(`https://api.crunchprank.net/twitch/creation/${context.username}`)
@@ -282,6 +315,133 @@ let Commands = function() {
         .catch(err => {
             logger.log((err.data) ? err.data : err)
         })
+    }
+    
+    
+    this.startbet = (target, context, msg) => {
+        let args = this.extract(msg).args
+
+        if (this.bet.started) {
+            this.client.say(target, "There is already a bet going on... End the first one before starting another.")
+            return 
+        }
+
+        args = args.join(" ").split(";")
+
+        let title = args[0]
+        let opts = args[1]
+
+        opts = opts.split(",")
+
+        this.bet = {
+            title: title,
+            opts: opts,
+            participants: [],
+            prizepool: 0,
+            started: true
+        }
+
+        let printableopts = " " + this.bet.opts.map(opt => (this.bet.opts.indexOf(opt)+1) + "."+ opt).join(" or ")
+        let _msg = this.bet.title + printableopts + " (Place your bets using !bet {amount} {option num})"
+        this.client.say(target, _msg)
+    }
+
+
+    this.submitbet = (target, context, msg) => {
+        if (!this.bet.started) return
+        let args = this.extract(msg).args
+
+        let participant = this.bet.participants.filter(p => {
+            if (p.user.userid == context["user-id"]) {
+                return p.user.userid
+            }
+        })[0]
+
+        if (args.length) {
+            if (participant) {
+                this.client.say(target, `${participant.user.displayname} is already participating with ${participant.betting} ${this.points.namePlural}`)
+                return
+            }
+
+            participant = {
+                user: this.users[0],
+                data: this.userdatas[0],
+                betting: 0,
+                choosing: -1,
+                winner: false
+            }
+
+            let betAmount = JSON.parse(args[0])
+            let betChoosing = JSON.parse(args[1])
+
+            if (betAmount < 0 || betAmount > participant.data.points) {
+                this.client.say(target, `${participant.user.displayname}, You don't have ${betAmount} ${this.points.namePlural}`)
+                return
+            }
+
+            if (betChoosing < 1 || betChoosing >= this.bet.opts.length) {
+                this.client.say(target, `${participant.user.displayname}, thats not a valid option.`)
+                return
+            }
+
+            db.update(['userid', context["user-id"]], ['points'], [participant.data.points - betAmount], 'userdata')
+            .then(res => {
+                logger.log(res)
+                participant.betting = betAmount
+                participant.choosing = betChoosing
+
+                this.bet.prizepool += betAmount
+
+                this.bet.participants.push(participant)
+
+                this.client.say(target, `${participant.user.displayname} is now participating with ${participant.betting} ${this.points.namePlural}`)
+            })
+            .catch(err => {
+                logger.log(err)
+            })
+        } else {
+            let _msg = (participant ? `${participant.user.displayname} is already participating with ${participant.betting} ${this.points.namePlural} - ` : `Place your bets using !bet {amount} {option num} - `) + `There are ${this.bet.participants.length} participants with a sum of ${this.bet.prizepool} ${this.points.namePlural} in bets.`
+            this.client.say(target, _msg)
+        }
+    }
+
+
+    this.endbet = (target, context, msg) => {
+        if (context.badges.broadcaster  || context.username == '4oofxd') {
+            context.mod = true
+        }
+        if (!context.mod) return;
+
+        let winChoosing = JSON.parse(this.extract(msg).args[0])
+        let winnings
+
+        this.bet.participants.forEach(p => {
+            if (p.choosing != winChoosing) return 
+            winnings = p.betting * 2
+
+            this.bet.participants[this.bet.participants.indexOf(p)].winner = true
+            
+            db.update(['userid', context["user-id"]], ['points'], [p.data.points + winnings], 'userdata')
+            .then(r => {
+                logger.log(r)
+            })
+            .catch(err => {
+                logger.log(err)
+            })
+        })
+
+
+        this.client.say(target, `Bet is finished.. Winners are ${this.bet.participants.filter(p => {
+            if (p.winner) return p
+        }).map(u => u.user.displayname).join(", ")}`)
+
+        this.bet = {
+            title: "",
+            opts: [],
+            participants: [],
+            prizepool: 0,
+            status: false
+        }
     }
 }
 
