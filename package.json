@@ -5,7 +5,7 @@
   "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "start nodemon bot --ignore static/"
+    "start": "node bot"
   },
   "repository": {
     "type": "git",
