@@ -59,7 +59,7 @@ let Commands = function() {
     this.crowning = (target, context, msg) => {
         // No filtering for empty results here cuz the function before did that
         userdata = this.userdatas[0]
-        if (Math.random() >= .9994) {
+        if (Math.random() >= .994) {
             db.update(['userid', context['user-id']],
                         ['goldcrowns', 'points'],
                         [userdata.goldcrowns + 1, userdata.points + 2500],
@@ -151,7 +151,7 @@ let Commands = function() {
         db.insert(["command", "reply"], [command, reply], 'tcommands')
         .then(res => {
             logger.log(res)
-            this.client.say(target, `${context["display-name"]} added ${command}.`)
+            this.client.say(target, `${context["display-name"]} added ${this.prefix}${command}.`)
         })
         .catch(err => {
             logger.log(err)

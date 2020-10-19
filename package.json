@@ -5,7 +5,7 @@
   "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node bot.js"
+    "start": "start nodemon bot --ignore static/"
   },
   "repository": {
     "type": "git",
@@ -19,12 +19,21 @@
   "homepage": "https://github.com/Aoof/jamybot#readme",
   "dependencies": {
     "axios": "^0.20.0",
+    "connect-flash": "^0.1.1",
+    "connect-pg-simple": "^6.2.1",
+    "csurf": "^1.11.0",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "https": "^1.0.0",
+    "marked": "^1.2.0",
     "mysql": "^2.18.1",
     "pg": "^8.4.1",
-    "tmi.js": "^1.5.0"
+    "tmi.js": "^1.5.0",
+    "webpack": "^5.1.3"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.0.0"
   }
 }

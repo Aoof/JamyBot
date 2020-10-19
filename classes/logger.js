@@ -1,7 +1,9 @@
 const fs = require("fs")
 const path = require("path")
 const dir = path.resolve(__dirname, '..')
-const mode = "prod"
+require("dotenv").config()
+
+const mode = process.env.MODE || "prod" 
 
 module.exports = {
     log(msg, doConsoleLog) {

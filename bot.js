@@ -1,18 +1,17 @@
 const tmi = require("tmi.js")
-const Commands = require("./classes/commands.js")
-const user = require("./classes/User.js")
-const twitch = require("./classes/twitchapi.js")
-const logger = require("./classes/logger.js")
-const db = require("./db.js")
-const Points = require("./classes/points.js")
+const Commands = require("./classes/commands")
+const user = require("./classes/User")
+const twitch = require("./classes/twitchapi")
+const logger = require("./classes/logger")
+const db = require("./db")
+const Points = require("./classes/points")
+const csrf = require('csurf')
 const express = require("express")
 const path = require("path")
 
 require("dotenv").config()
 
-const mode = "jamy"
-
-const env = (mode == "jamy") ? {
+const env = (process.env.MODE || "prod" == "prod") ? {
                                     name: process.env.NAMERELEASE,
                                     oauth: process.env.OAUTHRELEASE,
                                     channel: process.env.CHANNELRELEASE,
@@ -62,7 +61,8 @@ function Bot() {
     commands.prefix = "!"
     
     points.points =
-    commands.points =  {
+    commands.points =  
+    this.points = {
         name: "Egg shell",
         namePlural: "Egg shells"
     }
@@ -160,6 +160,87 @@ function Bot() {
         commands.textCommandsApplier(target, context, msg)
     }
 
+    this.getPrintableCommands = async () => {        
+        this.printableCommands = [
+            {
+                command: "crowns",
+                reply: "{user}, has ${goldeggs} Golden Eggs, and {plateggs} PLATINUM EGGS.",
+                description: "Shows crowns you/user have, you can check the user's crowns by providing his name after !crowns"
+            },
+            {
+                command: "cmd, command",
+                reply: "{user} [updated, added, deleted] !{command}",
+                description: "[ONLY MODS] adds/updates/deletes a plain-text-reply-command.. following syntax must be used !cmd [update/add] (command without prefix) reply | !cmd [delete] (command without prefix)"
+            },
+            {
+                command: "wink",
+                reply: "{user} winks at {sec-user}",
+                description: "Randomly winks at someone.. or you can wink at a specific person by providing their name."
+            },
+            {
+                command: "emotes",
+                reply: "{emotes}",
+                description: "I (for real) do not know what this does but it exist."
+            },
+            {
+                command: "lurk",
+                reply: "{user} slowly takes off their crown and fades into the crowd but can still hear Jamy's velvety voice",
+                description: "User will now start lurking but still have jamy in the background"
+            },
+            {
+                command: "so, shoutout",
+                reply: "You need to peep this royal Egg: https://twitch.tv/{user}",
+                description: "[ONLY MODS] Shouts out someone"
+            },
+            {
+                command: "followage",
+                reply: "[API RESPONSE] you have been following {channel} for ...",
+                description: "Checks the time since you followed "+env.channel
+            },
+            {
+                command: "uptime",
+                reply: `[API RESPONSE] ${env.channel} has been streaming for...`,
+                description: `Checks time since ${env.channel} started streaming or been off for.`
+            },
+            {
+                command: "accountage",
+                reply: `[API RESPONSE] {user} account was created at ..date..`,
+                description: `Tells you when did you create your account.`
+            },
+            {
+                command: "points",
+                reply: `{user} has {amount} ${this.points.namePlural} and is rank {rank}/{participants_count} on the leaderboard.`,
+                description: `Tells you how many ${this.points.plural} you have`
+            },
+            {
+                command: "gamble",
+                reply: `{user}, gambled with {amount} ${this.points.namePlural}, and won/lost PogChamp/LUL! and now has {points} ${this.points.namePlural}. PogChamp/LUL`,
+                description: `Gambling with your ${this.points.namePlural}`
+            }
+        ]
+
+        let cmds = await db.get('tcommands')
+        cmds.forEach(cmd => {
+            this.printableCommands.forEach(pc => {
+                if (pc.reply == cmd.reply) {
+                    this.printableCommands[this.printableCommands.indexOf(pc)] = {
+                        command: cmd.command + ", " + pc.command,
+                        reply: pc.reply,
+                        description: pc.description
+                    }
+                }
+            })
+
+            if (this.printableCommands.map(pc => pc.reply).includes(cmd.reply)) return
+
+            this.printableCommands.push({
+                command: cmd.command,
+                reply: cmd.reply,
+                description: ""
+            })
+        })
+    }
+
     this.onConnectedHandler = (addr, port) => {
         this.status = true
         logger.log(`* Connected   :  ${addr}:${port}`);
@@ -182,33 +263,8 @@ function Bot() {
 
 let bot = new Bot()
 
-const app = express()
-const port = process.env.PORT || "8080";
-
-app.set('view engine', 'ejs')
-
-app.get("/", async (req, res) => {
-    let cond
-    try {
-        cond = await db.get('users')
-    } catch {
-        cond = false
-    }
-    res.render('index', {
-        status: {
-            // bot: false,
-            bot: bot.status,
-            db: typeof cond != "boolean",
-            phandler: true,
-            chandler: true
-        },
-        bot: {
-            name: env.name
-        },
-        channel: env.channel
-    })
-});
-
-app.listen(port, () => {
-    logger.log(`listening to http://127.0.0.1:${port}/`)
-});
+module.exports = bot
+const app = require("./web/app")
+bot.getPrintableCommands()
+app.listen(process.env.PORT || 8080)
+logger.log(`Listening to http://127.0.0.1:${process.env.PORT || 8080}/`)
