@@ -59,7 +59,7 @@ let Commands = function() {
     this.crowning = (target, context, msg) => {
         // No filtering for empty results here cuz the function before did that
         userdata = this.userdatas[0]
-        if (Math.random() >= .994) {
+        if (Math.random() >= .996) {
             db.update(['userid', context['user-id']],
                         ['goldcrowns', 'points'],
                         [userdata.goldcrowns + 1, userdata.points + 2500],
@@ -98,7 +98,7 @@ let Commands = function() {
         }
 
         
-        if (Math.random() <= .000001) {
+        if (Math.random() <= .0004) {
             db.update(['userid', context['user-id']],
                         ['platcrowns', 'points'],
                         [userdata.platcrowns + 1, userdata.points + 2500*5],
@@ -116,7 +116,7 @@ let Commands = function() {
     }
     
     
-    this.getCrowns = (target, context, msg) => {
+    this.getEggs = (target, context, msg) => {
         let user = context.username
 
         let ext = this.extract(msg)

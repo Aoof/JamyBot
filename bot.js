@@ -142,20 +142,20 @@ function Bot() {
             if (commands.command(cmdname, msg)) command(target, context, msg);
         }
 
-        cmd("crowns",                 commands.getCrowns)
-        cmd(["cmd", "command"],       commands.textCommandsHandler)
-        cmd("wink",                   commands.randomWink)
-        cmd("emotes",                 commands.emotes)
-        cmd("lurk",                   commands.lurk)
-        cmd(["so", "shoutout"],       commands.shoutout)
-        cmd("followage",              commands.followage)
-        cmd("uptime",                 commands.uptime)
-        cmd("accountage",             commands.accountAge)
-        cmd("points",                 points.getPoints)
-        cmd(["gamble", "roulette"],   points.gamble)
-        cmd(["startbet", "sb"],       commands.startbet)
-        cmd("bet",                    commands.submitbet)
-        cmd(["endbet", "eb"],         commands.endbet)
+        cmd("eggs",                                   commands.getEggs)
+        cmd(["cmd", "command"],                       commands.textCommandsHandler)
+        cmd("wink",                                   commands.randomWink)
+        cmd("emotes",                                 commands.emotes)
+        cmd("lurk",                                   commands.lurk)
+        cmd(["so", "shoutout"],                       commands.shoutout)
+        cmd("followage",                              commands.followage)
+        cmd("uptime",                                 commands.uptime)
+        cmd("accountage",                             commands.accountAge)
+        cmd(["points", "eggshells", "shells"],        points.getPoints)
+        cmd(["gamble", "roulette"],                   points.gamble)
+        cmd(["startbet", "sb"],                       commands.startbet)
+        cmd("bet",                                    commands.submitbet)
+        cmd(["endbet", "eb"],                         commands.endbet)
 
         commands.textCommandsApplier(target, context, msg)
     }
@@ -163,9 +163,9 @@ function Bot() {
     this.getPrintableCommands = async () => {        
         this.printableCommands = [
             {
-                command: "crowns",
+                command: "eggs",
                 reply: "{user}, has ${goldeggs} Golden Eggs, and {plateggs} PLATINUM EGGS.",
-                description: "Shows crowns you/user have, you can check the user's crowns by providing his name after !crowns"
+                description: "Shows eggs you/user have, you can check the user's eggs by providing his name after !eggs"
             },
             {
                 command: "cmd, command",
@@ -208,7 +208,7 @@ function Bot() {
                 description: `Tells you when did you create your account.`
             },
             {
-                command: "points",
+                command: "points, shells, eggshells",
                 reply: `{user} has {amount} ${this.points.namePlural} and is rank {rank}/{participants_count} on the leaderboard.`,
                 description: `Tells you how many ${this.points.plural} you have`
             },

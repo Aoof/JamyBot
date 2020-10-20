@@ -52,6 +52,7 @@ module.exports = {
             }
             return;
         }
+        
         db.insert( // User
             ['userid',
                 'username',
