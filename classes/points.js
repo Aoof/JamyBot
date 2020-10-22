@@ -98,13 +98,12 @@ let Points = function () {
         let args1 = ext.args[0]
         let amount;
 
-        switch (args1) {
-            case "all":
-                amount = data.points;
-                break;
-            default:
-                amount = JSON.parse(args1)
-                break;
+        if (args1 == "all") {
+            amount = data.points;
+        } else if (/^\d+$/.test(args1)) {
+            amount = JSON.parse(args1)
+        } else {
+            return
         }
 
         let user = this.users[0]

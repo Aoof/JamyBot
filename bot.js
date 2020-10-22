@@ -11,7 +11,7 @@ const path = require("path")
 
 require("dotenv").config()
 
-const env = (process.env.MODE || "prod" == "prod") ? {
+const env = ((process.env.MODE || "prod") == "prod") ? {
                                     name: process.env.NAMERELEASE,
                                     oauth: process.env.OAUTHRELEASE,
                                     channel: process.env.CHANNELRELEASE,
