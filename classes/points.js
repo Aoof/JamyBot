@@ -100,6 +100,10 @@ let Points = function () {
 
         if (args1 == "all") {
             amount = data.points;
+        } else if (args1 == "half") {
+            amount = Math.ceil(data.points/2)
+        } else if (args1 == "quarter") {
+            amount = Math.ceil(data.points/4)
         } else if (/^\d+$/.test(args1)) {
             amount = JSON.parse(args1)
         } else {
