@@ -145,7 +145,7 @@ let Commands = function() {
         })
     }
     this.addTextCommand = (target, context, args) => {
-        let command = args[0]
+        let command = args[0].toLowerCase()
         let reply = args.slice(1).join(" ")
 
         db.insert(["command", "reply"], [command, reply], 'tcommands')
@@ -158,7 +158,7 @@ let Commands = function() {
         })
     }
     this.updateTextCommand = (target, context, args) => {
-        let command = args[0]
+        let command = args[0].toLowerCase()
         let reply = args.slice(1).join(" ")
 
         db.update(['command', command], ["reply"], [reply], 'tcommands')
