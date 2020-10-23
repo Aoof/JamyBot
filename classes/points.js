@@ -53,9 +53,9 @@ let Points = function () {
         db.update(['userid', from_user.user.userid], ['points'], [from_user.userdata.points - amount], 'userdata')
         .then(res => {
             db.update(['userid', to_user.user.userid], ['points'], [to_user.userdata.points + amount])
-            .then(res => {
+            .then(_res => {
                 if (typeof callback == "function") callback(amount)
-                logger.log(res)
+                logger.log(_res)
             })
             .catch(err => logger.log(err))
             logger.log(res)
@@ -71,7 +71,7 @@ let Points = function () {
 
         let ext = this.extract(msg)
 
-        if (!ext.args.length) {
+        if (ext.args.length <= 1) {
             this.getPoints(target, context, msg)
             return;
         }
