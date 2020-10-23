@@ -52,7 +52,7 @@ let Points = function () {
     this.givePoints = (from_user, to_user, amount, callback=null) => {
         db.update(['userid', from_user.user.userid], ['points'], [from_user.userdata.points - amount], 'userdata')
         .then(res => {
-            db.update(['userid', to_user.user.userid], ['points'], [to_user.userdata.points + amount])
+            db.update(['userid', to_user.user.userid], ['points'], [to_user.userdata.points + amount], 'userdata')
             .then(_res => {
                 if (typeof callback == "function") callback(amount)
                 logger.log(_res)
