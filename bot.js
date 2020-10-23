@@ -151,7 +151,7 @@ function Bot() {
         cmd("followage",                              commands.followage)
         cmd("uptime",                                 commands.uptime)
         cmd("accountage",                             commands.accountAge)
-        cmd(["points", "eggshells", "shells"],        points.getPoints)
+        cmd(["points", "eggshells", "shells"],        points.pointsHandler)
         cmd(["gamble", "roulette"],                   points.gamble)
         cmd(["startbet", "sb"],                       commands.startbet)
         cmd("bet",                                    commands.submitbet)

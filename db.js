@@ -19,7 +19,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             let q = `SELECT * FROM royalbutler.${table}`
             if (condition) q += ` WHERE ${condition}`
-            if (order) q += ` ORDER BY ${order}` 
+            if (order) q += ` ORDER BY ${order}`
             client.query(q,
                 (err, result) => {
                     if (err) {

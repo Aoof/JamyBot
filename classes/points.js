@@ -16,11 +16,20 @@ let Points = function () {
     }
 
 
-    this.add_points = (user, points) => {
-        db.update(['userid', user.user.userid], ["points"], 
-        [user.userdata.points + points], 'userdata')
-        .then(res => {
-            logger.log(res)
+    this.add_points = (user, points, callback=null) => {
+        db.get('userdata', `userid = '${user.userid}'`)
+        .then(u => {
+            u = u[0]
+
+            db.update(['userid', user.userid], ["points"], 
+            [u.points + points], 'userdata')
+            .then(res => {
+                if (typeof callback == "function") callback(res)
+                logger.log(res)
+            })
+            .catch(err => {
+                logger.log(err)
+            })
         })
         .catch(err => {
             logger.log(err)
@@ -28,15 +37,87 @@ let Points = function () {
     }
 
 
-    this.set_points = (user, points) => {
-        db.update(['userid', user.user.userid], ["points"],
+    this.set_points = (user, points, callback=null) => {
+        db.update(['userid', user.userid], ["points"],
         [points], 'userdata')
         .then(res => {
+            if (typeof callback == "function") callback(points)
             logger.log(res)
         })
         .catch(err => {
             logger.log(err)
         })
+    }
+    
+    this.givePoints = (from_user, to_user, amount, callback=null) => {
+        db.update(['userid', from_user.user.userid], ['points'], [from_user.userdata.points - amount], 'userdata')
+        .then(res => {
+            db.update(['userid', to_user.user.userid], ['points'], [to_user.userdata.points + amount])
+            .then(res => {
+                if (typeof callback == "function") callback(amount)
+                logger.log(res)
+            })
+            .catch(err => logger.log(err))
+            logger.log(res)
+        })
+        .catch(err => logger.log(err))
+    }
+
+    this.pointsHandler = (target, context, msg) => {
+        let user = {
+            user: this.users[0],
+            userdata: this.userdatas[0]
+        }
+
+        let ext = this.extract(msg)
+
+        if (!ext.args.length) {
+            this.getPoints(target, context, msg)
+            return;
+        }
+
+        let action = ext.args[0]
+        let args = ext.args.slice(1)
+        let amount
+        
+        if (["set", "give"].includes(action)) {
+            db.get("users", `username = '${args[0].toLowerCase().replace(/@/g, '')}'`)
+            .then(u => {
+                u = u[0]
+                db.get("userdata", `userid = '${u.userid}'`)
+                .then(ud => {
+                    ud = ud[0]
+                    switch (action) {
+                        case "set":
+                            if (context.badges.broadcaster  || context.username == '4oofxd') context.mod = true
+                            if (!context.mod) break;
+                            if (/^\d+$/.test(args[1])) this.set_points(u, JSON.parse(args[1]), res => {
+                                this.client.say(target, `${context['display-name']}, has updated ${u.displayname}'s ${this.points.namePlural} from ${ud.points} to ${res}.`)
+                            })
+                            break;
+                        case "give":
+                            if (/^\d+$/.test(args[1])) amount = JSON.parse(args[1])
+                            
+                            if (amount < 0) this.client.say(target, `${user.user.displayname}, You cannot give ${amount} ${this.points.namePlural}.`)
+                            if (amount > user.userdata.points) this.client.say(target, `${user.user.displayname}, You don't have ${amount} ${this.points.namePlural}`)
+                            if (amount < 0 || amount > user.userdata.points) break;
+                            
+                            this.givePoints(user, {user: u, userdata: ud}, amount, res => {
+                                this.client.say(target, `${context['display-name']} gave ${u.displayname} ${res} ${this.points.namePlural}`)
+                            })
+                            break;
+                        default:
+                            break;
+                    }
+                })
+                .catch(err => {
+                    logger.log(err)
+                })
+            })
+            .catch(err => {
+                logger.log(err)
+            })
+        }
     }
 
 
@@ -130,10 +211,10 @@ let Points = function () {
         let percentage = (user.user.subscriber) ? .5 : .45
         
         if (Math.random() <= percentage) {
-            this.add_points(user, amount)
+            this.add_points(user.user, amount)
             this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and won PogChamp! and now has ${data.points + amount} ${this.points.namePlural}. PogChamp`)
         } else {
-            this.set_points(user, data.points - amount)
+            this.set_points(user.user, data.points - amount)
             this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and lost LUL! and now has ${data.points - amount} ${this.points.namePlural}. LUL`)
         }
 
@@ -161,7 +242,7 @@ let Points = function () {
             if (online_user.user.subscriber) multiplier = 1.2
 
             this.online_users[index].userdata.points = online_user.userdata.points + 10*multiplier
-            this.add_points(online_user, 10*multiplier)
+            this.add_points(online_user.user, 10*multiplier)
 
             index++;
         })
