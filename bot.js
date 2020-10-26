@@ -228,7 +228,7 @@ function Bot() {
             {
                 command: "points, shells, eggshells",
                 reply: `{user} has {amount} ${this.points.namePlural} and is rank {rank}/{participants_count} on the leaderboard.`,
-                description: `Tells you how many ${this.points.plural} you have`
+                description: `Tells you how many ${this.points.namePlural} you have`
             },
             {
                 command: "gamble",
@@ -257,6 +257,9 @@ function Bot() {
                 description: cmd.desc ? cmd.desc : ""
             })
         })
+
+        	
+        this.printableCommands = this.printableCommands.sort((a, b) => a.command.localeCompare(b.command, 'es', { sensitivity: 'base' }))
     }
 
     this.onConnectedHandler = (addr, port) => {
