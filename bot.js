@@ -136,6 +136,8 @@ function Bot() {
             # # Platinum crown .1% Chance
             # Save user's data accordingly
         */
+        if (!context.badges) context.badges = {broadcaster: false}
+
         let users = await db.get('users', `userid = '${context["user-id"]}'`)
         let userdatas = await db.get('userdata', `userid = '${context["user-id"]}'`)
         
@@ -150,7 +152,7 @@ function Bot() {
         commands.userdatas = userdatas
 
         user.addUserOrUpdate(target, context, msg)
-        commands.crowning(target, context, msg)
+        if (users[0].userid != "24544309") commands.gifting(target, context, msg)
 
         if (commands.command(["ul", "updateleaderboard"], msg)) this.updateleaderboard()
 
@@ -263,8 +265,8 @@ function Bot() {
         logger.log(`  Username    :  ${env.name}`)
         logger.log(`  To Channel  :  ${env.channel}`)
 
-        setTimeout(() => points.timedMessage(1.5), 1000*60*60*1.5)
-        setTimeout(() => points.timedMessage2(2), 1000*60*60*2)
+        setTimeout(() => points.timedMessage(1.5, 'Don\'t mind me, just wanted to say the King\'s head looks extra shiny today.'), 1000*60*60*1.5)
+        setTimeout(() => points.timedMessage(2, 'If you see a bug, get my master Aoof to squash it.'), 1000*60*60*2)
         setTimeout(this.updateleaderboard, 1000*60*10)
         points.onlineUsersHandler()
     }

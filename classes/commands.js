@@ -56,7 +56,7 @@ let Commands = function() {
     }
     
     
-    this.crowning = (target, context, msg) => {
+    this.gifting = (target, context, msg) => {
         // No filtering for empty results here cuz the function before did that
         userdata = this.userdatas[0]
         if (Math.random() >= .996) {
@@ -202,7 +202,7 @@ let Commands = function() {
     
     
     this.textCommandsHandler = (target, context, msg) => {
-        if ((context.badges && context.badges.broadcaster) || context.username == '4oofxd') context.mod = true
+        if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
         if (!context.mod) return;
 
         let ext = this.extract(msg)
@@ -268,7 +268,7 @@ let Commands = function() {
     
     
     this.shoutout = (target, context, msg) => {
-        if ((context.badges && context.badges.broadcaster) || context.username == '4oofxd') context.mod = true
+        if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
         if (!context.mod) return;
 
         let ext = this.extract(msg)
@@ -315,6 +315,9 @@ let Commands = function() {
     
     
     this.startbet = (target, context, msg) => {
+        if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
+        if (!context.mod) break 
+
         let args = this.extract(msg).args
 
         if (this.bet.started) {
@@ -398,7 +401,7 @@ let Commands = function() {
 
 
     this.endbet = (target, context, msg) => {
-        if ((context.badges && context.badges.broadcaster) || context.username == '4oofxd') context.mod = true
+        if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
         if (!context.mod) return;
 
         let winChoosing = JSON.parse(this.extract(msg).args[0])

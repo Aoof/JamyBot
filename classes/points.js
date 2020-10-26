@@ -89,7 +89,7 @@ let Points = function () {
                     ud = ud[0]
                     switch (action) {
                         case "set":
-                            if ((context.badges && context.badges.broadcaster) || context.username == '4oofxd') context.mod = true
+                            if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
                             if (!context.mod) break;
                             if (/^\d+$/.test(args[1])) this.set_points(u, JSON.parse(args[1]), res => {
                                 this.client.say(target, `${context['display-name']}, has updated ${u.displayname}'s ${this.points.namePlural} from ${ud.points} to ${res}.`)
@@ -221,17 +221,10 @@ let Points = function () {
     }
 
 
-    this.timedMessage = (interval) => {
+    this.timedMessage = (interval, msg) => {
         logger.log(`There are ${this.online_users.length} users online`)
-        this.client.say('#'+this.env.channel, 'Don\'t mind me, just wanted to say the king\'s head looks extra shiny today.')
+        this.client.say('#'+this.env.channel, msg)
         setTimeout(() => this.timedMessage(interval), 1000*60*60*interval)
-    }
-
-
-    this.timedMessage2 = (interval) => {
-        logger.log(`There are ${this.online_users.length} users online`)
-        this.client.say('#'+this.env.channel, 'If you see a bug, get my master Aoof to squash it.')
-        setTimeout(() => this.timedMessage2(interval), 1000*60*60*interval)
     }
 
 
