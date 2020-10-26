@@ -202,7 +202,7 @@ let Commands = function() {
     
     
     this.textCommandsHandler = (target, context, msg) => {
-        if (context.badges.broadcaster  || context.username == '4oofxd') context.mod = true
+        if ((context.badges && context.badges.broadcaster) || context.username == '4oofxd') context.mod = true
         if (!context.mod) return;
 
         let ext = this.extract(msg)
@@ -268,7 +268,7 @@ let Commands = function() {
     
     
     this.shoutout = (target, context, msg) => {
-        if (context.badges.broadcaster  || context.username == '4oofxd') context.mod = true
+        if ((context.badges && context.badges.broadcaster) || context.username == '4oofxd') context.mod = true
         if (!context.mod) return;
 
         let ext = this.extract(msg)
@@ -398,7 +398,7 @@ let Commands = function() {
 
 
     this.endbet = (target, context, msg) => {
-        if (context.badges.broadcaster  || context.username == '4oofxd') context.mod = true
+        if ((context.badges && context.badges.broadcaster) || context.username == '4oofxd') context.mod = true
         if (!context.mod) return;
 
         let winChoosing = JSON.parse(this.extract(msg).args[0])
