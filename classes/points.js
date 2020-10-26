@@ -234,12 +234,12 @@ let Points = function () {
             let multiplier = 1
             if (online_user.user.subscriber) multiplier = 1.2
 
-            this.online_users[index].userdata.points = online_user.userdata.points + 10*multiplier
-            this.add_points(online_user.user, 10*multiplier)
+            this.online_users[index].userdata.points = online_user.userdata.points + 20*multiplier
+            this.add_points(online_user.user, 20*multiplier)
 
             index++;
         })
-        setTimeout(this.onlineUsersHandler, 1000*60)
+        setTimeout(this.onlineUsersHandler, 1000*60*10)
     }
 }
 
