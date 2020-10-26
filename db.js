@@ -34,6 +34,8 @@ module.exports = {
     },
     insert(names, values, table) {
         return new Promise((resolve, reject) => {
+            names = names.map(name => `"${name}"`)
+
             _values = []
 
             values = values.map(e => (e) ? e : '')
@@ -69,14 +71,15 @@ module.exports = {
                 if (typeof value == "string") {
                     value = `'${value}'`
                 }
-                updated.push(`${name} = ${value}`)
+                updated.push(`"${name}" = ${value}`)
             })
 
             updated = updated.join(", ")
 
             if (typeof pk[1] == "string") pk[1] = `'${pk[1]}'`
 
-            let q = `UPDATE royalbutler.${table} SET ${updated} WHERE ${pk[0]} = ${pk[1]}`
+            let q = `UPDATE royalbutler.${table} SET ${updated} WHERE "${pk[0]}" = ${pk[1]}`
+            logger.log(q)
             client.query(q,
                 function(err, result, fields) {
                     if (err) {
@@ -91,7 +94,7 @@ module.exports = {
     },
     delete(pk, table) {
         return new Promise((resolve, reject) => {
-            let q = `DELETE FROM royalbutler.${table} WHERE ${pk[0]} = '${pk[1]}'`
+            let q = `DELETE FROM royalbutler.${table} WHERE "${pk[0]}" = '${pk[1]}'`
             client.query(q,
                 function(err, result, fields) {
                     if (err) {

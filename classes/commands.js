@@ -137,14 +137,17 @@ let Commands = function() {
             .then(res => {
                 if (!res.length) return;
                 res = res[0]
-                this.client.say(target, `${user.username}, has ${res.goldcrowns} Golden Eggs, and ${res.platcrowns} PLATINUM EGGS.`)
+                this.client.say(target, `${user.username}, has ${res.goldcrowns} Golden Eggs, and ${res.platcrowns} PLATINUM EGGS!`)
             })
         })
         .catch(err => {
             logger.log(err)
         })
     }
+
+
     this.addTextCommand = (target, context, args) => {
+        if (args.length <= 2) return;
         let command = args[0].toLowerCase()
         let reply = args.slice(1).join(" ")
 
@@ -157,7 +160,10 @@ let Commands = function() {
             logger.log(err)
         })
     }
+
+
     this.updateTextCommand = (target, context, args) => {
+        if (args.length <= 2) return;
         let command = args[0].toLowerCase()
         let reply = args.slice(1).join(" ")
 
@@ -187,8 +193,11 @@ let Commands = function() {
         })
 
     }
-    this.delTextCommand = (target, context, args) => {        
-        let command = args[0]
+
+
+    this.delTextCommand = (target, context, args) => {      
+        if (args.length != 1) return;
+        let command = args[0].toLowerCase()
 
         db.delete(['command', command], 'tcommands')
         .then(res => {
@@ -199,7 +208,23 @@ let Commands = function() {
             logger.log(err)
         })
     }
-    
+
+
+    this.descTextCommand = (target, context, args) => {
+        if (args.length <= 2) return;
+        let command = args[0].toLowerCase()
+        let desc = args.slice(1).join(" ")
+
+        db.update(['command', command], ['desc'], [desc], 'tcommands')
+        .then(res => {
+            this.client.say(target, `${context["display-name"]} changed description of ${this.prefix}${command}.`)
+            logger.log(res)
+        })
+        .catch(err => {
+            logger.log(err)
+        })
+    }
+
     
     this.textCommandsHandler = (target, context, msg) => {
         if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
@@ -209,7 +234,7 @@ let Commands = function() {
         let action = ext.args[0]
         let args = ext.args.slice(1)
 
-        if (["update", "add", "delete", "del", "remove"].includes(action)) {
+        if (["update", "add", "delete", "del", "remove", "desc"].includes(action)) {
             switch (action) {
                 case "update":
                     this.updateTextCommand(target, context, args)
@@ -225,6 +250,9 @@ let Commands = function() {
                     break;
                 case "remove":
                     this.delTextCommand(target, context, args)
+                    break;
+                case "desc":
+                    this.descTextCommand(target, context, args)
                     break;
                 default:
                     break;

@@ -240,7 +240,7 @@ function Bot() {
         let cmds = await db.get('tcommands')
         cmds.forEach(cmd => {
             this.printableCommands.forEach(pc => {
-                if (pc.reply == cmd.reply) {
+                if (pc.reply == cmd.reply && pc.command != cmd.command) {
                     this.printableCommands[this.printableCommands.indexOf(pc)] = {
                         command: cmd.command + ", " + pc.command,
                         reply: pc.reply,
@@ -254,7 +254,7 @@ function Bot() {
             this.printableCommands.push({
                 command: cmd.command,
                 reply: cmd.reply,
-                description: ""
+                description: cmd.desc ? cmd.desc : ""
             })
         })
     }
@@ -284,6 +284,5 @@ let bot = new Bot()
 
 module.exports = bot
 const app = require("./web/app")
-bot.getPrintableCommands()
 app.listen(process.env.PORT || 8080)
 logger.log(`Listening to http://127.0.0.1:${process.env.PORT || 8080}/`)
