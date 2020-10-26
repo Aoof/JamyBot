@@ -316,7 +316,7 @@ let Commands = function() {
     
     this.startbet = (target, context, msg) => {
         if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
-        if (!context.mod) break 
+        if (!context.mod) return 
 
         let args = this.extract(msg).args
 
