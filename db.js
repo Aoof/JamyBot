@@ -36,7 +36,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             _values = []
 
-            if (values[2] == null) values[2] = ''
+            values = values.map(e => (e) ? e : '')
             values.forEach(value => {
                 if (typeof value == "string") {
                     value = `'${value}'`
