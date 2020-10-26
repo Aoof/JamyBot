@@ -8,6 +8,10 @@
     <title>Royal Butler | Twitch bot</title>
 </head>
 <body>
-    <a class="topright" href="<%= href %>" style="color: white; font-size: 30px;">
-        <i class="fas fa-<%= topRightIcon %>"></i>
-    </a>
+    <div class="topleft">
+        <% icons.forEach(icon => { %>
+            <a href="<%= icon.href %>" style="color: white; font-size: 30px; margin-left: 10px;">
+                <i class="<%= icon.name %>"></i>
+            </a>
+        <% }) %>
+    </div>

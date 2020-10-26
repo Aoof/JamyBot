@@ -2,13 +2,13 @@
 
 <div class="absoluteCenter">
     <div class="grid">
-        <div class="cmd_row">
+        <div class="row">
             <div class="command">Name</div>
             <div class="reply">Reply</div>
             <div class="desc">Description</div>
         </div>
         <% commands.forEach(cmd => { %>
-            <div class="cmd_row">
+            <div class="row">
                 <div class="command"><%= cmd.command %></div>
                 <div class="reply"><%= cmd.reply %></div>
                 <div class="desc"><%= cmd.description %></div>

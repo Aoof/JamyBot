@@ -102,5 +102,18 @@ module.exports = {
                     resolve(`[DB_DELETE] Successfully deleted ${pk[0]} = ${pk[1]} at ${table}.`)
                 })
         })
+    },
+    query(q, resolved) {
+        return new Promise((resolve, reject) => {
+            client.query(q,
+                function(err, result, fields) {
+                    if (err) {
+                        reject(err.stack)
+                        return;
+                    }
+
+                    resolve({result: result, fields: fields})
+                })
+        })
     }
 }

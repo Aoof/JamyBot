@@ -66,10 +66,16 @@ app.use(async function(req, res, next) {
         phandler: true,
         chandler: true
     }
-    
-    res.locals.commands = bot.printableCommands
+
+    res.locals.points = bot.points
 
     res.locals.env = newEnv
+
+    res.locals.icons = [
+        {name: 'fas fa-home', href: '/'},
+        {name: 'fas fa-file-alt', href: '/commands'},
+        {name: 'fas fa-list-ol', href: '/leaderboard'},
+    ]
 
     // Make current user id available on the req object
     if (req.session.user) { req.visitorId = req.session.user._id } else { req.visitorId = 0 }
@@ -78,27 +84,6 @@ app.use(async function(req, res, next) {
     res.locals.user = req.session.user
     next()
 })
-
-// LIVE CHAT CONNECTIONS
-
-// const server = require("http").createServer(app)
-// const io = require("socket.io")(server)
-
-// io.use(function(socket, next) {
-//     sessionOptions(socket.request, socket.request.res, next)
-// })
-
-// io.on('connection', function(socket) {
-//     if (socket.request.session.user) {
-//         let user = socket.request.session.user
-
-//         socket.emit("welcome", { username: user.username, avatar: user.avatar })
-
-//         socket.on('chatMessageFromBrowser', function(data) {
-//             socket.broadcast.emit('chatMessageFromServer', { message: sanitizeHTML(data.message, { allowedTags: [], allowedAttributes: {} }), username: user.username, avatar: user.avatar })
-//         })
-//     }
-// })
 
 const router = require('./router')
 

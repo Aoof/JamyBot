@@ -70,6 +70,20 @@ function Bot() {
     this.online_users = []
     this.to_be_online = 10 // In minutes
 
+    this.updateleaderboard = (timeout=true) => {
+        db.query('SELECT u.username, u.displayname AS "name", ud.goldcrowns AS "geggs", ud.platcrowns AS "peggs", ud.points AS "shells" FROM users u, userdata ud WHERE u.userid = ud.userid ORDER BY -ud.points')
+        .then(r => {
+            res = r.result.rows
+            this.leaderboard = res
+        })
+        .catch(err => {
+            logger.log(err)
+        })
+        if (timeout) setTimeout(this.updateleaderboard, 1000*60*10)
+    }
+
+    this.updateleaderboard(false)
+
     this.add_online = (user, userdata) => {
         if (typeof user != "object" || typeof userdata != "object") return
         let userTimer = setInterval(() => {
@@ -137,6 +151,8 @@ function Bot() {
 
         user.addUserOrUpdate(target, context, msg)
         commands.crowning(target, context, msg)
+
+        if (commands.command(["ul", "updateleaderboard"], msg)) this.updateleaderboard()
 
         let cmd = (cmdname, command) => {
             if (commands.command(cmdname, msg)) command(target, context, msg);
@@ -249,6 +265,7 @@ function Bot() {
 
         setTimeout(() => points.timedMessage(1.5), 1000*60*60*1.5)
         setTimeout(() => points.timedMessage2(2), 1000*60*60*2)
+        setTimeout(this.updateleaderboard, 1000*60*10)
         points.onlineUsersHandler()
     }
 

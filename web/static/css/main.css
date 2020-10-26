@@ -58,20 +58,35 @@ div.absoluteCenter {
 
 div.command {
   grid-column: span 1;
-  padding-left: 5px;
+  padding-left: 10px;
 }
 
 div.reply {
   grid-column: span 5;
-  padding-left: 5px;
+  padding-left: 10px;
 }
 
 div.desc {
   grid-column: span 6;
-  padding-left: 5px;
+  padding-left: 10px;
 }
 
-div.cmd_row {
+div.index {
+  grid-column: span 2;
+  padding-left: 10px;
+}
+
+div.name, div.shells {
+  grid-column: span 3;
+  padding-left: 10px;
+}
+
+div.geggs, div.peggs {
+  grid-column: span 2;
+  padding-left: 10px;
+}
+
+div.row {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   text-align: left;
@@ -92,7 +107,7 @@ div.grid {
 .topright {
   position: fixed;
   top: 10px;
-  right: 10px;
+  left: 10px;
 
   padding: 10px;
   cursor: pointer;
