@@ -152,7 +152,7 @@ function Bot() {
         commands.userdatas = userdatas
 
         user.addUserOrUpdate(target, context, msg)
-        if (users[0].userid != "24544309") commands.gifting(target, context, msg)
+        if (users.length) if (users[0].userid != "24544309") commands.gifting(target, context, msg)
 
         if (commands.command(["ul", "updateleaderboard"], msg)) this.updateleaderboard()
 
