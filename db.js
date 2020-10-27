@@ -20,6 +20,7 @@ module.exports = {
             let q = `SELECT * FROM royalbutler.${table}`
             if (condition) q += ` WHERE ${condition}`
             if (order) q += ` ORDER BY ${order}`
+            logger.log(q)
             client.query(q,
                 (err, result) => {
                     if (err) {
@@ -38,7 +39,7 @@ module.exports = {
 
             _values = []
 
-            values = values.map(e => (e) ? e : '')
+            values = values.map(e => (typeof e != "undefined" || e != null) ? e : '')
             values.forEach(value => {
                 if (typeof value == "string") {
                     value = `'${value}'`
@@ -50,6 +51,7 @@ module.exports = {
             names = `(${names.join(", ")})`
 
             let q = `INSERT INTO royalbutler.${table} ${names} VALUES ${_values}`
+            logger.log(q)
             client.query(q,
                 function(err, result, fields) {
                     if (err) {
@@ -80,6 +82,7 @@ module.exports = {
 
             let q = `UPDATE royalbutler.${table} SET ${updated} WHERE "${pk[0]}" = ${pk[1]}`
             logger.log(q)
+            logger.log(q)
             client.query(q,
                 function(err, result, fields) {
                     if (err) {
@@ -95,6 +98,7 @@ module.exports = {
     delete(pk, table) {
         return new Promise((resolve, reject) => {
             let q = `DELETE FROM royalbutler.${table} WHERE "${pk[0]}" = '${pk[1]}'`
+            logger.log(q)
             client.query(q,
                 function(err, result, fields) {
                     if (err) {
