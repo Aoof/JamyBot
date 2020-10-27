@@ -137,7 +137,7 @@ let Commands = function() {
             .then(res => {
                 if (!res.length) return;
                 res = res[0]
-                this.client.say(target, `${user.username}, has ${res.goldcrowns} Golden Eggs, and ${res.platcrowns} PLATINUM EGGS!`)
+                this.client.say(target, `${user.username}, has ${res.goldcrowns} Golden Eggs, and ${res.platcrowns} Platinum Eggs!`)
             })
         })
         .catch(err => {

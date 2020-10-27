@@ -38,7 +38,7 @@ module.exports = {
 
             _values = []
 
-            values = values.map(e => (typeof e != "undefined" || e != null) ? e : '')
+            values = values.map(e => (e != null) ? e : '')
             values.forEach(value => {
                 if (typeof value == "string") {
                     value = `'${value}'`
