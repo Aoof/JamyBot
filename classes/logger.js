@@ -3,7 +3,7 @@ const path = require("path")
 const dir = path.resolve(__dirname, '..')
 require("dotenv").config()
 
-const mode = process.env.MODE + "0" || "prod" 
+const mode = process.env.MODE || "prod" 
 
 module.exports = {
     log(msg, doConsoleLog) {
