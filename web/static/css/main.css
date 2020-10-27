@@ -1,6 +1,23 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
 
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f120; 
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
 html, body {
   background-color: #222222;
   color: white;
@@ -58,32 +75,26 @@ div.absoluteCenter {
 
 div.command {
   grid-column: span 1;
-  padding-left: 10px;
 }
 
 div.reply {
   grid-column: span 5;
-  padding-left: 10px;
 }
 
 div.desc {
   grid-column: span 6;
-  padding-left: 10px;
 }
 
 div.index {
   grid-column: span 2;
-  padding-left: 10px;
 }
 
 div.name, div.shells {
   grid-column: span 3;
-  padding-left: 10px;
 }
 
 div.geggs, div.peggs {
   grid-column: span 2;
-  padding-left: 10px;
 }
 
 div.row {
@@ -96,9 +107,14 @@ div.row {
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+div.row>* {
+  padding: 10px;
+  overflow: auto;
+}
+
 
 div.grid {
-  width: 60%;
+  width: 70%;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 20px;
@@ -115,4 +131,11 @@ div.grid {
 
 .topright:hover, .topright>*:hover {
   color: rgba(255, 255, 255, 0.8)
+}
+
+@media only screen and (max-width: 1024px) {
+  div.grid {
+    margin-top: 20px;
+    width: -webkit-fill-available;
+  }
 }

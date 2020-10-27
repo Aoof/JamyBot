@@ -211,7 +211,7 @@ let Commands = function() {
 
 
     this.descTextCommand = (target, context, args) => {
-        if (args.length <= 2) return;
+        if (args.length < 1) return;
         let command = args[0].toLowerCase()
         let desc = args.slice(1).join(" ")
 
