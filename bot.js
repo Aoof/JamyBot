@@ -237,7 +237,7 @@ function Bot() {
         ]
 
         let cmds = await db.query('SELECT * FROM tcommands')
-        cmds.forEach(cmd => {
+        cmds.rows.forEach(cmd => {
             this.printableCommands.forEach(pc => {
                 if (pc.reply == cmd.reply && pc.command != cmd.command) {
                     this.printableCommands[this.printableCommands.indexOf(pc)] = {
