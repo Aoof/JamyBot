@@ -134,15 +134,15 @@ let Commands = function() {
 
 
     this.addTextCommand = (target, context, args) => {
-        if (args.length <= 2) return;
+        if (args.length < 1) return;
         let command = args[0].toLowerCase()
         let reply = args.slice(1).join(" ")
 
 
-        let q = `INSERT INTO tcommands (command, reply)` + 
-                `VALUES ('${command}', '${reply}')` +
-                `ON CONFLICT ON CONSTRAINT tcommands_command_key` +
-                `DO UPDATE SET` +
+        let q = `INSERT INTO tcommands (command, reply) ` + 
+                `VALUES ('${command}', '${reply}') ` +
+                `ON CONFLICT ON CONSTRAINT tcommands_command_key ` +
+                `DO UPDATE SET ` +
                 `reply = '${reply}'`
         db.query(q, (err, results, fields) => {
             if (err) {
@@ -156,7 +156,7 @@ let Commands = function() {
 
 
     this.updateTextCommand = (target, context, args) => {
-        if (args.length <= 2) return;
+        if (args.length < 1) return;
         let command = args[0].toLowerCase()
         let reply = args.slice(1).join(" ")
 
@@ -232,6 +232,7 @@ let Commands = function() {
         let args = ext.args.slice(1)
 
         if (["update", "add", "delete", "del", "remove", "desc"].includes(action)) {
+            logger.log("Valid CMD")
             switch (action) {
                 case "update":
                     this.updateTextCommand(target, context, args)

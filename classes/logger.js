@@ -8,7 +8,7 @@ const mode = process.env.MODE || "prod"
 module.exports = {
     logs: [],
     log(msg, doConsoleLog) {
-        logs.append(msg)
+        this.logs.push(msg)
         if (mode == "prod") return
         if (!doConsoleLog) console.log(msg);
 

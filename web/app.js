@@ -7,7 +7,7 @@ const path = require("path")
 const PostgreSqlStore = require('connect-pg-simple')(session);
 const bot = require("../bot")
 const app = express()
-const logger = require("../classes/logger")
+const logger = require("../classes/Logger")
 require("dotenv").config()
 
 const env = (process.env.MODE || "prod" == "prod") ? {

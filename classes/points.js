@@ -150,7 +150,7 @@ let Points = function () {
             let participants = 0;
             let index = 1;
 
-            q = `SELECT * FROM userdata`
+            q = `SELECT * FROM userdata ORDER BY -points`
             db.query(q, (err, results, fields) => {
                 if (err) {
                     logger.log(err)
@@ -165,7 +165,7 @@ let Points = function () {
                     }
                     index++;
                 })
-                this.client.say(target, `${context["display-name"]}, ${user.displayname} has ${res.points} ${this.points.namePlural} and is rank ${pos}/${participants} on the leaderboard.`)
+                this.client.say(target, `${context["display-name"]}, ${data.displayname} has ${data.points} ${this.points.namePlural} and is rank ${pos}/${participants} on the leaderboard.`)
             })
         })
     }
