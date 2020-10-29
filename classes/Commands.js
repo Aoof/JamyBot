@@ -62,7 +62,7 @@ let Commands = function() {
         let q
         if (Math.random() >= .996) {
             
-            q = `UPDATE userdata SET goldeggs = ${userdata.goldeggs + 1}, points = ${userdata.points + 2500} WHERE userid = '${context["user-id"]}'`
+            q = `UPDATE userdata SET "goldeggs" = ${userdata.goldeggs + 1}, "points" = ${userdata.points + 2500} WHERE "userid" = '${context["user-id"]}'`
             db.query(q, (err, results, fields) => {
                 if (err) {
                     logger.log(err)
@@ -71,7 +71,7 @@ let Commands = function() {
 
                 logger.log(`[DB_UPDATE] user ${context['display-name']} goldeggs & points (${userdata.goldeggs + 1}, ${userdata.points + 2500})`)
                 if ((userdata.goldeggs + 1) % 5 == 0) {
-                    q = `UPDATE userdata SET plateggs = ${userdata.plateggs + 1}, points = ${userdata.points + 2500*5} WHERE userid = '${context["user-id"]}'`
+                    q = `UPDATE userdata SET "plateggs" = ${userdata.plateggs + 1}, "points" = ${userdata.points + 2500*5} WHERE "userid" = '${context["user-id"]}'`
                     db.query(q, (err, results, fields) => {
                         if (err) {
                             logger.log(err)
@@ -89,7 +89,7 @@ let Commands = function() {
 
         
         if (Math.random() <= .0004) {
-            q = `UPDATE userdata SET plateggs = ${userdata.plateggs + 1}, points = ${userdata.points + 2500*5} WHERE userid = '${context["user-id"]}'`
+            q = `UPDATE userdata SET "plateggs" = ${userdata.plateggs + 1}, "points" = ${userdata.points + 2500*5} WHERE "userid" = '${context["user-id"]}'`
             db.query(q, (err, results, fields) => {
                 if (err) {
                     logger.log(err)
@@ -117,7 +117,7 @@ let Commands = function() {
 
         let q = `SELECT u.userid, u.username, u.displayname, ud.goldeggs, ud.plateggs ` +
                 `FROM users u, userdata ud `+
-                `WHERE u.username = '${user}'`
+                `WHERE u.username = '${user}' AND u.userid = ud.userid`
         
         db.query(q, (err, results, fields) => {
             if (err) {
@@ -126,9 +126,9 @@ let Commands = function() {
             }
             let res = results.rows
             if (!res.length) return
-            user = res[0]
+            u = res[0]
 
-            this.client.say(target, `${user.displayname}, has ${user.goldeggs} Golden Eggs, and ${user.plateggs} Platinum Eggs!`)
+            this.client.say(target, `${u.displayname}, has ${u.goldeggs} Golden Eggs, and ${u.plateggs} Platinum Eggs!`)
         })
     }
 
@@ -139,11 +139,11 @@ let Commands = function() {
         let reply = args.slice(1).join(" ")
 
 
-        let q = `INSERT INTO tcommands (command, reply) ` + 
+        let q = `INSERT INTO tcommands ("command", "reply") ` + 
                 `VALUES ('${command}', '${reply}') ` +
                 `ON CONFLICT ON CONSTRAINT tcommands_command_key ` +
                 `DO UPDATE SET ` +
-                `reply = '${reply}'`
+                `"reply" = '${reply}'`
         db.query(q, (err, results, fields) => {
             if (err) {
                 logger.log(err)
@@ -160,7 +160,7 @@ let Commands = function() {
         let command = args[0].toLowerCase()
         let reply = args.slice(1).join(" ")
 
-        let q = `UPDATE tcommands SET reply = '${reply}' WHERE command = '${command}'`
+        let q = `UPDATE tcommands SET "reply" = '${reply}' WHERE "command" = '${command}'`
         db.query(q, (err, results, fields) => {
             if (err) {
                 logger.log(err)
@@ -170,31 +170,13 @@ let Commands = function() {
             logger.log(`[DB_UPDATE] tcommands updated ${this.prefix + command}.`)
         })
     }
-    
-    
-    this.textCommandsApplier = (target, context, msg) => {
-        let q = `SELECT * FROM tcommands`
-        db.query(q, (err, results, fields) => {
-            if (err) {
-                logger.log(err)
-                return
-            }
-
-            results.rows.forEach(command => {
-                if (this.command(command['command'], msg)) {
-                    this.client.say(target, command["reply"])
-                }
-            })
-        })
-
-    }
 
 
     this.delTextCommand = (target, context, args) => {      
         if (args.length != 1) return;
         let command = args[0].toLowerCase()
 
-        let q = `DELETE FROM tcommands WHERE command = '${command}'`
+        let q = `DELETE FROM tcommands WHERE "command" = '${command}'`
         db.query(q, (err, results, fields) => {
             if (err) {
                 logger.log(err)
@@ -211,7 +193,7 @@ let Commands = function() {
         let command = args[0].toLowerCase()
         let desc = args.slice(1).join(" ")
 
-        let q = `UPDATE tcommands SET desc = '${desc}' WHERE command = '${command}'`
+        let q = `UPDATE tcommands SET "desc" = '${desc}' WHERE "command" = '${command}'`
         db.query(q, (err, results, fields) => {
             if (err) {
                 logger.log(err)
@@ -223,6 +205,23 @@ let Commands = function() {
     }
 
     
+    
+    this.textCommandsApplier = (target, context, msg) => {
+        let q = `SELECT * FROM tcommands`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+
+            results.rows.forEach(command => {
+                if (this.command(command['command'], msg)) {
+                    this.client.say(target, command["reply"])
+                }
+            })
+        })
+    }
+    
     this.textCommandsHandler = (target, context, msg) => {
         if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
         if (!context.mod) return;
@@ -232,7 +231,6 @@ let Commands = function() {
         let args = ext.args.slice(1)
 
         if (["update", "add", "delete", "del", "remove", "desc"].includes(action)) {
-            logger.log("Valid CMD")
             switch (action) {
                 case "update":
                     this.updateTextCommand(target, context, args)
@@ -256,6 +254,113 @@ let Commands = function() {
                     break;
             }
         } 
+    }
+
+
+    this.addRedeem = (target, context, args) => {
+        if (args.length < 1) return;
+        
+        let name = args.join(" ").match(/'.+'|`.+`|".+"/g)[0]
+        name = name.substr(1, name.length-2)
+
+        let price = args.join(" ").match(/\d+/g)
+        price = JSON.parse(price[price.length - 1])
+
+        let q = `INSERT INTO store ("name", "price") ` + 
+                `VALUES ('${name}', ${price}) ` +
+                `ON CONFLICT ON CONSTRAINT store_pkey ` +
+                `DO UPDATE SET ` +
+                `"price" = ${price}, ` +
+                `"name" = '${name}'`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+
+            logger.log(`[DB_INSERT_OR_UPDATE] store inserted/updated name & price ('${name}', ${price}).`)
+        })
+    }
+
+
+    this.updateRedeem = (target, context, args) => {
+        if (args.length < 1) return;
+        
+        let itemid = JSON.parse(args[0])
+
+        let method = args[1].toLowerCase()
+
+        let value = args.slice(2)
+
+        if (method == "name") {
+            value = `'${value.join(" ")}'`
+        } else if (method == "price") {
+            value = JSON.parse(value[0])
+        }
+
+        let q = `UPDATE store SET ${method} = ${value} WHERE "itemid" = ${itemid}`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+
+            logger.log(`[DB_UPDATED] store where itemid = ${itemid} updated ${method} to ${value}.`)
+        })
+    }
+
+
+    this.delRedeem = (target, context, args) => {      
+        if (args.length != 1) return;
+        let itemid = JSON.parse(args[0])
+
+        let q = `DELETE FROM store WHERE "itemid" = ${itemid}`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+
+            logger.log(`[DB_DELETE] store where itemid = ${itemid} deleted.`)
+        })
+    }
+
+
+    this.redeem = (target, context, args) => {
+        // REDEEM FUNCTIONALITY
+    }
+
+
+    this.getRedeem = (target, context, msg) => {
+        let ext = this.extract(msg)
+        let action = ext.args[0]
+        let args = ext.args.slice(1)
+
+        if (["update", "add", "delete", "del", "remove"].includes(action)) {
+            if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
+            if (!context.mod) return;
+            switch (action) {
+                case "update":
+                    this.updateRedeem(target, context, args)
+                    break;
+                case "add":
+                    this.addRedeem(target, context, args)
+                    break;
+                case "delete":
+                    this.delRedeem(target, context, args)
+                    break;
+                case "del":
+                    this.delRedeem(target, context, args)
+                    break;
+                case "remove":
+                    this.delRedeem(target, context, args)
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            if (/\d+/g.test(action)) this.redeem(target, context, JSON.parse(action))
+        }
     }
     
     
@@ -405,7 +510,7 @@ let Commands = function() {
                 return
             }
 
-            let q = `UPDATE userdata SET points = ${participant.data.points - betAmount} WHERE userid = '${context["user-id"]}'`
+            let q = `UPDATE userdata SET "points" = ${participant.data.points - betAmount} WHERE "userid" = '${context["user-id"]}'`
             db.query(q, (err, results, fields) => {
                 if (err) {
                     logger.log(err)
@@ -441,7 +546,7 @@ let Commands = function() {
 
             this.bet.participants[this.bet.participants.indexOf(p)].winner = true
 
-            let q = `UPDATE userdata SET points = ${p.data.points + winnings} WHERE userid = '${context["user-id"]}'`
+            let q = `UPDATE userdata SET "points" = ${p.data.points + winnings} WHERE "userid" = '${context["user-id"]}'`
             db.query(q, (err, results, fields) => {
                 if (err) {
                     logger.log(err)

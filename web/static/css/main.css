@@ -120,7 +120,7 @@ div.grid {
   padding: 20px;
 }
 
-.topright {
+.topleft {
   position: fixed;
   top: 10px;
   left: 10px;
@@ -129,11 +129,14 @@ div.grid {
   cursor: pointer;
 }
 
-.topright:hover, .topright>*:hover {
+.topleft:hover, .topleft>*:hover {
   color: rgba(255, 255, 255, 0.8)
 }
 
 @media only screen and (max-width: 1024px) {
+  .topleft {
+    position: 
+  }
   div.grid {
     margin-top: 20px;
     width: -webkit-fill-available;

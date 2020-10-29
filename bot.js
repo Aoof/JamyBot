@@ -170,6 +170,7 @@ function Bot() {
         cmd(["startbet", "sb"],                       commands.startbet)
         cmd("bet",                                    commands.submitbet)
         cmd(["endbet", "eb"],                         commands.endbet)
+        cmd(["redeem", "rdm"],                        commands.getRedeem)
         // cmd("uptime",                                 commands.uptime)
         // cmd("accountage",                             commands.accountAge)
         // cmd("followage",                              commands.followage)

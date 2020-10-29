@@ -104,7 +104,7 @@ let Points = function () {
                         if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
                         if (!context.mod) break;
                         if (/^\d+$/.test(args[1])) this.set_points(u, JSON.parse(args[1]), res => {
-                            this.client.say(target, `${context['display-name']}, has updated ${u.displayname}'s ${this.points.namePlural} from ${ud.points} to ${res}.`)
+                            this.client.say(target, `${context['display-name']}, has updated ${u.displayname}'s ${this.points.namePlural} from ${ud.points} to ${res} ${this.points.namePlural}.`)
                         })
                         break;
                     case "give":
