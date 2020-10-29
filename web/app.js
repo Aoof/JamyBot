@@ -72,9 +72,9 @@ app.use(async function(req, res, next) {
     res.locals.env = newEnv
 
     res.locals.icons = [
-        {name: 'fas fa-home', href: '/'},
-        {name: 'fas fa-file-alt', href: '/commands'},
-        {name: 'fas fa-list-ol', href: '/leaderboard'},
+        {name: 'fa fa-home', href: '/'},
+        {name: 'fa fa-file', href: '/commands'},
+        {name: 'fa fa-list-ol', href: '/leaderboard'},
     ]
 
     // Make current user id available on the req object
