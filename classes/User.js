@@ -1,91 +1,45 @@
 const db = require("../db")
-const logger = require("./logger.js")
-const twitch = require("./twitchapi.js")
-
-
-function arrayEquals(a, b) {
-    return Array.isArray(a) &&
-      Array.isArray(b) &&
-      a.length === b.length &&
-      a.every((val, index) => val == b[index]);
-}
-
+const logger = require("./Logger.js")
+const twitch = require("./TwitchAPI.js")
 
 module.exports = {
     addUserOrUpdate(target, context, msg) {
-        if (this.users.length) {
-            // Update if exists
-            user = this.users[0]
-            if (typeof user != "object") return;
-
-            names = ['username',
-                    'badgesraw',
-                    'displayname',
-                    'room_id',
-                    'moderator',
-                    'subscriber']
-
-            context_user = [context.username,
-                            context["badges-raw"],
-                            context["display-name"],
-                            context["room-id"],
-                            context.mod,
-                            context.subscriber]
-            
-
-            db_user = [user.username,
-                    user.badgesraw,
-                    user.displayname,
-                    user.room_id,
-                    user.moderator,
-                    user.subscriber]
-            
-            
-            if (!arrayEquals(context_user, db_user)) {
-                db.update(['userid', context["user-id"]], names, context_user, 'users')
-                .then(res => {
-                    logger.log(res)
-                })
-                .catch(err => {
-                    logger.log(err)
-                })
+        let q = (
+                `INSERT INTO users (userid, username, displayname, badgesraw, room_id, moderator, subscriber)
+                        VALUES ('${context["user-id"]}', '${context.username}', '${context["display-name"]}', '${context["badges-raw"]}', '${context["room-id"]}', ${context.mod ? true : false}, ${context.subscriber ? true : false})
+                    ON CONFLICT ON CONSTRAINT users_pkey
+                    DO UPDATE SET
+                        userid = '${context["user-id"]}',
+                        username = '${context.username}',
+                        displayname = '${context["display-name"]}',
+                        badgesraw = '${context["badges-raw"]}',
+                        room_id = '${context["room-id"]}',
+                        moderator = ${context.mod ? true : false},
+                        subscriber = ${context.subscriber ? true : false} 
+                    WHERE users.userid = '${context["user-id"]}';`
+                )
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
             }
-            return;
-        }
-        
-        db.insert( // User
-            ['userid',
-                'username',
-                'badgesraw',
-                'displayname',
-                'room_id',
-                'moderator',
-                'subscriber'], // Keys
-            [context["user-id"],
-                context.username,
-                context["badges-raw"],
-                context["display-name"],
-                context["room-id"],
-                context.mod,
-                context.subscriber], // Values
-                'users'
-            ).then(res => {
-                logger.log(res)
-            }).catch(err => {
-                logger.log(err)
-            })
-        
-        
-        if (this.userdatas.length) return;
 
-        db.insert( // User Data
-            ['userid'], // Keys
-            [context["user-id"]], // Values
-                'userdata'
-            ).then(res => {
-                logger.log(res)
-            }).catch(err => {
+            logger.log(`[DB_INSERT_OR_UPDATE] User ${context.username} with '${context["user-id"]}' id at users table`)
+        })
+
+        let q2 = (
+            `INSERT INTO userdata (userid)
+            VALUES ('${context["user-id"]}')
+            ON CONFLICT ON CONSTRAINT userdata_userid_key
+            DO NOTHING;`
+            )
+        db.query(q2, (err, results, fields) => {
+            if (err) {
                 logger.log(err)
-            })
+                return
+            }
+
+            logger.log(`[DB_INSERT_OR_NOTHING] User ${context.username} with '${context["user-id"]}' at userdata table`)
+        })
     }
 }

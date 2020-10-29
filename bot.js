@@ -1,10 +1,10 @@
 const tmi = require("tmi.js")
-const Commands = require("./classes/commands")
+const Commands = require("./classes/Commands")
 const user = require("./classes/User")
-const twitch = require("./classes/twitchapi")
-const logger = require("./classes/logger")
+const twitch = require("./classes/TwitchAPI")
+const logger = require("./classes/Logger")
 const db = require("./db")
-const Points = require("./classes/points")
+const Points = require("./classes/Points")
 const csrf = require('csurf')
 const express = require("express")
 const path = require("path")
@@ -70,16 +70,19 @@ function Bot() {
     this.online_users = []
     this.to_be_online = 10 // In minutes
 
-    this.updateleaderboard = (timeout=true) => {
-        db.query('SELECT u.username, u.displayname AS "name", ud.goldcrowns AS "geggs", ud.platcrowns AS "peggs", ud.points AS "shells" FROM users u, userdata ud WHERE u.userid = ud.userid ORDER BY -ud.points')
-        .then(r => {
-            res = r.result.rows
-            this.leaderboard = res
-        })
-        .catch(err => {
-            logger.log(err)
-        })
-        if (timeout) setTimeout(this.updateleaderboard, 1000*60*10)
+    this.updateleaderboard = (loop=true) => {
+        db.query('SELECT ' + 
+                        'u.username, u.displayname AS "name", ud.goldeggs AS "geggs", ud.plateggs AS "peggs", ud.points AS "shells" ' +
+                        'FROM users u, userdata ud ' +
+                        'WHERE u.userid = ud.userid ' +
+                        'ORDER BY -ud.points', (err, results, fields) => {
+                            if (err) {
+                                logger.log(err.stack)
+                                return
+                            }
+                            this.leaderboard = results.rows
+                        })
+        if (loop) setTimeout(this.updateleaderboard, 1000*60*10)
     }
 
     this.updateleaderboard(false)
@@ -128,19 +131,15 @@ function Bot() {
 
     this.onMessageHandler = async (target, context, msg, self) => {
         if (self) { return; }
-        /*
-            # Receive message
-            # Insert user to database if not already registered
-            # Randomly check if user will get crowned or not
-            # # Golden crown 5% Chance
-            # # Platinum crown .1% Chance
-            # Save user's data accordingly
-        */
+        
         if (!context.badges) context.badges = {broadcaster: false, mod: false}
 
-        let users = await db.get('users', `userid = '${context["user-id"]}'`)
-        let userdatas = await db.get('userdata', `userid = '${context["user-id"]}'`)
-        
+        let users = await db.query(`SELECT * FROM royalbutler.users WHERE "userid" = '${context["user-id"]}'`)
+        let userdatas = await db.query(`SELECT * FROM royalbutler.userdata WHERE "userid" = '${context["user-id"]}'`)
+
+        users = users.rows
+        userdatas = userdatas.rows
+
         this.add_online(users[0], userdatas[0])
 
         user.users =
@@ -183,61 +182,61 @@ function Bot() {
             {
                 command: "eggs",
                 reply: "{user}, has ${goldeggs} Golden Eggs, and {plateggs} PLATINUM EGGS.",
-                description: "Shows eggs you/user have, you can check the user's eggs by providing his name after !eggs"
+                description: "Shows the amount of Golden and Platinum Eggs you/user have. You can check the user's Eggs by providing their username after !eggs"
             },
             {
                 command: "cmd, command",
                 reply: "{user} [updated, added, deleted] !{command}",
-                description: "[ONLY MODS] adds/updates/deletes a plain-text-reply-command.. following syntax must be used !cmd [update/add] (command without prefix) reply | !cmd [delete] (command without prefix)"
+                description: "ONLY MODS] adds/updates/deletes a plain-text-reply-command. The following syntax must be used: !cmd [update/add] (command without prefix) reply | !cmd [delete] (command without prefix)"
             },
             {
                 command: "wink",
                 reply: "{user} winks at {sec-user}",
-                description: "Randomly winks at someone.. or you can wink at a specific person by providing their name."
+                description: "Randomly winks at someone or you can wink at a specific user by providing their username"
             },
             {
                 command: "emotes",
                 reply: "{emotes}",
-                description: "I (for real) do not know what this does but it exist."
+                description: "Shows BTTV emotes linked to the channel"
             },
             {
                 command: "lurk",
                 reply: "{user} slowly takes off their crown and fades into the crowd but can still hear Jamy's velvety voice",
-                description: "User will now start lurking but still have jamy in the background"
+                description: "User will now start lurking but will still have Jamystro in the background"
             },
             {
                 command: "so, shoutout",
                 reply: "You need to peep this royal Egg: https://twitch.tv/{user}",
-                description: "[ONLY MODS] Shouts out someone"
+                description: "[ONLY MODS] Shouts out another user"
             },
             {
                 command: "followage",
                 reply: "[API RESPONSE] you have been following {channel} for ...",
-                description: "Checks the time since you followed "+env.channel
+                description: "Shows how long you have been following Jamystro"
             },
             {
                 command: "uptime",
                 reply: `[API RESPONSE] ${env.channel} has been streaming for...`,
-                description: `Checks time since ${env.channel} started streaming or been off for.`
+                description: `Shows how long Jamystro has been live for or been offline for`
             },
             {
                 command: "accountage",
                 reply: `[API RESPONSE] {user} account was created at ..date..`,
-                description: `Tells you when did you create your account.`
+                description: `Shows when you created your Twitch account`
             },
             {
                 command: "points, shells, eggshells",
                 reply: `{user} has {amount} ${this.points.namePlural} and is rank {rank}/{participants_count} on the leaderboard.`,
-                description: `Tells you how many ${this.points.namePlural} you have`
+                description: `Shows your amount of ${this.points.namePlural} and your place on the leaderboard`
             },
             {
                 command: "gamble",
                 reply: `{user}, gambled with {amount} ${this.points.namePlural}, and won/lost PogChamp/LUL! and now has {points} ${this.points.namePlural}. PogChamp/LUL`,
-                description: `Gambling with your ${this.points.namePlural}`
+                description: `Gamble your livelihood away with your hard-earned ${this.points.namePlural}`
             }
         ]
 
-        let cmds = await db.get('tcommands')
+        let cmds = await db.query('SELECT * FROM tcommands')
         cmds.forEach(cmd => {
             this.printableCommands.forEach(pc => {
                 if (pc.reply == cmd.reply && pc.command != cmd.command) {
@@ -279,7 +278,7 @@ function Bot() {
     this.client.on('disconnected', (reason) => {
         this.status = false
         logger.log(reason)
-        client.connect();
+        this.client.connect();
     });
 }
 

@@ -6,7 +6,9 @@ require("dotenv").config()
 const mode = process.env.MODE || "prod" 
 
 module.exports = {
+    logs: [],
     log(msg, doConsoleLog) {
+        logs.append(msg)
         if (mode == "prod") return
         if (!doConsoleLog) console.log(msg);
 

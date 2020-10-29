@@ -1,5 +1,5 @@
 const axios = require("axios")
-const logger = require("./logger.js")
+const logger = require("./Logger.js")
 
 module.exports = {
     auth(callback) {

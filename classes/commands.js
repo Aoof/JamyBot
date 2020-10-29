@@ -1,7 +1,7 @@
 const db = require('../db')
 const fs = require('fs');
 const axios = require('axios')
-const logger = require("./logger.js");
+const logger = require("./Logger.js");
 
 let Commands = function() {
     this.bet = {
@@ -59,59 +59,46 @@ let Commands = function() {
     this.gifting = (target, context, msg) => {
         // No filtering for empty results here cuz the function before did that
         userdata = this.userdatas[0]
+        let q
         if (Math.random() >= .996) {
-            db.update(['userid', context['user-id']],
-                        ['goldcrowns', 'points'],
-                        [userdata.goldcrowns + 1, userdata.points + 2500],
-                        'userdata'
-            )
-            .then(res => {
-                // Successfully crowned with a golden crown
+            
+            q = `UPDATE userdata SET goldeggs = ${userdata.goldeggs + 1}, points = ${userdata.points + 2500} WHERE userid = '${context["user-id"]}'`
+            db.query(q, (err, results, fields) => {
+                if (err) {
+                    logger.log(err)
+                    return
+                }
 
-                if ((userdata.goldcrowns + 1) % 5 == 0) { // This will check if the user received 4 golden crowns prior to this one
-                    db.update(['userid', context['user-id']],
-                                ['platcrowns', 'points'],
-                                [userdata.platcrowns + 1, userdata.points + 2500*5],
-                                'userdata'
-                    ) // Crown with a platinum crown
-                    .then(res => {
-                        // Successfully crowned with a platinum crown
+                logger.log(`[DB_UPDATE] user ${context['display-name']} goldeggs & points (${userdata.goldeggs + 1}, ${userdata.points + 2500})`)
+                if ((userdata.goldeggs + 1) % 5 == 0) {
+                    q = `UPDATE userdata SET plateggs = ${userdata.plateggs + 1}, points = ${userdata.points + 2500*5} WHERE userid = '${context["user-id"]}'`
+                    db.query(q, (err, results, fields) => {
+                        if (err) {
+                            logger.log(err)
+                            return
+                        }
 
-                        this.client.say(target, `${context.username}, You were lucky to be given the golden egg 5 times.. for that you have been gifted with a PLATINUM EGG.`)
-                        logger.log(res)
-                    })
-                    .catch(err => {
-                        // Something went wrong while changing the platcrowns column in the database
-                        logger.log(err)
+                        this.client.say(target, `${context.username}, You were lucky to be given The Golden Egg 5 times.. for that you have been gifted with The Platinum Egg!`)
+                        logger.log(`[DB_UPDATE] user ${context['display-name']} plateggs & points (${userdata.plateggs + 1}, ${userdata.points + 2500*5})`)
                     })
                 } else {
-                    // if there was no 4 crowns prior to this then send this message instead
-                    this.client.say(target, `${context.username}, You have been gifted with a Golden Egg.`)
+                    this.client.say(target, `${context.username}, You have been gifted with a Golden Egg!`)
                 }
-                logger.log(res)
             })
-            .catch(err => {
-                // something went wrong while changing the goldcrowns column in the database
-                logger.log(err)
-            })
-
         }
 
         
         if (Math.random() <= .0004) {
-            db.update(['userid', context['user-id']],
-                        ['platcrowns', 'points'],
-                        [userdata.platcrowns + 1, userdata.points + 2500*5],
-                        'userdata'
-            ) // Crown with a platinum crown
-            .then(res => {
-                this.client.say(target, `${context.username}, You have been gifted with THE PLATINIUM EGG.`)
-                logger.log(res)
-            })
-            .catch(err => {
-                logger.log(err)
-            })
+            q = `UPDATE userdata SET plateggs = ${userdata.plateggs + 1}, points = ${userdata.points + 2500*5} WHERE userid = '${context["user-id"]}'`
+            db.query(q, (err, results, fields) => {
+                if (err) {
+                    logger.log(err)
+                    return
+                }
 
+                this.client.say(target, `${context.username}, You have been gifted with The Platinum Egg!`)
+                logger.log(`[DB_UPDATE] user ${context['display-name']} plateggs & points (${userdata.plateggs + 1}, ${userdata.points + 2500*5})`)
+            })
         }
     }
     
@@ -128,20 +115,20 @@ let Commands = function() {
             }
         }
 
-        db.get('users', `username = '${user}'`)
-        .then(users => {
-            if (!users.length) return
-            user = users[0]
+        let q = `SELECT u.userid, u.username, u.displayname, ud.goldeggs, ud.plateggs ` +
+                `FROM users u, userdata ud `+
+                `WHERE u.username = '${user}'`
+        
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+            let res = results.rows
+            if (!res.length) return
+            user = res[0]
 
-            db.get('userdata', `userid = '${user.userid}'`)
-            .then(res => {
-                if (!res.length) return;
-                res = res[0]
-                this.client.say(target, `${user.username}, has ${res.goldcrowns} Golden Eggs, and ${res.platcrowns} Platinum Eggs!`)
-            })
-        })
-        .catch(err => {
-            logger.log(err)
+            this.client.say(target, `${user.displayname}, has ${user.goldeggs} Golden Eggs, and ${user.plateggs} Platinum Eggs!`)
         })
     }
 
@@ -151,13 +138,19 @@ let Commands = function() {
         let command = args[0].toLowerCase()
         let reply = args.slice(1).join(" ")
 
-        db.insert(["command", "reply"], [command, reply], 'tcommands')
-        .then(res => {
-            logger.log(res)
-            this.client.say(target, `${context["display-name"]} added ${this.prefix}${command}.`)
-        })
-        .catch(err => {
-            logger.log(err)
+
+        let q = `INSERT INTO tcommands (command, reply)` + 
+                `VALUES ('${command}', '${reply}')` +
+                `ON CONFLICT ON CONSTRAINT tcommands_command_key` +
+                `DO UPDATE SET` +
+                `reply = '${reply}'`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+
+            logger.log(`[DB_INSERT_OR_UPDATE] tcommands inserted/updated ${this.prefix + command}.`)
         })
     }
 
@@ -167,29 +160,31 @@ let Commands = function() {
         let command = args[0].toLowerCase()
         let reply = args.slice(1).join(" ")
 
-        db.update(['command', command], ["reply"], [reply], 'tcommands')
-        .then(res => {
-            logger.log(res)
-            this.client.say(target, `${context["display-name"]} updated ${this.prefix}${command}.`)
-        })
-        .catch(err => {
-            logger.log(err)
-        })
+        let q = `UPDATE tcommands SET reply = '${reply}' WHERE command = '${command}'`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
 
+            logger.log(`[DB_UPDATE] tcommands updated ${this.prefix + command}.`)
+        })
     }
     
     
     this.textCommandsApplier = (target, context, msg) => {
-        db.get('tcommands')
-        .then(commands => {
-            commands.forEach(command => {
-                if (this.command(command["command"], msg)) {
+        let q = `SELECT * FROM tcommands`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+
+            results.rows.forEach(command => {
+                if (this.command(command['command'], msg)) {
                     this.client.say(target, command["reply"])
                 }
             })
-        })
-        .catch(err => {
-            logger.log(err)
         })
 
     }
@@ -199,13 +194,14 @@ let Commands = function() {
         if (args.length != 1) return;
         let command = args[0].toLowerCase()
 
-        db.delete(['command', command], 'tcommands')
-        .then(res => {
-            logger.log(res)
-            this.client.say(target, `${context["display-name"]} deleted ${this.prefix}${command}.`)
-        })
-        .catch(err => {
-            logger.log(err)
+        let q = `DELETE FROM tcommands WHERE command = '${command}'`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+
+            logger.log(`[DB_DELETE] tcommands deleted ${this.prefix + command}.`)
         })
     }
 
@@ -215,13 +211,14 @@ let Commands = function() {
         let command = args[0].toLowerCase()
         let desc = args.slice(1).join(" ")
 
-        db.update(['command', command], ['desc'], [desc], 'tcommands')
-        .then(res => {
-            this.client.say(target, `${context["display-name"]} changed description of ${this.prefix}${command}.`)
-            logger.log(res)
-        })
-        .catch(err => {
-            logger.log(err)
+        let q = `UPDATE tcommands SET desc = '${desc}' WHERE command = '${command}'`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+
+            logger.log(`[DB_UPDATE] tcommands updated ${this.prefix + command} description.`)
         })
     }
 
@@ -407,8 +404,13 @@ let Commands = function() {
                 return
             }
 
-            db.update(['userid', context["user-id"]], ['points'], [participant.data.points - betAmount], 'userdata')
-            .then(res => {
+            let q = `UPDATE userdata SET points = ${participant.data.points - betAmount} WHERE userid = '${context["user-id"]}'`
+            db.query(q, (err, results, fields) => {
+                if (err) {
+                    logger.log(err)
+                    return
+                }
+
                 participant.betting = betAmount
                 participant.choosing = betChoosing
 
@@ -417,9 +419,6 @@ let Commands = function() {
                 this.bet.participants.push(participant)
 
                 this.client.say(target, `${participant.user.displayname} is now participating with ${participant.betting} ${this.points.namePlural}`)
-            })
-            .catch(err => {
-                logger.log(err)
             })
         } else {
             let _msg = (participant ? `${participant.user.displayname} is already participating with ${participant.betting} ${this.points.namePlural} - ` : `Place your bets using !bet {amount} {option num} - `) + `There are ${this.bet.participants.length} participants with a sum of ${this.bet.prizepool} ${this.points.namePlural} in bets.`
@@ -440,13 +439,15 @@ let Commands = function() {
             winnings = p.betting * 2
 
             this.bet.participants[this.bet.participants.indexOf(p)].winner = true
-            
-            db.update(['userid', context["user-id"]], ['points'], [p.data.points + winnings], 'userdata')
-            .then(r => {
-                logger.log(r)
-            })
-            .catch(err => {
-                logger.log(err)
+
+            let q = `UPDATE userdata SET points = ${p.data.points + winnings} WHERE userid = '${context["user-id"]}'`
+            db.query(q, (err, results, fields) => {
+                if (err) {
+                    logger.log(err)
+                    return
+                }
+
+                logger.log(`[DB_UPDATE] userdata where userid = '${context["userid"]}' updated points to ${p.data.points + winnings}`)
             })
         })
 
