@@ -1,21 +1,22 @@
 <%- include('includes/header.ejs') %>
 
+<h1 class="title">Leaderboard</h1>
 <div class="absoluteCenter">
     <div class="grid">
         <div class="row">
-            <div class="index">#</div>
-            <div class="name">Name</div>
-            <div class="shells"><%= points.namePlural %></div>
-            <div class="geggs">Golden Eggs</div>
-            <div class="peggs">Platinum Eggs</div>
+            <div class="index col-md-2">#</div>
+            <div class="name col-md-3">Name</div>
+            <div class="shells col-md-3"><%= points.namePlural %></div>
+            <div class="geggs col-md-2">Golden Eggs</div>
+            <div class="peggs col-md-2">Platinum Eggs</div>
         </div>
         <% leaderboard.forEach(user => { %>
             <div class="row">
-                <div class="index"><%= leaderboard.indexOf(user) + 1 %></div>
-                <div class="name"><%= (user.name) ? user.name : user.username %></div>
-                <div class="shells"><%= user.shells %></div>
-                <div class="geggs"><%= user.geggs %></div>
-                <div class="peggs"><%= user.peggs %></div>
+                <div class="index col-md-2"><%= leaderboard.indexOf(user) + 1 %></div>
+                <div class="name col-md-3"><%= (user.name) ? user.name : user.username %></div>
+                <div class="shells col-md-3"><%= user.shells %></div>
+                <div class="geggs col-md-2"><%= user.geggs %></div>
+                <div class="peggs col-md-2"><%= user.peggs %></div>
             </div>
         <% }) %>
     </div>

@@ -178,6 +178,10 @@ function Bot() {
         commands.textCommandsApplier(target, context, msg)
     }
 
+    this.getStoreItems = () => {
+        return db.query('SELECT * FROM store ORDER BY price').rows
+    }
+
     this.getPrintableCommands = async () => {        
         this.printableCommands = [
             {

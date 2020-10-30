@@ -1,17 +1,18 @@
 <%- include('includes/header.ejs') %>
 
+<h1 class="title">Commands</h1>
 <div class="absoluteCenter">
     <div class="grid">
         <div class="row">
-            <div class="command">Name</div>
-            <div class="reply">Reply</div>
-            <div class="desc">Description</div>
+            <div class="command col-md-1">Name</div>
+            <div class="reply col-md-5">Reply</div>
+            <div class="desc col-md-6">Description</div>
         </div>
         <% commands.forEach(cmd => { %>
             <div class="row">
-                <div class="command"><%= cmd.command %></div>
-                <div class="reply"><%= cmd.reply %></div>
-                <div class="desc"><%= cmd.description %></div>
+                <div class="command col-md-1"><%= cmd.command %></div>
+                <div class="reply col-md-5"><%= cmd.reply %></div>
+                <div class="desc col-md-6"><%= cmd.description %></div>
             </div>
         <% }) %>
     </div>

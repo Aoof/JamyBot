@@ -73,28 +73,41 @@ div.absoluteCenter {
   z-index: -1;
 }
 
-div.command {
+.col-md-1 {
   grid-column: span 1;
 }
-
-div.reply {
-  grid-column: span 5;
-}
-
-div.desc {
-  grid-column: span 6;
-}
-
-div.index {
+.col-md-2 {
   grid-column: span 2;
 }
-
-div.name, div.shells {
+.col-md-3 {
   grid-column: span 3;
 }
-
-div.geggs, div.peggs {
-  grid-column: span 2;
+.col-md-4 {
+  grid-column: span 4;
+}
+.col-md-5 {
+  grid-column: span 5;
+}
+.col-md-6 {
+  grid-column: span 6;
+}
+.col-md-7 {
+  grid-column: span 7;
+}
+.col-md-8 {
+  grid-column: span 8;
+}
+.col-md-9 {
+  grid-column: span 9;
+}
+.col-md-10 {
+  grid-column: span 10;
+}
+.col-md-11 {
+  grid-column: span 11;
+}
+.col-md-12 {
+  grid-column: span 12;
 }
 
 div.row {
@@ -133,10 +146,16 @@ div.grid {
   color: rgba(255, 255, 255, 0.8)
 }
 
+.title {
+  margin: 20px 10px;
+  text-align: center;
+}
+
+.muted {
+  color: rgb(170, 170, 170)
+}
+
 @media only screen and (max-width: 1024px) {
-  .topleft {
-    position: 
-  }
   div.grid {
     margin-top: 20px;
     width: -webkit-fill-available;

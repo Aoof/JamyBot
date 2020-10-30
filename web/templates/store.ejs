@@ -1,9 +1,23 @@
 <%- include('includes/header.ejs') %>
 
-<div class="absoluteCenter" style="position: fixed;">
-    <h1>
-        404 page not found
-    </h1>
+<h1 class="title">Store</h1>
+<div class="absoluteCenter">
+    <div class="grid">
+        <div class="row">
+            <div class="id col-md-2">id</div>
+            <div class="name col-md-6">Name</div>
+            <div class="desc col-md-4">Price</div>
+        </div>
+        <% items.forEach(item => { %>
+            <div class="row">
+                <div class="command col-md-2"><%= item.itemid %></div>
+                <div class="reply col-md-6"><%= item.name %></div>
+                <div class="desc col-md-4"><%= item.price %> Egg Shells</div>
+            </div>
+        <% }) %>
+        <div class="row">
+            <div class="command col-md-12 muted">You can redeem any item by using "!redeem id" in <a href="http://twitch.tv/jamystro" target="_blank" rel="noopener noreferrer">Jamystro's Twitch Chat</a></div>
+        </div>
+    </div>
 </div>
-
 <%- include('includes/footer.ejs') %>

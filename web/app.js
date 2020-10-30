@@ -75,6 +75,7 @@ app.use(async function(req, res, next) {
         {name: 'fa fa-home', href: '/'},
         {name: 'fa fa-file', href: '/commands'},
         {name: 'fa fa-list-ol', href: '/leaderboard'},
+        {name: 'fa fa-shopping-cart', href: '/store'}
     ]
 
     // Make current user id available on the req object

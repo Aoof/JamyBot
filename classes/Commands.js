@@ -190,10 +190,10 @@ let Commands = function() {
 
     this.descTextCommand = (target, context, args) => {
         if (args.length < 1) return;
-        let command = args[0].toLowerCase()
-        let desc = args.slice(1).join(" ")
+        let command = args[0].toLowerCase().replace(/'/g, "\\'")
+        let desc = args.slice(1).join(" ").replace(/'/g, "\\'")
 
-        let q = `UPDATE tcommands SET "desc" = '${desc}' WHERE "command" = '${command}'`
+        let q = `UPDATE tcommands SET "desc" = E'${desc}' WHERE "command" = '${command}'`
         db.query(q, (err, results, fields) => {
             if (err) {
                 logger.log(err)
@@ -326,8 +326,46 @@ let Commands = function() {
     }
 
 
-    this.redeem = (target, context, args) => {
-        // REDEEM FUNCTIONALITY
+    this.redeem = (target, context, itemid) => {
+        /*
+            ## Get the redeemed item
+            ## Check if user has enough points for item
+            ## Deduct points from user
+            ## Insert order to orders table
+        */
+       let q = `SELECT * FROM store WHERE "itemid" = ${itemid}`
+       db.query(q, (err, results, fields) => {
+           if (err) {
+               logger.log(err)
+               return
+           }
+
+           if (results.rows.length) {
+                let item = results.rows[0] // GOT REDEEMED ITEM
+                ud = this.userdatas[0]
+                if (ud.points < item.price) { // CHECKED IF USER HAS ENOUGH POINTS FOR ITEM
+                    this.client.say(target, `${context["display-name"]}, you don't have ${item.price} ${this.points.namePlural}.`)
+                    return
+                }
+
+                q = `UPDATE userdata SET points = points - ${item.price} WHERE "userid" = '${ud.userid}'`
+                db.query(q, (err, results, fields) => {
+                    if (err) {
+                        logger.log(err)
+                        return
+                    }
+
+                    q = `INSERT INTO orders (itemid, userid) VALUES (${itemid}, '${ud.userid}')`
+                    db.query(q, (err, results, fields) => {
+                        if (err) {
+                            logger.log(err)
+                            return
+                        }
+                        this.client.say(target, `${context["display-name"]}, has redeemed ${item.name}`)
+                    })
+                })
+           }
+       })
     }
 
 
