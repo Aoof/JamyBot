@@ -215,7 +215,7 @@ let Commands = function() {
             }
 
             results.rows.forEach(command => {
-                if (this.command(command['command'], msg)) {
+                if (this.command(command['command'], msg) && msg.split(" ").length == 1) {
                     this.client.say(target, command["reply"])
                 }
             })
