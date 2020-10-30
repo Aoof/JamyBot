@@ -225,22 +225,6 @@ let Points = function () {
         this.client.say('#'+this.env.channel, msg)
         setTimeout(() => this.timedMessage(interval), 1000*60*60*interval)
     }
-
-
-    this.onlineUsersHandler = () => {
-        let index = 0
-        if (this.online_users) this.online_users.forEach(online_user => {
-            let multiplier = 1
-            if (online_user.user.subscriber) multiplier = 1.2
-
-            this.online_users[index].userdata.points = online_user.userdata.points + 20*multiplier
-            this.add_points(online_user.user, 20*multiplier)
-
-            index++;
-        })
-        setTimeout(this.onlineUsersHandler, 1000*60*10)
-        // setTimeout(this.onlineUsersHandler, 1000*60*Math.floor(Math.random()*10))
-    }
 }
 
 module.exports = Points

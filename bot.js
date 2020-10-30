@@ -55,8 +55,7 @@ function Bot() {
     commands.env =
     twitch.env = env
 
-    points.online_users = []
-
+    
     points.prefix = 
     commands.prefix = "!"
     
@@ -66,9 +65,10 @@ function Bot() {
         name: "Egg shell",
         namePlural: "Egg shells"
     }
-
+    
+    points.online_users =
     this.online_users = []
-    this.to_be_online = 10 // In minutes
+    this.to_be_online = 30 // In minutes
 
     this.updateleaderboard = (loop=true) => {
         db.query('SELECT ' + 
@@ -88,45 +88,35 @@ function Bot() {
     this.updateleaderboard(false)
 
     this.add_online = (user, userdata) => {
-        if (typeof user != "object" || typeof userdata != "object") return
-        let userTimer = setInterval(() => {
-            this.online_users = this.online_users.filter(ou => {
-                if (user.userid != ou.user.userid) {
-                    return ou
-                }
+        if (this.online_users.map(ou => ou.user.userid).includes(user.userid)) {
+            points.online_users =
+            this.online_users = this.online_users.filter(onuser => {
+                if (onuser.userid != user.userid) return onuser
             })
+        }
 
-            commands.online_users =
-            twitch.online_users =
-            user.online_users =
-            points.online_users = this.online_users
-        }, 1000*60*this.to_be_online)
+        let userTimer = () => {
+            points.online_users =
+            this.online_users = this.online_users.filter(onuser => {
+                if (onuser.userid != user.userid) return onuser
+            })
+        }
 
-        let online_user = {
+        let pointsGiver = () => {
+            let multiplier = 1
+            if (user.subscriber) multiplier = 1.2
+
+            userdata.points = userdata.points + 20*multiplier
+            points.add_points(user, 20*multiplier)
+            setTimeout(pointsGiver, 1000*60*10)
+        }
+
+        this.online_users.push({
             user: user,
             userdata: userdata,
-            userTimer: userTimer
-        }
-        if (!this.online_users.map(x => x.user.userid).includes(online_user.user.userid)) {
-            this.online_users.push(online_user)
-        } else {
-            this.online_users = this.online_users.map(usr => {
-                if (usr.user.userid == online_user.user.userid) {
-                    return {
-                        user: user,
-                        userdata: userdata,
-                        userTimer: userTimer
-                    }
-                } else {
-                    return usr
-                }
-            })
-        }
-
-        commands.online_users =
-        twitch.online_users =
-        user.online_users =
-        points.online_users = this.online_users
+            userTimer: setTimeout(userTimer, 1000*60*this.to_be_online),
+            pointGiver: setTimeout(pointsGiver, 1000*60*10)
+        })
     }
 
     this.onMessageHandler = async (target, context, msg, self) => {
@@ -159,6 +149,7 @@ function Bot() {
             if (commands.command(cmdname, msg)) command(target, context, msg);
         }
 
+        cmd("test", () => logger.log(this.online_users))
         cmd("eggs",                                   commands.getEggs)
         cmd(["cmd", "command"],                       commands.textCommandsHandler)
         cmd("wink",                                   commands.randomWink)
@@ -275,7 +266,6 @@ function Bot() {
         setTimeout(() => points.timedMessage(1.5, 'Don\'t mind me, just wanted to say the King\'s head looks extra shiny today.'), 1000*60*60*1.5)
         setTimeout(() => points.timedMessage(2, 'If you see a bug, get my master Aoof to squash it.'), 1000*60*60*2)
         setTimeout(this.updateleaderboard, 1000*60*10)
-        points.onlineUsersHandler()
     }
 
     this.client.on('message', this.onMessageHandler);
