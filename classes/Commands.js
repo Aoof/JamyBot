@@ -34,7 +34,7 @@ let Commands = function() {
     this.command = (cmd, msg) => {
         if (typeof cmd != "object") {
             let ext = this.extract(msg)
-            let cond =  ext.command == cmd.toLowerCase()
+            let cond =  ext.command.toLowerCase() == cmd.toLowerCase()
             if (cond) logger.log(`[CMD] Requested command ${this.prefix+cmd.toLowerCase()}`)
             return cond
         } else {
@@ -43,7 +43,7 @@ let Commands = function() {
             
             cmd.forEach(command => {
                 let ext = this.extract(msg)
-                if (ext.command == command.toLowerCase()) {
+                if (ext.command.toLowerCase() == command.toLowerCase()) {
                     tr++;
                     logger.log(`[CMD] Requested command ${this.prefix+command.toLowerCase()}`)
                 } else {
