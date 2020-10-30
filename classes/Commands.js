@@ -78,11 +78,11 @@ let Commands = function() {
                             return
                         }
 
-                        this.client.say(target, `${context.username}, You were lucky to be given The Golden Egg 5 times.. for that you have been gifted with The Platinum Egg!`)
+                        this.client.say(target, `${context["display-name"]}, You were lucky to be given The Golden Egg 5 times.. for that you have been gifted with The Platinum Egg!`)
                         logger.log(`[DB_UPDATE] user ${context['display-name']} plateggs & points (${userdata.plateggs + 1}, ${userdata.points + 2500*5})`)
                     })
                 } else {
-                    this.client.say(target, `${context.username}, You have been gifted with a Golden Egg!`)
+                    this.client.say(target, `${context["display-name"]}, You have been gifted with a Golden Egg!`)
                 }
             })
         }
@@ -96,7 +96,7 @@ let Commands = function() {
                     return
                 }
 
-                this.client.say(target, `${context.username}, You have been gifted with The Platinum Egg!`)
+                this.client.say(target, `${context["display-name"]}, You have been gifted with The Platinum Egg!`)
                 logger.log(`[DB_UPDATE] user ${context['display-name']} plateggs & points (${userdata.plateggs + 1}, ${userdata.points + 2500*5})`)
             })
         }
