@@ -92,7 +92,7 @@ function Bot() {
         if (this.online_users.map(ou => ou.user.userid).includes(user.userid)) {
             points.online_users =
             this.online_users = this.online_users.filter(on_user => {
-                if (on_user.user.userid != user.userid) return user
+                if (on_user.user.userid != user.userid) return on_user
                 else recentCommands = on_user.recentCommands
             })
         }
@@ -143,43 +143,39 @@ function Bot() {
         if (commands.command(["ul", "updateleaderboard"], msg)) this.updateleaderboard()
 
         let cmd = (cmdname, command, delay=0) => {
-            if (commands.command(cmdname, msg)) {
-                let i = this.online_users.map(e => e.user.userid).indexOf(req.user.userid)
-                let rcmds = this.online_users[i].recentCommands
-                let errors = []
-                if (typeof cmdname == "string") {
-                    if (rcmds.map(e => e.cmd).includes(cmdname)) rcmds.forEach(cmd => {
-                        logger.log(cmd)
-                        errors.push(`Please wait ${Math.ceil(Math.abs(-cmd.delay._idleStart + cmd.delay._idleTimeout) / 1000 / 60)} minute/s to use ${this.prefix+cmd.cmd} again`)
-                    })
+            // if (commands.command(cmdname, msg)) {
+            //     let i = this.online_users.map(e => e.user.userid).indexOf(req.user.userid)
+            //     let rcmds = this.online_users[i].recentCommands
+            //     logger.log(rcmds.map(e => e.cmd))
+            //     let errors = []
+            //     if (typeof cmdname == "string") {
+            //         if (rcmds.map(e => e.cmd).includes(cmdname)) errors.push("")
 
-                    this.online_users[i].recentCommands.push({
-                        cmd: cmdname,
-                        delay: setTimeout(() => {
-                            this.online_users[i].recentCommands.filter(rc => rc.cmd != cmdname) 
-                        }, Math.floor(1000*60*delay))
-                    })
-                }
-                else if (typeof cmdname == "object") {
-                    cmdname.forEach(cmd => {
-                        if (rcmds.map(e => e.cmd).includes(cmd)) rcmds.forEach(cmd => {
-                            logger.log(cmd)
-                            errors.push(`Please wait ${Math.ceil(Math.abs(-cmd.delay._idleStart + cmd.delay._idleTimeout) / 1000 / 60)} minute/s to use ${this.prefix+cmd.cmd} again`)
-                        })
+            //         this.online_users[i].recentCommands.push({
+            //             cmd: cmdname,
+            //             delay: setTimeout(() => {
+            //                 this.online_users[i].recentCommands.filter(rc => rc.cmd != cmdname) 
+            //             }, Math.floor(1000*60*delay))
+            //         })
+            //     }
+            //     else if (typeof cmdname == "object") {
+            //         cmdname.forEach(cmd => {
+            //             if (rcmds.map(e => e.cmd).includes(cmd)) errors.push("")
     
-                        this.online_users[i].recentCommands.push({
-                            cmd: cmd,
-                            delay: setTimeout(() => {
-                                this.online_users[i].recentCommands.filter(rc => rc.cmd != cmd) 
-                            }, Math.floor(1000*60*delay))
-                        })
-                    })
-                }
-                if (!errors.length) command(target, context, msg)
-                else {
-                    logger.log(errors[0])
-                }
-            }
+            //             this.online_users[i].recentCommands.push({
+            //                 cmd: cmd,
+            //                 delay: setTimeout(() => {
+            //                     this.online_users[i].recentCommands.filter(rc => rc.cmd != cmd) 
+            //                 }, Math.floor(1000*60*delay))
+            //             })
+            //         })
+            //     }
+            //     if (!errors.length) command(target, context, msg)
+            //     else {
+            //         logger.log(errors[0])
+            //     }
+            // }
+            if (commands.command(cmdname, msg)) command(target, context, msg)
         }
 
         cmd("eggs",                                   commands.getEggs)
