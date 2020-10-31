@@ -157,7 +157,7 @@ function Bot() {
                         cmd: cmdname,
                         delay: setTimeout(() => {
                             this.online_users[i].recentCommands.filter(rc => rc.cmd != cmdname) 
-                        }, Math.floor(1000*60*delay+100))
+                        }, Math.floor(1000*60*delay))
                     })
                 }
                 else if (typeof cmdname == "object") {
@@ -171,7 +171,7 @@ function Bot() {
                             cmd: cmd,
                             delay: setTimeout(() => {
                                 this.online_users[i].recentCommands.filter(rc => rc.cmd != cmd) 
-                            }, Math.floor(1000*60*delay+100))
+                            }, Math.floor(1000*60*delay))
                         })
                     })
                 }
