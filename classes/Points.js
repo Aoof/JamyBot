@@ -60,8 +60,8 @@ let Points = function () {
 
     this.pointsHandler = (target, context, msg) => {
         let user = {
-            user: this.users[0],
-            userdata: this.userdatas[0]
+            user: this.req.user,
+            userdata: this.req.userdata
         }
 
         let ext = this.extract(msg)
@@ -172,7 +172,7 @@ let Points = function () {
 
 
     this.gamble = (target, context, msg) => {
-        let data = this.userdatas[0]
+        let data = this.req.userdata
 
         let ext = this.extract(msg)
         let args1 = ext.args[0]
@@ -190,7 +190,7 @@ let Points = function () {
             return
         }
 
-        let user = this.users[0]
+        let user = this.req.user
 
         if (amount > data.points ) {
             this.client.say(target, `${user.displayname}, You don't have ${amount} ${this.points.namePlural}.`)
@@ -220,10 +220,9 @@ let Points = function () {
     }
 
 
-    this.timedMessage = (interval, msg) => {
+    this.timedMessage = (msg) => {
         logger.log(`There are ${this.online_users.length} users online`)
         this.client.say('#'+this.env.channel, msg)
-        setTimeout(() => this.timedMessage(interval), 1000*60*60*interval)
     }
 }
 

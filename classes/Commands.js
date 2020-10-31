@@ -57,8 +57,7 @@ let Commands = function() {
     
     
     this.gifting = (target, context, msg) => {
-        // No filtering for empty results here cuz the function before did that
-        userdata = this.userdatas[0]
+        userdata = this.req.userdata
         let q
         if (Math.random() >= .996) {
             
@@ -342,7 +341,7 @@ let Commands = function() {
 
            if (results.rows.length) {
                 let item = results.rows[0] // GOT REDEEMED ITEM
-                ud = this.userdatas[0]
+                ud = this.req.userdata
                 if (ud.points < item.price) { // CHECKED IF USER HAS ENOUGH POINTS FOR ITEM
                     this.client.say(target, `${context["display-name"]}, you don't have ${item.price} ${this.points.namePlural}.`)
                     return
@@ -528,8 +527,8 @@ let Commands = function() {
             }
 
             participant = {
-                user: this.users[0],
-                data: this.userdatas[0],
+                user: this.req.user,
+                data: this.req.userdata,
                 betting: 0,
                 choosing: -1,
                 winner: false

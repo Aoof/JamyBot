@@ -57,7 +57,8 @@ function Bot() {
 
     
     points.prefix = 
-    commands.prefix = "!"
+    commands.prefix =
+    this.prefix = "!"
     
     points.points =
     commands.points =  
@@ -70,35 +71,36 @@ function Bot() {
     this.online_users = []
     this.to_be_online = 30 // In minutes
 
-    this.updateleaderboard = (loop=true) => {
+    this.updateleaderboard = () => {
         db.query('SELECT ' + 
-                        'u.username, u.displayname AS "name", ud.goldeggs AS "geggs", ud.plateggs AS "peggs", ud.points AS "shells" ' +
-                        'FROM users u, userdata ud ' +
-                        'WHERE u.userid = ud.userid ' +
-                        'ORDER BY -ud.points', (err, results, fields) => {
-                            if (err) {
-                                logger.log(err.stack)
-                                return
-                            }
-                            this.leaderboard = results.rows
-                        })
-        if (loop) setTimeout(this.updateleaderboard, 1000*60*10)
+                'u.username, u.displayname AS "name", ud.goldeggs AS "geggs", ud.plateggs AS "peggs", ud.points AS "shells" ' +
+                'FROM users u, userdata ud ' +
+                'WHERE u.userid = ud.userid ' +
+                'ORDER BY -ud.points', (err, results, fields) => {
+                    if (err) {
+                        logger.log(err.stack)
+                        return
+                    }
+                    this.leaderboard = results.rows
+                })
     }
 
-    this.updateleaderboard(false)
+    this.updateleaderboard()
 
     this.add_online = (user, userdata) => {
+        let recentCommands = []
         if (this.online_users.map(ou => ou.user.userid).includes(user.userid)) {
             points.online_users =
-            this.online_users = this.online_users.filter(onuser => {
-                if (onuser.userid != user.userid) return onuser
+            this.online_users = this.online_users.filter(on_user => {
+                if (on_user.user.userid != user.userid) return user
+                else recentCommands = on_user.recentCommands
             })
         }
 
         let userTimer = () => {
             points.online_users =
-            this.online_users = this.online_users.filter(onuser => {
-                if (onuser.userid != user.userid) return onuser
+            this.online_users = this.online_users.filter(on_user => {
+                if (on_user.userid != user.userid) return on_user
             })
         }
 
@@ -108,14 +110,14 @@ function Bot() {
 
             userdata.points = userdata.points + 20*multiplier
             points.add_points(user, 20*multiplier)
-            setTimeout(pointsGiver, 1000*60*10)
         }
 
         this.online_users.push({
             user: user,
             userdata: userdata,
             userTimer: setTimeout(userTimer, 1000*60*this.to_be_online),
-            pointGiver: setTimeout(pointsGiver, 1000*60*10)
+            pointGiver: setInterval(pointsGiver, 1000*60*10),
+            recentCommands: recentCommands
         })
     }
 
@@ -126,30 +128,60 @@ function Bot() {
 
         let users = await db.query(`SELECT * FROM royalbutler.users WHERE "userid" = '${context["user-id"]}'`)
         let userdatas = await db.query(`SELECT * FROM royalbutler.userdata WHERE "userid" = '${context["user-id"]}'`)
-
-        users = users.rows
-        userdatas = userdatas.rows
-
-        this.add_online(users[0], userdatas[0])
-
-        user.users =
-        points.users =
-        commands.users = users
-
-        user.userdatas =
-        points.userdatas =
-        commands.userdatas = userdatas
+        
+        user.req =
+        points.req = 
+        commands.req =
+        req = {userdata: userdatas.rows[0],
+               user    : users.rows[0]}
+        
+        this.add_online(req.user, req.userdata)
 
         user.addUserOrUpdate(target, context, msg)
-        if (users.length) if (users[0].userid != "24544309") commands.gifting(target, context, msg)
+        if (users.length) if (req.user.userid != "24544309") commands.gifting(target, context, msg)
 
         if (commands.command(["ul", "updateleaderboard"], msg)) this.updateleaderboard()
 
-        let cmd = (cmdname, command) => {
-            if (commands.command(cmdname, msg)) command(target, context, msg);
+        let cmd = (cmdname, command, delay=0) => {
+            if (commands.command(cmdname, msg)) {
+                let i = this.online_users.map(e => e.user.userid).indexOf(req.user.userid)
+                let rcmds = this.online_users[i].recentCommands
+                let errors = []
+                if (typeof cmdname == "string") {
+                    if (rcmds.map(e => e.cmd).includes(cmdname)) rcmds.forEach(cmd => {
+                        logger.log(cmd)
+                        errors.push(`Please wait ${Math.ceil(Math.abs(-cmd.delay._idleStart + cmd.delay._idleTimeout) / 1000 / 60)} minute/s to use ${this.prefix+cmd.cmd} again`)
+                    })
+
+                    this.online_users[i].recentCommands.push({
+                        cmd: cmdname,
+                        delay: setTimeout(() => {
+                            this.online_users[i].recentCommands.filter(rc => rc.cmd != cmdname) 
+                        }, Math.floor(1000*60*delay+100))
+                    })
+                }
+                else if (typeof cmdname == "object") {
+                    cmdname.forEach(cmd => {
+                        if (rcmds.map(e => e.cmd).includes(cmd)) rcmds.forEach(cmd => {
+                            logger.log(cmd)
+                            errors.push(`Please wait ${Math.ceil(Math.abs(-cmd.delay._idleStart + cmd.delay._idleTimeout) / 1000 / 60)} minute/s to use ${this.prefix+cmd.cmd} again`)
+                        })
+    
+                        this.online_users[i].recentCommands.push({
+                            cmd: cmd,
+                            delay: setTimeout(() => {
+                                this.online_users[i].recentCommands.filter(rc => rc.cmd != cmd) 
+                            }, Math.floor(1000*60*delay+100))
+                        })
+                    })
+                }
+                if (!errors.length) command(target, context, msg)
+                else {
+                    logger.log(errors[0])
+                }
+            }
         }
 
-        cmd("test", () => logger.log(this.online_users))
         cmd("eggs",                                   commands.getEggs)
         cmd(["cmd", "command"],                       commands.textCommandsHandler)
         cmd("wink",                                   commands.randomWink)
@@ -157,7 +189,7 @@ function Bot() {
         cmd("lurk",                                   commands.lurk)
         cmd(["so", "shoutout"],                       commands.shoutout)
         cmd(["points", "eggshells", "shells"],        points.pointsHandler)
-        cmd(["gamble", "roulette"],                   points.gamble)
+        cmd(["gamble", "roulette"],                   points.gamble, 2)
         cmd(["startbet", "sb"],                       commands.startbet)
         cmd("bet",                                    commands.submitbet)
         cmd(["endbet", "eb"],                         commands.endbet)
@@ -263,9 +295,9 @@ function Bot() {
         logger.log(`  Username    :  ${env.name}`)
         logger.log(`  To Channel  :  ${env.channel}`)
 
-        setTimeout(() => points.timedMessage(1.5, 'Don\'t mind me, just wanted to say the King\'s head looks extra shiny today.'), 1000*60*60*1.5)
-        setTimeout(() => points.timedMessage(2, 'If you see a bug, get my master Aoof to squash it.'), 1000*60*60*2)
-        setTimeout(this.updateleaderboard, 1000*60*10)
+        setInterval(() => points.timedMessage('Don\'t mind me, just wanted to say the King\'s head looks extra shiny today.'), 1000*60*60*1.5)
+        setInterval(() => points.timedMessage('If you see a bug, get my master Aoof to squash it.'), 1000*60*60*2)
+        setInterval(this.updateleaderboard, 1000*60*10)
     }
 
     this.client.on('message', this.onMessageHandler);
