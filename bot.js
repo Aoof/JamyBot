@@ -199,7 +199,7 @@ let Bot = function() {
         cmd("lurk",                                   commands.lurk)
         cmd(["so", "shoutout"],                       commands.shoutout)
         cmd(["points", "eggshells", "shells"],        points.pointsHandler)
-        cmd(["gamble", "roulette"],                   points.gamble, .1)
+        cmd(["gamble", "roulette"],                   points.gamble, 2)
         cmd(["startbet", "sb"],                       commands.startbet)
         cmd("bet",                                    commands.submitbet)
         cmd(["endbet", "eb"],                         commands.endbet)
