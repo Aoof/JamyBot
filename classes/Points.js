@@ -1,6 +1,6 @@
 const twitch = require("./TwitchAPI.js")
 const db = require("../db.js")
-const logger = require("./Logger.js")
+const logger = require("./Logger")
 
 let Points = function () {
     this.extract = (msg) => {
@@ -207,14 +207,19 @@ let Points = function () {
             userdata: data
         }
 
-        let percentage = (user.user.subscriber) ? .5 : .45
+        this.percentage = (user.user.subscriber || user.user.moderator || context.badges.broadcaster) ? .5 : .45
+        if (this.gamblingRigged) this.percentage = Math.random()
+
+        logger.log(`Gambling Percentage for ${user.user.displayname}: ${this.percentage}`)
         
-        if (Math.random() <= percentage) {
+        if (Math.random() <= this.percentage) {
             this.add_points(user.user, amount)
-            this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and won PogChamp! and now has ${data.points + amount} ${this.points.namePlural}. PogChamp`)
+            if (!this.gamblingRigged) this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and won PogChamp! and now has ${data.points + amount} ${this.points.namePlural}. PogChamp`)
+            else this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and won with ${Math.ceil(this.percentage*100)}% win rate PogChamp! and now has ${data.points + amount} ${this.points.namePlural}. PogChamp`)
         } else {
             this.set_points(user.user, data.points - amount)
-            this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and lost LUL! and now has ${data.points - amount} ${this.points.namePlural}. LUL`)
+            if (!this.gamblingRigged) this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and lost LUL! and now has ${data.points - amount} ${this.points.namePlural}. LUL`)
+            else this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and lost with ${Math.ceil(this.percentage*100)}% win rate LUL! and now has ${data.points - amount} ${this.points.namePlural}. LUL`)
         }
 
     }
@@ -223,6 +228,17 @@ let Points = function () {
     this.timedMessage = (msg) => {
         logger.log(`There are ${this.online_users.length} users online`)
         this.client.say('#'+this.env.channel, msg)
+    }
+
+
+    this.rigGambling = (context) => {
+        if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
+        if (!context.mod) return
+        
+        this.gamblingRigged = true
+        this.percentage = Math.random()
+        logger.log("Rigged gambling command")
+        setTimeout(() => this.gamblingRigged = false, 1000*60*10)
     }
 }
 

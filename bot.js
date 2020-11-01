@@ -27,7 +27,8 @@ const env = ((process.env.MODE || "prod") == "prod") ? {
                                     channel_id: process.env.ID
                                 }
 
-function Bot() {
+
+let Bot = function() {
     this.opts = {
         identity: {
             username: env.name,
@@ -37,11 +38,10 @@ function Bot() {
             env.channel
         ]
     }
-
-    logger.newSave()
-
     let commands = new Commands()
     let points = new Points()
+
+    this.logFile = logger.newSave()
 
     this.client = new tmi.client(this.opts)
     this.client.connect()
@@ -143,39 +143,41 @@ function Bot() {
         if (commands.command(["ul", "updateleaderboard"], msg)) this.updateleaderboard()
 
         let cmd = (cmdname, command, delay=0) => {
-            // if (commands.command(cmdname, msg)) {
-            //     let i = this.online_users.map(e => e.user.userid).indexOf(req.user.userid)
-            //     let rcmds = this.online_users[i].recentCommands
-            //     logger.log(rcmds.map(e => e.cmd))
-            //     let errors = []
-            //     if (typeof cmdname == "string") {
-            //         if (rcmds.map(e => e.cmd).includes(cmdname)) errors.push("")
+            if (commands.command(cmdname, msg)) {
+                let i = this.online_users.map(e => e.user.userid).indexOf(req.user.userid)
+                let rcmds = this.online_users[i].recentCommands
+                logger.log(rcmds.map(e => e.cmd))
+                let errors = []
+                if (typeof cmdname == "string") {
+                    if (rcmds.map(e => e.cmd).includes(cmdname)) errors.push("")
+                    else this.online_users[i].recentCommands.push({
+                        cmd: cmdname,
+                        delay: setTimeout(() => {
+                            this.online_users[i].recentCommands = this.online_users[i].recentCommands.filter(rc => rc.cmd != cmdname)
+                        }, Math.floor(1000*60*delay))
+                    })
+                }
+                else if (typeof cmdname == "object") {
+                    cmdname.forEach(cmd => {
+                        if (rcmds.map(e => e.cmd).includes(cmd)) errors.push("")
+                        else this.online_users[i].recentCommands.push({
+                            cmd: cmd,
+                            delay: setTimeout(() => {
+                                this.online_users[i].recentCommands = this.online_users[i].recentCommands.filter(rc => rc.cmd != cmd)
+                            }, Math.floor(1000*60*delay))
+                        })
+                    })
+                }
+                if (!errors.length) command(target, context, msg)
+            }
+        }
 
-            //         this.online_users[i].recentCommands.push({
-            //             cmd: cmdname,
-            //             delay: setTimeout(() => {
-            //                 this.online_users[i].recentCommands.filter(rc => rc.cmd != cmdname) 
-            //             }, Math.floor(1000*60*delay))
-            //         })
-            //     }
-            //     else if (typeof cmdname == "object") {
-            //         cmdname.forEach(cmd => {
-            //             if (rcmds.map(e => e.cmd).includes(cmd)) errors.push("")
-    
-            //             this.online_users[i].recentCommands.push({
-            //                 cmd: cmd,
-            //                 delay: setTimeout(() => {
-            //                     this.online_users[i].recentCommands.filter(rc => rc.cmd != cmd) 
-            //                 }, Math.floor(1000*60*delay))
-            //             })
-            //         })
-            //     }
-            //     if (!errors.length) command(target, context, msg)
-            //     else {
-            //         logger.log(errors[0])
-            //     }
-            // }
-            if (commands.command(cmdname, msg)) command(target, context, msg)
+        let rigGamble = (target, context, msg) => {
+            if (context.badges.broadcaster || context.username == '4oofxd') context.mod = true
+            if (!context.mod) return;
+
+            points.rigGambling(context)
+            this.client.say(target, `${req.user.displayname}, Rigged the !gamble command for 10 minutes.`)
         }
 
         cmd("eggs",                                   commands.getEggs)
@@ -190,6 +192,7 @@ function Bot() {
         cmd("bet",                                    commands.submitbet)
         cmd(["endbet", "eb"],                         commands.endbet)
         cmd(["redeem", "rdm"],                        commands.getRedeem)
+        cmd(["riggamble", "rigamble"],                rigGamble)
         // cmd("uptime",                                 commands.uptime)
         // cmd("accountage",                             commands.accountAge)
         // cmd("followage",                              commands.followage)

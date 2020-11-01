@@ -1,4 +1,4 @@
-const logger = require("./classes/Logger.js")
+const logger = require("./classes/Logger")
 // const mysql = require("mysql")
 const {Client} = require("pg")
 

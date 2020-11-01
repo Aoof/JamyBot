@@ -1,7 +1,9 @@
 const db = require('../db')
 const fs = require('fs');
 const axios = require('axios')
-const logger = require("./Logger.js");
+const logger = require("./Logger")
+const Points = require("./Points")
+const points = new Points()
 
 let Commands = function() {
     this.bet = {
@@ -360,6 +362,7 @@ let Commands = function() {
                             logger.log(err)
                             return
                         }
+                        
                         this.client.say(target, `${context["display-name"]}, has redeemed ${item.name}`)
                     })
                 })

@@ -1,7 +1,6 @@
 const bot = require("../bot")
 const db = require("../db")
 const logger = require("../classes/Logger")
-const { storeItems } = require("../bot")
 
 module.exports = {
     gethome(req, res, next) {

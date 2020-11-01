@@ -1,5 +1,5 @@
 const db = require("../db")
-const logger = require("./Logger.js")
+const logger = require("./Logger")
 const twitch = require("./TwitchAPI.js")
 
 module.exports = {
