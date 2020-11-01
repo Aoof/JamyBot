@@ -63,8 +63,8 @@ let Bot = function() {
     points.points =
     commands.points =  
     this.points = {
-        name: "Egg shell",
-        namePlural: "Egg shells"
+        name: "Egg Shell",
+        namePlural: "Egg Shells"
     }
     
     points.online_users =
@@ -191,7 +191,7 @@ let Bot = function() {
         cmd(["startbet", "sb"],                       commands.startbet)
         cmd("bet",                                    commands.submitbet)
         cmd(["endbet", "eb"],                         commands.endbet)
-        cmd(["redeem", "rdm"],                        commands.getRedeem)
+        cmd(["redeem", "buy"],                        commands.getRedeem)
         cmd(["riggamble", "rigamble"],                rigGamble)
         // cmd("uptime",                                 commands.uptime)
         // cmd("accountage",                             commands.accountAge)
