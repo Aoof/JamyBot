@@ -135,18 +135,30 @@ let Bot = function() {
         req = {userdata: userdatas.rows[0],
                user    : users.rows[0]}
         
-        this.add_online(req.user, req.userdata)
-
+               
         user.addUserOrUpdate(target, context, msg)
+        
+        
+        if (!userdatas.rows.length || !users.rows.length) {
+            users = await db.query(`SELECT * FROM royalbutler.users WHERE "userid" = '${context["user-id"]}'`)
+            userdatas = await db.query(`SELECT * FROM royalbutler.userdata WHERE "userid" = '${context["user-id"]}'`)
+            
+            user.req =
+            points.req = 
+            commands.req =
+            req = {
+                userdata: userdatas.rows[0],
+                user    : users.rows[0]
+            }
+        }
+        this.add_online(req.user, req.userdata)
+            
         if (users.length) if (req.user.userid != "24544309") commands.gifting(target, context, msg)
-
         if (commands.command(["ul", "updateleaderboard"], msg)) this.updateleaderboard()
-
         let cmd = (cmdname, command, delay=0) => {
             if (commands.command(cmdname, msg)) {
                 let i = this.online_users.map(e => e.user.userid).indexOf(req.user.userid)
                 let rcmds = this.online_users[i].recentCommands
-                logger.log(rcmds.map(e => e.cmd))
                 let errors = []
                 if (typeof cmdname == "string") {
                     if (rcmds.map(e => e.cmd).includes(cmdname)) errors.push("")
@@ -164,7 +176,7 @@ let Bot = function() {
                             cmd: cmd,
                             delay: setTimeout(() => {
                                 this.online_users[i].recentCommands = this.online_users[i].recentCommands.filter(rc => rc.cmd != cmd)
-                            }, Math.floor(1000*60*delay))
+                        }, Math.floor(1000*60*delay))
                         })
                     })
                 }
@@ -187,7 +199,7 @@ let Bot = function() {
         cmd("lurk",                                   commands.lurk)
         cmd(["so", "shoutout"],                       commands.shoutout)
         cmd(["points", "eggshells", "shells"],        points.pointsHandler)
-        cmd(["gamble", "roulette"],                   points.gamble, 2)
+        cmd(["gamble", "roulette"],                   points.gamble, .1)
         cmd(["startbet", "sb"],                       commands.startbet)
         cmd("bet",                                    commands.submitbet)
         cmd(["endbet", "eb"],                         commands.endbet)
