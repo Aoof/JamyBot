@@ -144,7 +144,8 @@ let Points = function () {
                 logger.log(err)
                 return
             }
-
+            if (!results.rows.length) return
+            
             let data = results.rows[0]
             let pos;
             let participants = 0;
@@ -207,7 +208,12 @@ let Points = function () {
             userdata: data
         }
 
-        this.percentage = (user.user.subscriber || user.user.moderator || context.badges.broadcaster) ? .5 : .45
+        if (user.user.subscriber || user.user.moderator || context.badges.broadcaster) {
+            this.percentage = .5
+        } else {
+            this.percentage = .45
+        }
+
         if (this.gamblingRigged) this.percentage = Math.random()
 
         logger.log(`Gambling Percentage for ${user.user.displayname}: ${this.percentage}`)

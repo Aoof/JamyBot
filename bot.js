@@ -110,6 +110,7 @@ let Bot = function() {
 
             userdata.points = userdata.points + 20*multiplier
             points.add_points(user, 20*multiplier)
+            logger.log("Gave someone something")
         }
 
         this.online_users.push({
@@ -135,9 +136,7 @@ let Bot = function() {
         req = {userdata: userdatas.rows[0],
                user    : users.rows[0]}
         
-               
         user.addUserOrUpdate(target, context, msg)
-        
         
         if (!userdatas.rows.length || !users.rows.length) {
             users = await db.query(`SELECT * FROM royalbutler.users WHERE "userid" = '${context["user-id"]}'`)
@@ -158,25 +157,24 @@ let Bot = function() {
         let cmd = (cmdname, command, delay=0) => {
             if (commands.command(cmdname, msg)) {
                 let i = this.online_users.map(e => e.user.userid).indexOf(req.user.userid)
-                let rcmds = this.online_users[i].recentCommands
                 let errors = []
                 if (typeof cmdname == "string") {
-                    if (rcmds.map(e => e.cmd).includes(cmdname)) errors.push("")
+                    if (this.online_users[i].recentCommands.map(e => e.cmd).includes(cmdname)) errors.push("")
                     else this.online_users[i].recentCommands.push({
                         cmd: cmdname,
                         delay: setTimeout(() => {
                             this.online_users[i].recentCommands = this.online_users[i].recentCommands.filter(rc => rc.cmd != cmdname)
-                        }, Math.floor(1000*60*delay))
+                        }, Math.floor((1000*60)*delay))
                     })
                 }
                 else if (typeof cmdname == "object") {
                     cmdname.forEach(cmd => {
-                        if (rcmds.map(e => e.cmd).includes(cmd)) errors.push("")
+                        if (this.online_users[i].recentCommands.map(e => e.cmd).includes(cmd)) errors.push("")
                         else this.online_users[i].recentCommands.push({
                             cmd: cmd,
                             delay: setTimeout(() => {
                                 this.online_users[i].recentCommands = this.online_users[i].recentCommands.filter(rc => rc.cmd != cmd)
-                        }, Math.floor(1000*60*delay))
+                        }, Math.floor((1000*60)*delay))
                         })
                     })
                 }
@@ -309,6 +307,7 @@ let Bot = function() {
         setInterval(() => points.timedMessage('Don\'t mind me, just wanted to say the King\'s head looks extra shiny today.'), 1000*60*60*1.5)
         setInterval(() => points.timedMessage('If you see a bug, get my master Aoof to squash it.'), 1000*60*60*2)
         setInterval(this.updateleaderboard, 1000*60*10)
+        setInterval(() => logger.log(this.online_users.map(e => e.user.displayname)), 1000*5)
     }
 
     this.client.on('message', this.onMessageHandler);
