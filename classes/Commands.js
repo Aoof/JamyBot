@@ -434,7 +434,16 @@ let Commands = function() {
     
     
     this.lurk = (target, context, msg) => {
-        this.client.say(target, `${context['display-name']} slowly takes off their crown and fades into the crowd but can still hear Jamy's velvety voice`)
+        let USER = context['display-name']
+        let possibilities = [
+            `${USER} slowly takes off their crown and fades into the crowd but can still hear Jamy's velvety voice`,
+            `${USER} spits at their screen and runs away`,
+            `${USER}'s mum pulls ${USER} off the computer because it's her turn to simp Jamy`,
+            `${USER} gets a phone call that the bank is repossessing their house because they are in Egg Shell debt`,
+            `${USER} goes to the mirror and wonders what they would look like with a shaved head`,
+        ]
+        let index = Math.floor(Math.random() * possibilities.length);
+        this.client.say(target, possibilities[index])
     }
     
     
