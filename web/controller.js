@@ -53,6 +53,7 @@ module.exports = {
         })
     },
     getOnlineUsers(req, res, next) {
+        if (!req.session.user) return
         res.json(bot.online_users.map(user => {
             return {
                 displayname: user.user.displayname,
@@ -61,5 +62,9 @@ module.exports = {
                 recentCommands: user.recentCommands
             }
         }))
+    },
+    getLogs(req, res, next) {
+        if (!req.session.user) return
+        res.json(logger.getLogs())
     }
 }

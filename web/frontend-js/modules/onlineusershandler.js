@@ -3,14 +3,46 @@ import axios from 'axios'
 export default class OnlineUsersHandler {
     constructor() {
         this.previousOnlineUsers = []
+        this.previousOnlineLogs = []
         this.events()
     }
 
     events() {
-        setInterval(this.getOnlineUsers, 500)
+        setInterval(this.getOnlineUsers, 50)
+        setInterval(this.getLogs, 50)
+    }
+
+    getLogs() {
+        this.stopRefresh = document.querySelector(".stop-refresh")
+        if (this.stopRefresh.checked) return
+        function arrayEquals(a, b) {
+            return Array.isArray(a) &&
+              Array.isArray(b) &&
+              a.length === b.length &&
+              a.every((val, index) => val === b[index]);
+        }
+        axios.get('/logs').then(logs => {
+            logs = logs.data
+
+            if (arrayEquals(this.previousOnlineLogs, logs)) return
+            this.previousOnlineLogs = logs
+            let output = document.querySelector(".logsOutput>.tab-content>.output")
+            output.innerText = ""
+            logs.forEach(log => {
+                let output_line = document.createElement("div")
+                output_line.className = "output_line"
+                output_line.innerText = log
+                output.appendChild(output_line)
+            })
+        })
+        .catch(err => {
+            console.error(err)
+        })
     }
 
     getOnlineUsers() {
+        this.stopRefresh = document.querySelector(".stop-refresh")
+        if (this.stopRefresh.checked) return
         function arrayEquals(a, b) {
             return Array.isArray(a) &&
               Array.isArray(b) &&
@@ -21,8 +53,14 @@ export default class OnlineUsersHandler {
             users = users.data
             if (arrayEquals(this.previousOnlineUsers, users)) return
             this.previousOnlineUsers = users
-            let table = document.querySelector(".user-table>tbody")
-            table.innerHTML = ""
+            let table = document.querySelector(".user-table>thead")
+            table.innerHTML = `
+            <tr class='th'>
+                <td>User ID</td>
+                <td>Name</td>
+                <td>Points</td>
+            </tr>
+            `
             users.forEach(user => {
                 let userRow = document.createElement("tr")
                 let userid = document.createElement("td")

@@ -28,7 +28,12 @@
         <div class="nav-center">
             Welcome, <%= user.displayname %>
         </div>
+        
         <div class="nav-topright">
+            <label class="switch">
+              <input type="checkbox" class="stop-refresh">
+              <span class="slider round"></span>
+            </label>
             <button class="non-btn" onclick="document.querySelector('#logoutForm').submit()">
                 <i class="fa fa-sign-out"></i>
             </button>

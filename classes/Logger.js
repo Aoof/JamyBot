@@ -30,11 +30,12 @@ let Logger = function() {
         }
 }
 
+let logs = []
+
 module.exports = {
-    logs: [],
     log(msg, doConsoleLog=false) {
         msg = JSON.stringify(msg)
-        this.logs.push(msg)
+        logs.push(`[${new Date().toISOString().replace(/T/, " ")}]  ` + msg)
         if (mode == "prod") return
         if (!doConsoleLog) console.log(msg);
 
@@ -49,5 +50,8 @@ module.exports = {
             if (err) throw err
         });
         return this.logFile
+    },
+    getLogs() {
+        return logs
     }
 }
