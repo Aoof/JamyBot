@@ -54,7 +54,7 @@ export default class OnlineUsersHandler {
             users = users.data
             if (arrayEquals(this.previousOnlineUsers, users)) return
             this.previousOnlineUsers = users
-            let table = document.querySelector(".user-table>thead")
+            let table = document.querySelector(".user-table>table>thead")
             table.innerHTML = `
             <tr class='th'>
                 <td>User ID</td>
