@@ -8,8 +8,8 @@ export default class OnlineUsersHandler {
     }
 
     events() {
-        setInterval(this.getOnlineUsers, 50)
-        setInterval(this.getLogs, 50)
+        setInterval(this.getOnlineUsers, 250)
+        setInterval(this.getLogs, 250)
     }
 
     getLogs() {
@@ -33,6 +33,7 @@ export default class OnlineUsersHandler {
                 output_line.className = "output_line"
                 output_line.innerText = log
                 output.appendChild(output_line)
+                output.scrollTop = output.scrollHeight;
             })
         })
         .catch(err => {
@@ -76,6 +77,7 @@ export default class OnlineUsersHandler {
                 userRow.appendChild(points)
 
                 table.appendChild(userRow)
+                table.scrollTop = table.scrollHeight;
             })
         })
         .catch(err => {
