@@ -363,7 +363,7 @@ let Commands = function() {
                             return
                         }
                         
-                        this.client.say(target, `${context["display-name"]}, has redeemed ${item.name}`)
+                        this.client.say(target, `/me ${context["display-name"]}, has redeemed ${item.name}`)
                     })
                 })
            }

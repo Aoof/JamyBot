@@ -323,8 +323,4 @@ let Bot = function() {
 }
 
 let bot = new Bot()
-
 module.exports = bot
-const app = require("./web/app")
-app.listen(process.env.PORT || 8080)
-logger.log(`Listening to http://127.0.0.1:${process.env.PORT || 8080}/`)
