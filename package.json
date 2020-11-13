@@ -5,7 +5,7 @@
   "main": "bot.js",
   "scripts": {
     "run": "start nodemon index --ignore static/ && start webpack --watch --config .\\web\\webpack.config.js",
-    "start": "node bot"
+    "start": "node index"
   },
   "repository": {
     "type": "git",
