@@ -51,8 +51,6 @@ app.use(async function(req, res, next) {
     // Make all error and success flash messages available from all templates
     res.locals.errors = req.flash('errors')
     res.locals.success = req.flash('success')
-
-    
     
     let newEnv = {
         name: env.name,

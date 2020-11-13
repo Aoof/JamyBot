@@ -8,10 +8,30 @@
     <title>Royal Butler | Twitch bot</title>
 </head>
 <body>
-    <div class="topleft">
-        <% icons.forEach(icon => { %>
-            <a href="<%= icon.href %>" style="color: white; font-size: 30px; margin-left: 10px;">
-                <i class="<%= icon.name %>"></i>
-            </a>
-        <% }) %>
+    <div class="nav">
+        <div class="nav-topleft">
+            <% icons.forEach(icon => { %>
+                <a href="<%= icon.href %>">
+                    <i class="<%= icon.name %>"></i>
+                </a>
+            <% }) %> 
+            <% if (user) { %>
+                <a href="/admin">
+                    <i class="fa fa-terminal"></i>
+                </a>
+            <% } %>
+        </div>
+        <% if (user) { %>
+        <form action="/logout" method="post" id="logoutForm">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        </form>
+        <div class="nav-center">
+            Welcome, <%= user.displayname %>
+        </div>
+        <div class="nav-topright">
+            <button class="non-btn" onclick="document.querySelector('#logoutForm').submit()">
+                <i class="fa fa-sign-out"></i>
+            </button>
+        </div>
+        <% } %>
     </div>

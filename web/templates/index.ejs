@@ -9,6 +9,7 @@
     
     
     <div class="absoluteCenter" style="position: fixed;">
+      <%- include('includes/flash.ejs') %>
       <% if (status.bot && status.db) { %>
         <h1>Connected as <%= env.name %> To <a href='https://twitch.tv/<%= env.channel %>' target="_blank"><%= env.channel %> Twitch Channel</a></h1>
       <% } else { %>

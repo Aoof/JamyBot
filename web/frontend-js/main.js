@@ -1,4 +1,6 @@
-import CommandsHandler from './modules/commands.js';
+import OnlineUsersHandler from "./modules/onlineusershandler"
 
 
-new CommandsHandler()
+if (document.querySelector(".user-table")) {
+    new OnlineUsersHandler()
+}

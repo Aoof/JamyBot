@@ -1,8 +1,42 @@
 const db = require("../db")
 const logger = require("./Logger")
 const twitch = require("./TwitchAPI.js")
+const bcrypt = require("bcryptjs")
 
 module.exports = {
+    login(username, password) {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT * FROM users WHERE "username" = '${username}'`, (err, results, fields) => {
+                if (err) {
+                    logger.log(err)
+                    reject(err)
+                    return
+                }
+
+                if (results.rows.length) {
+                    let user = results.rows[0]
+                    if (user.password == null) {
+                        reject("User is not an admin")
+                        return
+                    }
+
+                    if (bcrypt.compareSync(password, user.password)) {
+                        resolve({
+                            userid: user.userid,
+                            username: user.username,
+                            displayname: user.displayname,
+                            badgesraw: user.badgesraw,
+                            moderator: user.moderator,
+                            subscriber: user.subscriber
+                        })
+                    }
+                    else reject("Incorrect Username or Password") 
+                } else {
+                    reject("User not found, contact an admin if you think this is a mistake")
+                }
+            })
+        })
+    },
     addUserOrUpdate(target, context, msg) {
         let q = (
                 `INSERT INTO users (userid, username, displayname, badgesraw, room_id, moderator, subscriber) ` +

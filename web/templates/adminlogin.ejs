@@ -1,0 +1,24 @@
+<%- include('includes/header.ejs') %>
+
+<div class="absoluteCenter" style="position: fixed;">
+    <div class="form-container">
+        <%- include('includes/flash.ejs') %>
+        <h1 class="form-header">
+            Administration Portal
+        </h1>
+        <form action="/admin-login" method="POST">
+            <div class="form-group">
+                <label for="username">Username: </label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password: </label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+            </div>
+            <input type="hidden" name='_csrf' value='<%= csrfToken %>'>
+            <button type="submit" class="form-btn form-control">Login</button>
+        </form>
+    </div>
+</div>
+
+<%- include('includes/footer.ejs') %>

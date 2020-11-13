@@ -1,0 +1,52 @@
+<%- include('includes/header.ejs') %>
+
+<div class="container">
+    <%- include('includes/flash.ejs') %>
+    <main class="inputTerminal">
+        <div class="tab-title">
+            Input Terminal
+        </div>
+
+        <div class="tab-content terminal">
+            <div class="output terminal">
+            </div>
+            <div class="input-group prefix">
+                <span class="input-group-addon terminal">RoyalButler $ </span>
+                <input type="text" name="input" class="terminal-input terminal">
+            </div>
+        </div>
+    </main>
+
+    <main class="logsOutput">
+        <div class="tab-title">
+            Logs Output
+        </div>
+
+        <div class="tab-content">
+            <div class="output terminal">
+            </div>
+        </div>
+    </main>
+
+    <main class="onlineUsers">
+        <div class="tab-title">
+            Online Users
+        </div>
+
+        <div class="tab-content">
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<%- include('includes/footer.ejs') %>

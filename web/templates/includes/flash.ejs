@@ -1,0 +1,13 @@
+<% errors.forEach(function(message) { %>
+    <div class="alert alert-danger">
+        <%= message %>
+        <button onclick='this.parentElement.style.display = "none" '><i class='fa fa-times text-danger float-right'></i></button>
+    </div>
+<% }) %>
+
+<% success.forEach(function(message) { %>
+    <div class="alert alert-success">
+        <%= message %>
+        <button onclick='this.parentElement.style.display = "none" '><i class='fa fa-times text-danger float-right'></i></button>
+    </div>
+<% }) %>

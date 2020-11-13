@@ -1,6 +1,7 @@
 const twitch = require("./TwitchAPI.js")
 const db = require("../db.js")
 const logger = require("./Logger")
+const Filter = require("./Filter.js")
 
 let Points = function () {
     this.extract = (msg) => {
@@ -43,8 +44,7 @@ let Points = function () {
     }
     
     this.givePoints = (from_user, to_user, amount, callback=null) => {
-        let q = `UPDATE userdata SET points = ${from_user.userdata.points - amount} WHERE userid = '${from_user.user.userid}';`+
-                `UPDATE userdata SET points = ${to_user.userdata.points + amount} WHERE userid = '${to_user.user.userid}';`
+        let q = `UPDATE userdata SET points = ${from_user.userdata.points - amount} WHERE userid = '${from_user.user.userid}'`                
         
         db.query(q, (err, results, fields) => {
             if (err) {
@@ -52,8 +52,17 @@ let Points = function () {
                 return
             }
 
-            if (typeof callback == "function") callback(amount)
             logger.log(`[DB_UPDATE] userdata where userid = '${from_user.user.userid}' updated points to ${from_user.userdata.points} - ${amount}`)
+        })
+
+        q = `UPDATE userdata SET points = ${to_user.userdata.points + amount} WHERE userid = '${to_user.user.userid}'`
+        db.query(q, (err, results, fields) => {
+            if (err) {
+                logger.log(err)
+                return
+            }
+
+            if (typeof callback == "function") callback(amount)
             logger.log(`[DB_UPDATE] userdata where userid = '${to_user.user.userid}' updated points to ${to_user.userdata.points} + ${amount}`)
         })
     }
@@ -108,11 +117,17 @@ let Points = function () {
                         })
                         break;
                     case "give":
+                        
                         if (/^\d+$/.test(args[1])) amount = JSON.parse(args[1])
                         
                         if (amount < 0) this.client.say(target, `${user.user.displayname}, You cannot give ${amount} ${this.points.namePlural}.`)
                         if (amount > user.userdata.points) this.client.say(target, `${user.user.displayname}, You don't have ${amount} ${this.points.namePlural}`)
                         if (amount < 0 || amount > user.userdata.points) break;
+
+                        if (args[0].toLowerCase().replace(/@/g, '') == context.username) {
+                            this.client.say(target, context["display-name"] + ", You cannot give money to yourself")
+                            return
+                        }
                         
                         this.givePoints(user, {user: u, userdata: ud}, amount, res => {
                             this.client.say(target, `${context['display-name']} gave ${u.displayname} ${res} ${this.points.namePlural}`)

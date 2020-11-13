@@ -108,7 +108,18 @@ let Bot = function() {
             let multiplier = 1
             if (user.subscriber) multiplier = 1.2
 
-            userdata.points = userdata.points + 20*multiplier
+            this.online_users.forEach(ou => {
+                if (ou.user.userid == user.user.userid) {
+                    userdata.points = userdata.points + 20*multiplier
+                    return {
+                        user: user,
+                        userdata: userdata,
+                        userTimer: ou.userTimer,
+                        pointGiver: setTimeout(pointsGiver, 1000*60*10),
+                        recentCommands: ou.recentCommands
+                    }
+                }
+            }) 
             points.add_points(user, 20*multiplier)
             logger.log("Gave someone something")
         }
@@ -117,7 +128,7 @@ let Bot = function() {
             user: user,
             userdata: userdata,
             userTimer: setTimeout(userTimer, 1000*60*this.to_be_online),
-            pointGiver: setInterval(pointsGiver, 1000*60*10),
+            pointGiver: setTimeout(pointsGiver, 1000*60*10),
             recentCommands: recentCommands
         })
     }
@@ -310,7 +321,6 @@ let Bot = function() {
         setInterval(() => points.timedMessage('Don\'t mind me, just wanted to say the King\'s head looks extra shiny today.'), 1000*60*60*1.5)
         setInterval(() => points.timedMessage('If you see a bug, get my master Aoof to squash it.'), 1000*60*60*2)
         setInterval(this.updateleaderboard, 1000*60*10)
-        setInterval(() => logger.log(this.online_users.map(e => e.user.displayname)), 1000*5)
     }
 
     this.client.on('message', this.onMessageHandler);
