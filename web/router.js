@@ -7,8 +7,10 @@ router.get('/commands', mainController.getcommands)
 router.get('/leaderboard', mainController.getleader)
 router.get('/store', mainController.getstore)
 router.get('/admin', mainController.admin)
+
 router.post('/admin-login', mainController.adminLogin)
 router.post('/logout', mainController.logout)
+router.post('/command', mainController.executeCommand)
 
 router.get('/online-users', mainController.getOnlineUsers)
 router.get('/logs', mainController.getLogs)

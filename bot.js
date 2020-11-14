@@ -69,6 +69,7 @@ let Bot = function() {
     
     points.online_users =
     this.online_users = []
+    this.pointGivers = []
     this.to_be_online = 30 // In minutes
 
     this.updateleaderboard = () => {
@@ -104,33 +105,38 @@ let Bot = function() {
             })
         }
 
-        let pointsGiver = () => {
+        function pGiverFunc(online_users) {
             let multiplier = 1
             if (user.subscriber) multiplier = 1.2
 
-            this.online_users.forEach(ou => {
-                if (ou.user.userid == user.user.userid) {
+            logger.log(`Success giving ${user.username} ${20*multiplier} Egg Shells`)
+            points.add_points(user, 20*multiplier)
+            return online_users.map(function(ou) {
+                if (ou.user.userid == user.userid) {
                     userdata.points = userdata.points + 20*multiplier
                     return {
                         user: user,
                         userdata: userdata,
                         userTimer: ou.userTimer,
-                        pointGiver: setTimeout(pointsGiver, 1000*60*10),
                         recentCommands: ou.recentCommands
                     }
+                } else {
+                    return ou
                 }
-            }) 
-            points.add_points(user, 20*multiplier)
-            logger.log("Gave someone something")
+            })
         }
 
         this.online_users.push({
             user: user,
             userdata: userdata,
             userTimer: setTimeout(userTimer, 1000*60*this.to_be_online),
-            pointGiver: setTimeout(pointsGiver, 1000*60*10),
             recentCommands: recentCommands
         })
+
+        let pgiver = setInterval(() => this.online_users = pGiverFunc(this.online_users), 1000*60*10)
+
+        this.pointGivers.push(pgiver)
+        logger.log(pgiver)
     }
 
     this.onMessageHandler = async (target, context, msg, self) => {

@@ -25,6 +25,7 @@ let Points = function () {
                 return
             }
 
+            if (typeof callback == "function") callback(points)
             logger.log(`[DB_UPDATE] userdata where userid = '${user.userid}' increased points by ${points}`)
         })
     }

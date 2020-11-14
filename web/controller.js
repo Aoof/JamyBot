@@ -66,5 +66,8 @@ module.exports = {
     getLogs(req, res, next) {
         if (!req.session.user) return
         res.json(logger.getLogs())
-    }
+    },
+    executeCommand(req, res, next) {
+        
+    } 
 }

@@ -299,13 +299,13 @@ a::visited {
 
 .inputTerminal {
   grid-area: inputTerminal;
+  cursor: text;
 }
 
 .tab-title {
   width: Calc(100% - 8px);
   text-align: left;
 
-  border-radius: 7px 7px 0 0;
   padding: 2px 4px;
   border: 1px solid rgba(255, 255, 255, .3);
 

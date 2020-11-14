@@ -4,12 +4,25 @@ export default class OnlineUsersHandler {
     constructor() {
         this.previousOnlineUsers = []
         this.previousOnlineLogs = []
+        this.stopRefresh = document.querySelector(".stop-refresh")
+        this.logsOutput = document.querySelector(".logsOutput")
+        this.onlineUsers = document.querySelector(".onlineUsers")
+        this.inputTerminal = document.querySelector(".inputTerminal")
         this.events()
     }
 
     events() {
         setInterval(this.getOnlineUsers, 250)
         setInterval(this.getLogs, 250)
+        this.inputTerminalHandler()
+    }
+
+    inputTerminalHandler() {
+        this.inputTerminal.addEventListener("click", e => {
+            e.preventDefault()
+        
+            document.querySelector(".terminal-input").focus()
+        })
     }
 
     getLogs() {
