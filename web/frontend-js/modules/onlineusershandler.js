@@ -41,7 +41,7 @@ export default class OnlineUsersHandler {
             this.previousOnlineLogs = logs
             let output = document.querySelector(".logsOutput>.tab-content>.output")
             output.innerText = ""
-            if (logs.length > 50) logs = logs.slice(logs.length - 50, logs.length)
+            if (logs.length > 20) logs = logs.slice(logs.length - 20, logs.length)
             logs.forEach(log => {
                 let output_line = document.createElement("div")
                 output_line.className = "output_line"
