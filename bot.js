@@ -133,10 +133,8 @@ let Bot = function() {
             recentCommands: recentCommands
         })
 
-        let pgiver = setInterval(() => this.online_users = pGiverFunc(this.online_users), 1000*60*10)
-
+        let pgiver = setInterval(() => points.online_users = this.online_users = pGiverFunc(this.online_users), 1000*60*10)
         this.pointGivers.push(pgiver)
-        logger.log(pgiver)
     }
 
     this.onMessageHandler = async (target, context, msg, self) => {
@@ -171,35 +169,9 @@ let Bot = function() {
             
         if (users.length) if (req.user.userid != "24544309") commands.gifting(target, context, msg)
         if (commands.command(["ul", "updateleaderboard"], msg)) this.updateleaderboard()
-        let cmd = (cmdname, command, delay=0) => {
-            if (commands.command(cmdname, msg)) command(target, context, msg)
 
-            // Delay mechanics below...
-            // if (commands.command(cmdname, msg)) {
-                // let i = this.online_users.map(e => e.user.userid).indexOf(req.user.userid)
-                // let errors = []
-                // if (typeof cmdname == "string") {
-                //     if (this.online_users[i].recentCommands.map(e => e.cmd).includes(cmdname)) errors.push("")
-                //     else this.online_users[i].recentCommands.push({
-                //         cmd: cmdname,
-                //         delay: setTimeout(() => {
-                //             this.online_users[i].recentCommands = this.online_users[i].recentCommands.filter(rc => rc.cmd != cmdname)
-                //         }, Math.floor((1000*60)*delay))
-                //     })
-                // }
-                // else if (typeof cmdname == "object") {
-                //     cmdname.forEach(cmd => {
-                //         if (this.online_users[i].recentCommands.map(e => e.cmd).includes(cmd)) errors.push("")
-                //         else this.online_users[i].recentCommands.push({
-                //             cmd: cmd,
-                //             delay: setTimeout(() => {
-                //                 this.online_users[i].recentCommands = this.online_users[i].recentCommands.filter(rc => rc.cmd != cmd)
-                //         }, Math.floor((1000*60)*delay))
-                //         })
-                //     })
-                // }
-                // if (!errors.length) command(target, context, msg)
-            // }
+        function cmd(cmdname, command, delay=0) {
+            if (commands.command(cmdname, msg)) command(target, context, msg)
         }
 
         let rigGamble = (target, context, msg) => {
