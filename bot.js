@@ -112,7 +112,7 @@ let Bot = function() {
             if (user.subscriber) multiplier = 1.2
 
             points.add_points(user, 20*multiplier)
-            this.updates.push(`Success giving ${user.username} ${20*multiplier} Egg Shells`)
+            // this.updates.push(`Success giving ${user.username} ${20*multiplier} Egg Shells`)
             return online_users.map(function(ou) {
                 if (ou.user.userid == user.userid) {
                     userdata.points = userdata.points + 20*multiplier
