@@ -4,7 +4,6 @@ export default class OnlineUsersHandler {
     constructor() {
         this.previousOnlineUsers = []
         this.previousOnlineLogs = []
-        this.stopRefresh = document.querySelector(".stop-refresh")
         this.logsOutput = document.querySelector(".logsOutput")
         this.onlineUsers = document.querySelector(".onlineUsers")
         this.inputTerminal = document.querySelector(".inputTerminal")
@@ -12,9 +11,21 @@ export default class OnlineUsersHandler {
     }
 
     events() {
-        setInterval(this.getOnlineUsers, 250)
-        setInterval(this.getLogs, 250)
+        setInterval(() => this.updateData(), 250)
         this.inputTerminalHandler()
+    }
+
+    updateData() {
+        let updts = []
+        
+        axios.get('/get-updates').then(updates => {
+            updts = updates.data
+            if (document.querySelector("input.stop-refresh").checked || updts != 1) return
+            else {
+                this.getLogs()
+                this.getOnlineUsers()
+            }
+        }).catch(err => console.error(err))
     }
 
     inputTerminalHandler() {
@@ -25,9 +36,7 @@ export default class OnlineUsersHandler {
         })
     }
 
-    getLogs() {
-        this.stopRefresh = document.querySelector(".stop-refresh")
-        if (this.stopRefresh.checked) return
+    getLogs(callback=null) {
         function arrayEquals(a, b) {
             return Array.isArray(a) &&
               Array.isArray(b) &&
@@ -41,23 +50,25 @@ export default class OnlineUsersHandler {
             this.previousOnlineLogs = logs
             let output = document.querySelector(".logsOutput>.tab-content>.output")
             output.innerText = ""
-            if (logs.length > 40) logs = logs.slice(logs.length - 40, logs.length)
+            if (logs.length > 50) logs = logs.slice(logs.length - 50, logs.length)
+
             logs.forEach(log => {
                 let output_line = document.createElement("div")
                 output_line.className = "output_line"
                 output_line.innerText = log
+                
                 output.appendChild(output_line)
                 output.scrollTop = output.scrollHeight;
             })
+
+            if (typeof callback == "function") callback()
         })
         .catch(err => {
             console.error(err)
         })
     }
 
-    getOnlineUsers() {
-        this.stopRefresh = document.querySelector(".stop-refresh")
-        if (this.stopRefresh.checked) return
+    getOnlineUsers(callback=null) {
         function arrayEquals(a, b) {
             return Array.isArray(a) &&
               Array.isArray(b) &&
@@ -98,6 +109,7 @@ export default class OnlineUsersHandler {
                 table.appendChild(userRow)
                 table.scrollTop = table.scrollHeight;
             })
+            if (typeof callback == "function") callback()
         })
         .catch(err => {
             console.error(err)

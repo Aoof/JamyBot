@@ -72,6 +72,8 @@ let Bot = function() {
     this.pointGivers = []
     this.to_be_online = 30 // In minutes
 
+    this.updates = []
+
     this.updateleaderboard = () => {
         db.query('SELECT ' + 
                 'u.username, u.displayname AS "name", ud.goldeggs AS "geggs", ud.plateggs AS "peggs", ud.points AS "shells" ' +
@@ -109,8 +111,8 @@ let Bot = function() {
             let multiplier = 1
             if (user.subscriber) multiplier = 1.2
 
-            logger.log(`Success giving ${user.username} ${20*multiplier} Egg Shells`)
             points.add_points(user, 20*multiplier)
+            this.updates.push(`Success giving ${user.username} ${20*multiplier} Egg Shells`)
             return online_users.map(function(ou) {
                 if (ou.user.userid == user.userid) {
                     userdata.points = userdata.points + 20*multiplier

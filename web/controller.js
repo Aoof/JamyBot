@@ -69,5 +69,11 @@ module.exports = {
     },
     executeCommand(req, res, next) {
         
-    } 
+    },
+    getUpdates(req, res, next) {
+        if (!bot.updates.length) {
+            bot.updates = []
+            res.json(1)
+        } else res.json(0)
+    }
 }

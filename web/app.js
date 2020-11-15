@@ -81,6 +81,7 @@ app.use(async function(req, res, next) {
 
     // Make user session data available from within view templates
     res.locals.user = req.session.user
+
     next()
 })
 

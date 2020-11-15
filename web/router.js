@@ -12,6 +12,7 @@ router.post('/admin-login', mainController.adminLogin)
 router.post('/logout', mainController.logout)
 router.post('/command', mainController.executeCommand)
 
+router.get('/get-updates', mainController.getUpdates)
 router.get('/online-users', mainController.getOnlineUsers)
 router.get('/logs', mainController.getLogs)
 module.exports = router
