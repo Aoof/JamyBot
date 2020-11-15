@@ -18,6 +18,15 @@
   background: #555; 
 }
 
+.scroller {
+  scrollbar-color: #888 #f1f1f120;
+  scrollbar-width: thin;
+}
+
+.scroller:hover {
+  scrollbar-color: #555 #f1f1f120;
+}
+
 html, body {
   background-color: #222222;
   color: white;
@@ -59,7 +68,9 @@ a::visited {
 }
 
 .absoluteCenter {
+  width: 100%;
   width: -webkit-fill-available;
+  height: 100%;
   height: -webkit-fill-available;
   left: 0;
   right: 0;
@@ -118,6 +129,11 @@ a::visited {
   padding: 8px 5px;
 
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: default;
+}
+
+.row:hover:not(.row-header), .output_line:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .row>* {
@@ -154,6 +170,7 @@ a::visited {
 }
 
 .nav {
+  width: 100%;
   width: -webkit-fill-available;
   text-align: center;
   color: white; 
@@ -190,6 +207,7 @@ a::visited {
 }
 
 .form-container {
+  width: 100%;
   width: -webkit-fill-available;
   margin: 0 40%;
   padding: 30px;
@@ -204,6 +222,7 @@ a::visited {
 }
 
 .form-control {
+  width: 100%;
   width: -webkit-fill-available;
   border-radius: 7px;
   padding: 10px;
@@ -233,6 +252,7 @@ a::visited {
   padding: 10px 20px;
   border-radius: 7px;
   margin: 10px 0;
+  width: 100%;
   width: -webkit-fill-available;
 }
 
@@ -260,6 +280,7 @@ a::visited {
 @media only screen and (max-width: 1024px) {
   .grid {
     margin-top: 20px;
+    width: 100%;
     width: -webkit-fill-available;
   }
 }
@@ -279,7 +300,9 @@ a::visited {
 .container {
   margin-top: 3%;
   display: grid;
+  width: 100%;
   width: -webkit-fill-available;
+  height: 100%;
   height: -webkit-fill-available;
   grid-template-columns: auto;
   grid-template-rows: 30%;
@@ -341,6 +364,7 @@ a::visited {
   position: relative;
   z-index: 2;
   float: left;
+  width: 100%;
   width: -webkit-fill-available;
   display: table-cell;
   padding: 6px 12px;
@@ -354,6 +378,7 @@ a::visited {
   padding: 6px 12px;
   height: 400px !important;
   overflow-y: scroll;
+  width: 100%;
   width: -webkit-fill-available;
 }
 
@@ -380,6 +405,7 @@ a::visited {
   width: 100%;
   text-align: left;
   font-family: monospace;
+  cursor: default;
 }
 .switch {
   position: relative;

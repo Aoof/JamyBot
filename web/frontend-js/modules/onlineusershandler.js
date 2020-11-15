@@ -68,19 +68,24 @@ export default class OnlineUsersHandler {
             users = users.data
             if (arrayEquals(this.previousOnlineUsers, users)) return
             this.previousOnlineUsers = users
-            let table = document.querySelector(".user-table>table>thead")
+            let table = document.querySelector(".user-table")
             table.innerHTML = `
-            <tr class='th'>
-                <td>User ID</td>
-                <td>Name</td>
-                <td>Points</td>
-            </tr>
+            <div class="row row-header">
+                <div class="col-md-2">User ID</div>
+                <div class="col-md-6">Name</div>
+                <div class="col-md-4">Points</div>
+            </div>
             `
             users.forEach(user => {
-                let userRow = document.createElement("tr")
-                let userid = document.createElement("td")
-                let name = document.createElement("td")
-                let points = document.createElement("td")
+                let userRow = document.createElement("div")
+                let userid = document.createElement("div")
+                let name = document.createElement("div")
+                let points = document.createElement("div")
+
+                userRow.className = "row"
+                userid.className = "col-md-2"
+                name.className = "col-md-6"
+                points.className = "col-md-4"
     
                 userid.innerText = user.userid
                 name.innerText = user.displayname
