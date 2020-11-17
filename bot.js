@@ -107,13 +107,13 @@ let Bot = function() {
             })
         }
 
-        function pGiverFunc(online_users) {
+        let pGiverFunc = () => {
             let multiplier = 1
             if (user.subscriber) multiplier = 1.2
 
             points.add_points(user, 20*multiplier)
             // this.updates.push(`Success giving ${user.username} ${20*multiplier} Egg Shells`)
-            return online_users.map(function(ou) {
+            this.online_users = this.online_users.map(function(ou) {
                 if (ou.user.userid == user.userid) {
                     userdata.points = userdata.points + 20*multiplier
                     return {
@@ -135,8 +135,12 @@ let Bot = function() {
             recentCommands: recentCommands
         })
 
-        let pgiver = setInterval(() => points.online_users = this.online_users = pGiverFunc(this.online_users), 1000*60*10)
-        this.pointGivers.push(pgiver)
+        if (!this.pointGivers.map(e => e.userid).includes(user.userid)) {
+            this.pointGivers.push({
+                userid: user.userid,
+                pgiver: setInterval(pGiverFunc, 1000*60*10)
+            })
+        }
     }
 
     this.onMessageHandler = async (target, context, msg, self) => {
