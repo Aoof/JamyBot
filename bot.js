@@ -70,7 +70,7 @@ let Bot = function() {
     points.online_users =
     this.online_users = []
     this.pointGivers = []
-    this.to_be_online = .5 // In minutes
+    this.to_be_online = 30 // In minutes
 
     this.updates = []
 
