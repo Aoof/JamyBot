@@ -70,7 +70,7 @@ let Bot = function() {
     points.online_users =
     this.online_users = []
     this.pointGivers = []
-    this.to_be_online = 30 // In minutes
+    this.to_be_online = .5 // In minutes
 
     this.updates = []
 
@@ -97,20 +97,14 @@ let Bot = function() {
             this.online_users = this.online_users.filter(on_user => {
                 if (on_user.user.userid != user.userid) return on_user
                 else recentCommands = on_user.recentCommands
+                return on_user
             })
         }
-
-        let userTimer = () => {
-            points.online_users =
-            this.online_users = this.online_users.filter(on_user => {
-                if (on_user.userid != user.userid) return on_user
-            })
-        }
-
+        
         let pGiverFunc = () => {
             let multiplier = 1
             if (user.subscriber) multiplier = 1.2
-
+            
             points.add_points(user, 20*multiplier)
             // this.updates.push(`Success giving ${user.username} ${20*multiplier} Egg Shells`)
             this.online_users = this.online_users.map(function(ou) {
@@ -127,11 +121,20 @@ let Bot = function() {
                 }
             })
         }
+        
+        let userTimer = () => {
+            points.online_users =
+            this.online_users = this.online_users.filter(on_user => on_user.user.userid != user.userid)
+        }
 
+        this.online_users = this.online_users.filter(ou => {
+            if (ou.user.userid != user.userid) return ou
+            else clearTimeout(ou.userTimer)
+        })
         this.online_users.push({
             user: user,
             userdata: userdata,
-            userTimer: setTimeout(userTimer, 1000*60*this.to_be_online),
+            userTimer: setTimeout(userTimer, 1000*60*this.to_be_online), 
             recentCommands: recentCommands
         })
 
