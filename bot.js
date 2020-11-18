@@ -124,7 +124,16 @@ let Bot = function() {
         
         let userTimer = () => {
             points.online_users =
-            this.online_users = this.online_users.filter(on_user => on_user.user.userid != user.userid)
+            this.online_users = this.online_users.filter(on_user => {
+                if (on_user.user.userid != user.userid) return on_user
+                else {
+                    clearTimeout(on_user.userTimer)
+                    this.pointGivers.filter(g => {
+                        if (g.userid != on_user.user.userid) return g
+                        else clearInterval(g.pgiver)
+                    })
+                }
+            })
         }
 
         this.online_users = this.online_users.filter(ou => {
