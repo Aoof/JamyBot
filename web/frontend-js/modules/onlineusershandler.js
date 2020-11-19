@@ -107,7 +107,6 @@ export default class OnlineUsersHandler {
                 userRow.appendChild(points)
 
                 table.appendChild(userRow)
-                table.scrollTop = table.scrollHeight;
             })
             if (typeof callback == "function") callback()
         })
