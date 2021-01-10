@@ -236,8 +236,8 @@ let Points = function () {
         
         if (Math.random() <= this.percentage) {
             this.add_points(user.user, amount)
-            if (!this.gamblingRigged) this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and won! and now has ${data.points + amount} ${this.points.namePlural}.`)
-            else this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and won with ${Math.ceil(this.percentage*100)}% win rate! and now has ${data.points + amount} ${this.points.namePlural}.`)
+            if (!this.gamblingRigged) this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and won PogChamp! and now has ${data.points + amount} ${this.points.namePlural}.`)
+            else this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and won with ${Math.ceil(this.percentage*100)}% win rate PogChamp! and now has ${data.points + amount} ${this.points.namePlural}.`)
         } else {
             this.set_points(user.user, data.points - amount)
             if (!this.gamblingRigged) this.client.say(target, `${user.user.displayname}, gambled with ${amount} ${this.points.namePlural}, and lost LUL! and now has ${data.points - amount} ${this.points.namePlural}. LUL`)
