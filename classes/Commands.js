@@ -61,7 +61,7 @@ let Commands = function() {
     this.gifting = (target, context, msg) => {
         userdata = this.req.userdata
         let q
-        if (Math.random() >= .996) {
+        if (Math.random() >= .994) {
             
             q = `UPDATE userdata SET "goldeggs" = ${userdata.goldeggs + 1}, "points" = ${userdata.points + 2500} WHERE "userid" = '${context["user-id"]}'`
             db.query(q, (err, results, fields) => {
@@ -89,7 +89,7 @@ let Commands = function() {
         }
 
         
-        if (Math.random() <= .0004) {
+        if (Math.random() <= .0008) {
             q = `UPDATE userdata SET "plateggs" = ${userdata.plateggs + 1}, "points" = ${userdata.points + 2500*5} WHERE "userid" = '${context["user-id"]}'`
             db.query(q, (err, results, fields) => {
                 if (err) {
