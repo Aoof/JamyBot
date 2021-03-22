@@ -444,7 +444,11 @@ let Commands = function() {
             `${USER} realises they'd rather watch a dutty e-girl and dips`,
             `${USER} locks eyes with Jamy and blushes...maybe tomorrow ${USER} will confess their feelings for the bald boy`,
             `${USER} quickly goes to wax their shoulder hair before going on a date`,
-            `${USER} tabs over to AliExpress to look at fit waifu pillows, huge otaku alert`
+            `${USER} tabs over to AliExpress to look at fit waifu pillows, huge otaku alert`,
+            `${USER} leaves because Jamy is trying to scam them into buying crypto`,
+            `${USER} goes to open the door to collect their sad Uber Eats dinner for one`,
+            `${USER} rushes outside to practice their parkour skills`,
+            `${USER} drops down to do 20 pushups to impress Jamy`
         ]
         let index = Math.floor(Math.random() * possibilities.length);
         this.client.say(target, possibilities[index])
