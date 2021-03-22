@@ -316,6 +316,7 @@ let Bot = function() {
 
         setInterval(() => points.timedMessage('Don\'t mind me, just wanted to say the King\'s head looks extra shiny today.'), 1000*60*60*1.5)
         setInterval(() => points.timedMessage('If you see a bug, get my master Aoof to squash it.'), 1000*60*60*2)
+        setInterval(() => points.timedMessage('If the Egg overlord makes you giggle, capture is magic in the form of a clip. Give it a humorous title and go into the running for the monthly sub giveaway!'), 1000*60*60*1.5 + 1000*60*30)
         setInterval(this.updateleaderboard, 1000*60*10)
     }
 
